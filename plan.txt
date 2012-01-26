@@ -1,0 +1,45 @@
+ ANALYSIS TOOLS - Deepak Cherian
+------------------------------------
+
+General:
+	- Derived quantities
+		- energy
+		- pv
+		- Richardson number
+		- Burger number
+	- movie with changes w.r.t previous time step
+	- vertical stretched grid code
+	
+	- mod_movie
+		- check z plane contours
+	
+ROMS
+	- roms_info
+		- fix IC plotting
+		
+	- roms_derived quantities.
+		- integrate into the roms_*movie code somehow
+	
+	- conservative mode for huge files
+		- roms_diffmovie
+		- roms_pv
+		
+MITgcm
+	- gcm_diffmovie
+	- gcm_info
+	
+	- add directory check to build.bash
+	
+Improvements:
+	- animate.m
+		- move to string based variable arguments?
+		- fix imagesc
+		
+	- convergence.m
+		- make into function form
+		- robust checking of dimensions to exit gracefully from errors
+		
+	- linex, liney help comments
+	- fix corr_sig and confnorm
+	- LaPrint
+	- get matlab to compile
