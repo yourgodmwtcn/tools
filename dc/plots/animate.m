@@ -78,6 +78,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         labels.yax   = '';
         labels.revz  = 0;
         labels.time  = [];
+        labels.tmax  = size(data,3);
     end
     
     if ~isfield(labels,'tmax'), labels.tmax = labels.time(end); end
@@ -104,6 +105,13 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     pflag = 0;
     spaceplay = 1; % if 1, space pauses. if 0, space plays
     %caxisflag = 1; % constant color bar
+    
+    % kludge to fix problem where if Esc is used to quit once, it remains as
+    % the current key on the figure window. Thus, if animate is run once more
+    % in the same window, it will quit without plotting since ckey=Esc. Don't
+    % want to use clf because it'll mess up stride functionality in mod_movie
+    % just_start is 1 and then set to 0 at the end of first loop.
+    % just_start = 1;
     
     flag = [0 0 0];% defaults
     
@@ -136,7 +144,8 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
             pause(pausetime);
         end  
         
-        ckey = get(gcf,'currentkey'); 
+        %if ~just_start, 
+        ckey = get(gcf,'currentkey');% end
         
         % navigate : other keys move forward
         if strcmp(ckey,'leftarrow') | strcmp(ckey,'downarrow') | button == 28 | button == 31 
@@ -183,4 +192,5 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         end
         colorbar;        
         eval(commands); % execute custom commands
+        just_start = 0;
     end

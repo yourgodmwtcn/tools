@@ -34,12 +34,15 @@ Improvements:
 	- animate.m
 		- move to string based variable arguments?
 		- fix imagesc
+		- fix just_start and Esc problem.
 		
 	- convergence.m
 		- make into function form
 		- robust checking of dimensions to exit gracefully from errors
 		
-	- linex, liney help comments
+	- linex, liney 
+		- help comments
+		- fix monotonic axis error
 	- fix corr_sig and confnorm
 	- LaPrint
 	- get matlab to compile

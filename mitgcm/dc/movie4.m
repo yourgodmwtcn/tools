@@ -45,7 +45,6 @@ function [] = movie4(file,timesteps)
     if repnan(w(1,1,:,:),0)   == zeros([1 1 s(3) s(4)]), w(1,1,:,:) = NaN; end;
     if repnan(w(end,1,:,:),0) == zeros([1 1 s(3) s(4)]), w(end,1,:,:) = NaN; end;
     
-    figure
     stop=size(u,4);
     
     hfig = figure;

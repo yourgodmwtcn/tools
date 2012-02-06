@@ -9,7 +9,7 @@
 
 function [] = gcm_movie(fname, varname, tindices, axis, index, commands)
 
-    mod_movie('mitgcm',fname, varname, tindices, axis, index, commands);
+    mod_movie(fname, varname, tindices, axis, index, commands);
 
 % fname = find_file(fname);
 % fprintf('\n Using file: %s\n', fname)

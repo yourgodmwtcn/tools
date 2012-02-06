@@ -10,6 +10,8 @@ function [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname)
       pos = 'u';
     elseif ~isempty(findstr(varcoords,'_v'))
       pos = 'v';
+    elseif ~isempty(findstr(varcoords,'_w'))
+      pos = 'w';
     elseif ~isempty(findstr(varcoords,'_rho'))
       pos = 'rho';
     else
@@ -32,6 +34,13 @@ function [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname)
             
             xunits = ncreadatt(fname,'x_v','units');
             yunits = ncreadatt(fname,'y_v','units'); 
+            
+        case 'w'
+            xax = grid.lon_rho';
+            yax = grid.lat_rho';
+            zax = grid.z_w;
+            xunits = ncreadatt(fname,'x_rho','units');
+            yunits = ncreadatt(fname,'y_rho','units'); 
 
         otherwise
             xax = grid.lon_rho';

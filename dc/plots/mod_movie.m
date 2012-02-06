@@ -9,6 +9,7 @@
 %                      (passed to animate.m - optional)
 
 % CHANGELOG:
+% Fixed display of single timestep                              26 Jan 2012
 % Reducd jump to 100 and fixed many bugs                        26 Jan 2012
 %   - titles work perfectly now. Added labels.tmax
 %   - throws error if given a 2d simulation and asking for x-y plot
@@ -29,7 +30,7 @@ gcm = 1;
 try 
     ncreadatt(fname,'/','MITgcm_version');
 catch ME
-    gcm = 0
+    gcm = 0;
 end
 
 if gcm
@@ -83,10 +84,11 @@ if isinf(tindices(2)), tindices(2) = vinfo.Size(end); end
 
 stride = [1 1 1 dt];
     
-if tindices(2) == 0 | tindices(2) == 1
-    iend   = 1;
+if (tindices(2)-tindices(1)) == 0
+    iend = 1;
+    dt = tindices(2);
 else
-    iend   = ceil((tindices(2)-tindices(1))/jump);
+    iend   = ceil((tindices(2)-tindices(1))/jump/dt);
 end
 
 if strcmp(varname,'Eta') || strcmp(varname,'zeta')
@@ -102,6 +104,8 @@ labels.tmax = time(tindices(1) + dt*floor((tindices(2)-tindices(1))/dt));
 labels.revz  = 0;
 labels.tunits = 'days';
 vartitle = [varname ' (' ncreadatt(fname,varname,'units') ') | '];
+
+figure;
 
 for i=0:iend-1
     % start and count arrays for ncread : corrected to account for stride
@@ -119,7 +123,7 @@ for i=0:iend-1
     switch axis
         case 'x'
             % given location instead of index
-            if ischar(index), index = find_approx(xax,str2num(index),1); end
+            if ischar(index), index = find_approx(xax,str2double(index),1); end
             % fix title string
             labels.title = [vartitle axis ' = ' sprintf('%5.2f', xax(index)) ' m | '];
             
@@ -129,7 +133,8 @@ for i=0:iend-1
             dv  = double(squeeze(var));
             
             % take care of walls
-            s   = size(dv);
+            s   = size(dv);            
+            s(3) = size(dv,3); % correct for single timestep snapshots
             if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:) = NaN; end;
             if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
             
@@ -139,7 +144,7 @@ for i=0:iend-1
 
         case 'y'
             % given location instead of index
-            if ischar(index), index = find_approx(yax,str2num(index),1); end
+            if ischar(index), index = find_approx(yax,str2double(index),1); end
             % fix title string
             labels.title = [vartitle axis ' = ' sprintf('%5.2f', yax(index)) ' m | '];
             
@@ -150,6 +155,7 @@ for i=0:iend-1
             
             % take care of walls
             s   = size(dv);
+            s(3) = size(dv,3); % correct for single timestep snapshots
             if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:) = NaN; end;
             if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
             
@@ -159,7 +165,7 @@ for i=0:iend-1
 
         case 'z'
             % given location instead of index
-            if ischar(index), index = find_approx(zax,str2num(index),1); end
+            if ischar(index), index = find_approx(zax,str2double(index),1); end
                         
             if dim == 3 % catch zeta
                 read_start(3) = index;
@@ -175,10 +181,11 @@ for i=0:iend-1
             dv  = double(squeeze(var));
             
             % take care of walls
-            s   = size(dv);
-            if length(s) == 2
-                error('2D simulation?');
-            end
+            s   = size(dv);            
+            s(3) = size(dv,3); % correct for single timestep snapshots
+            if s(1) == 1 || s(2) == 1
+                 error('2D simulation?');
+             end
             if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:)   = NaN; end;
             if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
             if repnan(dv(:,1,:),0)   == zeros([s(1) 1 s(3)]), dv(:,1,:)   = NaN; end;
