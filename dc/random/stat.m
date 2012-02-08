@@ -7,6 +7,7 @@
 %       missing rows in each column
 
 % CHANGE LOG:
+% Changed 'if' output criterion from min -> median              06 Feb 2012
 % Catches structure / cell input and prints error.              16 Jan 2012
 % Colored output for complex and empty variables!               16 Jan 2012
 % Now outputs name too.                                         04 Jan 2012
@@ -77,7 +78,7 @@ function [] = stat(var1)
     end
     
     % Now print standard statistics
-    if abs(min(var1(:))) > 0.005 || abs(min(var1(:))) == 0
+    if abs(median(var1(:))) > 0.005 || abs(median(var1(:))) == 0
         fprintf(' \n\t %15s: % 6.2f \n\t %15s: % 6.2f \n\t %15s: % 6.2f \n\t %15s: % 6.2f ', ...% ...
                 'Max',max(var1(:)), 'Min', nanmin(var1(:)), 'Mean', nanmean(var1(:)), ...
                 'Median', nanmedian(var1(:)));
@@ -138,7 +139,7 @@ function [] = stat(var1)
     
     else
         % Output missing data information
-        if abs(min(var1(:))) > 0.005 || abs(min(var1(:))) == 0
+        if abs(median(var1(:))) > 0.005 || abs(median(var1(:))) == 0
             fprintf(' \n\t %15s:  %d/%d (%.2f %%) | Difference = %d', ...% ...
                     'Missing', miss, n, miss/(n)*100, n-miss);
         else

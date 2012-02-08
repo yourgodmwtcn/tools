@@ -8,10 +8,7 @@ General:
 		- Richardson number
 		- Burger number
 	- movie with changes w.r.t previous time step
-	- vertical stretched grid code
-	
-	- mod_movie
-		- check z plane contours
+	- vertical stretched grid code for gcm
 	
 ROMS
 	- roms_info
@@ -27,14 +24,11 @@ ROMS
 MITgcm
 	- gcm_diffmovie
 	- gcm_info
-	
-	- add directory check to build.bash
-	
+		
 Improvements:
 	- animate.m
 		- move to string based variable arguments?
 		- fix imagesc
-		- fix just_start and Esc problem.
 		
 	- convergence.m
 		- make into function form

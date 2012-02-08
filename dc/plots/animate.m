@@ -38,6 +38,11 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     % figure out input
     narg = nargin;
     
+    if strcmp(get(gcf,'currentkey'),'escape')
+        warning('Previous ESC detected. Opening new figure.');
+        figure;
+    end
+    
     switch narg
         case 1,
             data = squeeze(xax);
@@ -105,13 +110,6 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     pflag = 0;
     spaceplay = 1; % if 1, space pauses. if 0, space plays
     %caxisflag = 1; % constant color bar
-    
-    % kludge to fix problem where if Esc is used to quit once, it remains as
-    % the current key on the figure window. Thus, if animate is run once more
-    % in the same window, it will quit without plotting since ckey=Esc. Don't
-    % want to use clf because it'll mess up stride functionality in mod_movie
-    % just_start is 1 and then set to 0 at the end of first loop.
-    % just_start = 1;
     
     flag = [0 0 0];% defaults
     
@@ -183,7 +181,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         if isempty(labels.time)
             title([labels.title ' t instant = ' num2str(i)]);
         else
-            title([labels.title ' t = ' sprintf('%.2f/%.2f ', labels.time(i),labels.tmax) labels.tunits]);
+            title([labels.title ' t = ' sprintf('%.2f/%.2f ', labels.time(i),labels.tmax) labels.tunits ' (instant = ' num2str(i) ')']);
         end
         xlabel(labels.xax);
         ylabel(labels.yax);
@@ -192,5 +190,4 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         end
         colorbar;        
         eval(commands); % execute custom commands
-        just_start = 0;
     end

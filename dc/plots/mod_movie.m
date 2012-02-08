@@ -4,11 +4,15 @@
 %           varname - variable name
 %           tindices - time indices to animate [start (stride) end]
 %           axis - axis of slice ('x','y' or 'z')
-%           index - index along 'axis' to slice / location in proper units (finds nearest point)
+%           index - index along 'axis' to slice or
+%                 - location in proper units (finds nearest point)
+%                 - 'mid' will find midpoint of 'axis' for you
 %           commands - extra commands to be executed after each plot
 %                      (passed to animate.m - optional)
 
 % CHANGELOG:
+% Added 'mid' as possible input for index                       07 Feb 2012
+% Fixed 'z' plane sections & added filename check               06 Feb 2012
 % Fixed display of single timestep                              26 Jan 2012
 % Reducd jump to 100 and fixed many bugs                        26 Jan 2012
 %   - titles work perfectly now. Added labels.tmax
@@ -23,7 +27,11 @@
 function [] = mod_movie(fname, varname, tindices, axis, index, commands)
 
 fname = find_file(fname);
-fprintf('\n Using file: %s\n', fname)
+if isempty(fname)
+    error('No file found.');
+else
+	fprintf('\n Using file: %s\n', fname)
+end
 
 %% model specific setup
 gcm = 1;
@@ -119,18 +127,22 @@ for i=0:iend-1
     end
     
     labels.time = time(read_start(end):dt:(read_start(end)+read_end(end)*dt-1));
+    
+    if strcmp(index,'mid'), midflag = 1; end
             
     switch axis
         case 'x'
             % given location instead of index
+            if midflag, index = num2str((xax(1)+xax(end))/2); end
+            
             if ischar(index), index = find_approx(xax,str2double(index),1); end
             % fix title string
             labels.title = [vartitle axis ' = ' sprintf('%5.2f', xax(index)) ' m | '];
             
             read_start(1) = index;
             read_end(1)   = 1;
-            var = ncread(fname,varname,read_start,read_end,stride);            
-            dv  = double(squeeze(var));
+            dv = double(squeeze(ncread(fname,varname,read_start,read_end,stride)));            
+            %dv  = double(squeeze(var));
             
             % take care of walls
             s   = size(dv);            
@@ -144,14 +156,15 @@ for i=0:iend-1
 
         case 'y'
             % given location instead of index
+            if midflag, index = num2str((yax(1)+yax(end))/2); end
             if ischar(index), index = find_approx(yax,str2double(index),1); end
             % fix title string
             labels.title = [vartitle axis ' = ' sprintf('%5.2f', yax(index)) ' m | '];
             
             read_start(2) = index;
             read_end(2)   = 1;
-            var = ncread(fname,varname,read_start,read_end,stride);
-            dv  = double(squeeze(var));
+            dv = double(squeeze(ncread(fname,varname,read_start,read_end,stride)));
+            %dv  = double(squeeze(var));
             
             % take care of walls
             s   = size(dv);
@@ -164,27 +177,33 @@ for i=0:iend-1
             animate(xax,zax,dv,labels,commands);
 
         case 'z'
-            % given location instead of index
+            % given location instead of index            
+            if midflag, index = num2str((zax(1)+zax(end))/2); end
             if ischar(index), index = find_approx(zax,str2double(index),1); end
                         
             if dim == 3 % catch zeta
-                read_start(3) = index;
-                %read_end(3)   = 1;
+                % dont need to change read_start & read_end
                 stride = [1 1 dt];
                 % fix title string
                 labels.title = [vartitle axis ' = 0 m | '];
             else
+                read_start(3) = index;
+                read_end(3) = 1;
+                stride = [1 1 1 dt];
                 % fix title string
                 labels.title = [vartitle axis ' = ' sprintf('%5.2f', zax(index)) ' m | '];
             end
             var = ncread(fname,varname,read_start,read_end,stride);
+            s1 = size(var);
             dv  = double(squeeze(var));
+            clear var;
             
             % take care of walls
             s   = size(dv);            
             s(3) = size(dv,3); % correct for single timestep snapshots
-            if s(1) == 1 || s(2) == 1
-                 error('2D simulation?');
+            if s1(1) == 1 || s1(2) == 1
+                close(gcf);
+                error('2D simulation?');
              end
             if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:)   = NaN; end;
             if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
@@ -196,6 +215,6 @@ for i=0:iend-1
             animate(xax,yax,dv,labels,commands);
 
         otherwise
-            fprintf('\n ERROR: Invalid axis label. \n\n');
+            error('Invalid axis label.');
     end
 end
