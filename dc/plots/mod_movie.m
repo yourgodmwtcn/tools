@@ -72,6 +72,7 @@ end
 vinfo  = ncinfo(fname,varname);
 dim    = length(vinfo.Size);
 jump   = 100; % jump for ncread. read 'n' records in at a time - faster response + save some memory?
+midflag = 0; % 1 if script needs to compute the mid level for plot
 
 if ~exist('tindices','var') || isempty(tindices)
     tindices = [1 Inf];
@@ -115,6 +116,8 @@ vartitle = [varname ' (' ncreadatt(fname,varname,'units') ') | '];
 
 figure;
 
+if strcmp(index,'mid'), midflag = 1; end
+
 for i=0:iend-1
     % start and count arrays for ncread : corrected to account for stride
     read_start = ones(1,dim);
@@ -127,8 +130,6 @@ for i=0:iend-1
     end
     
     labels.time = time(read_start(end):dt:(read_start(end)+read_end(end)*dt-1));
-    
-    if strcmp(index,'mid'), midflag = 1; end
             
     switch axis
         case 'x'
