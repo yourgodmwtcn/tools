@@ -5,8 +5,10 @@ function [pv] = roms_pv(file,timesteps)
 
     file = find_file(file);
 
-    %[vars,atts,dims] = ncdfread(file);
+    %[vars,atts,dims] = ncdfread(file
+    warning off;
     grid = roms_get_grid(file,file,0,1);
+    warning on;
     
     if ~exist('timesteps','var') || isempty(timesteps)
         timesteps = [1 Inf];

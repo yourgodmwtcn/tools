@@ -2,7 +2,7 @@
 %       mod_movie(model,fname, varname, tindices, axis, index, commands)
 %           fname - filename
 %           varname - variable name
-%           tindices - time indices to animate [start (stride) end]
+%           tindices - time indices to animate [start (stride) end] OR [start count] OR [start] - single snapshot
 %           axis - axis of slice ('x','y' or 'z')
 %           index - index along 'axis' to slice or
 %                 - location in proper units (finds nearest point)
@@ -11,6 +11,8 @@
 %                      (passed to animate.m - optional)
 
 % CHANGELOG:
+% Extended tindices options and fixed major bug in              14 Feb 2012
+%      displaying subsets
 % Added 'mid' as possible input for index                       07 Feb 2012
 % Fixed 'z' plane sections & added filename check               06 Feb 2012
 % Fixed display of single timestep                              26 Jan 2012
@@ -72,23 +74,30 @@ end
 vinfo  = ncinfo(fname,varname);
 dim    = length(vinfo.Size);
 jump   = 100; % jump for ncread. read 'n' records in at a time - faster response + save some memory?
-midflag = 0; % 1 if script needs to compute the mid level for plot
+midflag = 0;  % 1 if script needs to compute the mid level for plot
 
 if ~exist('tindices','var') || isempty(tindices)
     tindices = [1 Inf];
     dt = 1;
-else    
-    if length(tindices) == 3
-        dt = tindices(2);
-        tindices(2) = tindices(3);
-        tindices(3) = NaN;
-    else
-        if length(tindices) == 2
+else
+    switch length(tindices)
+        case 1
             dt = 1;
-        end    
+            tindices(2) = tindices(1);
+            
+        case 2
+            dt = 1;
+        
+        case 3
+            dt = tindices(2);
+            tindices(2) = tindices(3);
+            tindices(3) = NaN;
     end
 end
 
+if tindices(2) < tindices(1)
+    tindices(2) = tindices(1)+tindices(2);
+end
 if isinf(tindices(2)), tindices(2) = vinfo.Size(end); end
 
 stride = [1 1 1 dt];
@@ -121,15 +130,23 @@ if strcmp(index,'mid'), midflag = 1; end
 for i=0:iend-1
     % start and count arrays for ncread : corrected to account for stride
     read_start = ones(1,dim);
-    read_end   = Inf(1,dim);
-    read_start(end) = tindices(1)+jump*i;
+    read_count   = Inf(1,dim);
+    
     if i == (iend-1)
-        read_end(end) = ceil((tindices(2)-jump*(i))/dt);
+        read_count(end) = ceil((tindices(2)-jump*(i))/dt);
     else
-        read_end(end) = ceil(jump/dt)-1;%ceil(jump*(i+1)/dt);
+        read_count(end) = ceil(jump/dt)-1;%ceil(jump*(i+1)/dt);
     end
     
-    labels.time = time(read_start(end):dt:(read_start(end)+read_end(end)*dt-1));
+    if i == 0
+        read_start(end) = tindices(1);
+    else
+        read_start(end) = jump*i + 1;
+    end
+    
+    if (iend-1) == 0, read_count(end) = tindices(2)-tindices(1)+1; end 
+    
+    labels.time = time(read_start(end):dt:(read_start(end)+read_count(end)*dt -1)); % read_start(end)-1
             
     switch axis
         case 'x'
@@ -141,15 +158,17 @@ for i=0:iend-1
             labels.title = [vartitle axis ' = ' sprintf('%5.2f', xax(index)) ' m | '];
             
             read_start(1) = index;
-            read_end(1)   = 1;
-            dv = double(squeeze(ncread(fname,varname,read_start,read_end,stride)));            
+            read_count(1)   = 1;
+            dv = double(squeeze(ncread(fname,varname,read_start,read_count,stride)));            
             %dv  = double(squeeze(var));
             
             % take care of walls
-            s   = size(dv);            
-            s(3) = size(dv,3); % correct for single timestep snapshots
-            if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:) = NaN; end;
-            if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
+            if gcm
+                s   = size(dv);            
+                s(3) = size(dv,3); % correct for single timestep snapshots
+                if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:) = NaN; end;
+                if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
+            end
             
             labels.xax = ['Y (' yunits ')'];
             labels.yax = 'Z (m)';
@@ -163,15 +182,17 @@ for i=0:iend-1
             labels.title = [vartitle axis ' = ' sprintf('%5.2f', yax(index)) ' m | '];
             
             read_start(2) = index;
-            read_end(2)   = 1;
-            dv = double(squeeze(ncread(fname,varname,read_start,read_end,stride)));
+            read_count(2)   = 1;
+            dv = double(squeeze(ncread(fname,varname,read_start,read_count,stride)));
             %dv  = double(squeeze(var));
             
             % take care of walls
-            s   = size(dv);
-            s(3) = size(dv,3); % correct for single timestep snapshots
-            if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:) = NaN; end;
-            if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
+            if gcm
+                s   = size(dv);
+                s(3) = size(dv,3); % correct for single timestep snapshots
+                if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:) = NaN; end;
+                if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
+            end
             
             labels.xax = ['X (' xunits ')'];
             labels.yax = 'Z (m)';
@@ -183,18 +204,18 @@ for i=0:iend-1
             if ischar(index), index = find_approx(zax,str2double(index),1); end
                         
             if dim == 3 % catch zeta
-                % dont need to change read_start & read_end
+                % dont need to change read_start & read_count
                 stride = [1 1 dt];
                 % fix title string
                 labels.title = [vartitle axis ' = 0 m | '];
             else
                 read_start(3) = index;
-                read_end(3) = 1;
+                read_count(3) = 1;
                 stride = [1 1 1 dt];
                 % fix title string
                 labels.title = [vartitle axis ' = ' sprintf('%5.2f', zax(index)) ' m | '];
             end
-            var = ncread(fname,varname,read_start,read_end,stride);
+            var = ncread(fname,varname,read_start,read_count,stride);
             s1 = size(var);
             dv  = double(squeeze(var));
             clear var;
@@ -205,11 +226,13 @@ for i=0:iend-1
             if s1(1) == 1 || s1(2) == 1
                 close(gcf);
                 error('2D simulation?');
-             end
-            if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:)   = NaN; end;
-            if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
-            if repnan(dv(:,1,:),0)   == zeros([s(1) 1 s(3)]), dv(:,1,:)   = NaN; end;
-            if repnan(dv(:,end,:),0) == zeros([s(1) 1 s(3)]), dv(:,end,:) = NaN; end;
+            end
+            if gcm
+                if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:)   = NaN; end;
+                if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
+                if repnan(dv(:,1,:),0)   == zeros([s(1) 1 s(3)]), dv(:,1,:)   = NaN; end;
+                if repnan(dv(:,end,:),0) == zeros([s(1) 1 s(3)]), dv(:,end,:) = NaN; end;
+            end
             
             labels.xax = ['X (' xunits ')'];
             labels.yax = ['Y (' yunits ')'];
