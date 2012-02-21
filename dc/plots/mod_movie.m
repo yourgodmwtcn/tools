@@ -11,6 +11,8 @@
 %                      (passed to animate.m - optional)
 
 % CHANGELOG:
+% Imposed same colorbar even when multiple strides are used     21 Feb 2012
+% Fixed bug with Esc quitting when multiple strides are used    21 Feb 2012
 % Extended tindices options and fixed major bug in              14 Feb 2012
 %      displaying subsets
 % Added 'mid' as possible input for index                       07 Feb 2012
@@ -28,12 +30,12 @@
 
 function [] = mod_movie(fname, varname, tindices, axis, index, commands)
 
-fname = find_file(fname);
-if isempty(fname)
-    error('No file found.');
-else
-	fprintf('\n Using file: %s\n', fname)
-end
+% fname = find_file(fname);
+% if isempty(fname) 
+%     error('No file found.');
+% else
+% 	fprintf('\n Using file: %s\n', fname)
+% end
 
 %% model specific setup
 gcm = 1;
@@ -128,6 +130,12 @@ figure;
 if strcmp(index,'mid'), midflag = 1; end
 
 for i=0:iend-1
+    % if reading data in multiple strides, an escape in the first stride should
+    % not results in the next stride getting read / animated.
+    if i>0 & strcmp(get(gcf,'currentkey'),'escape')
+        return;
+    end
+    
     % start and count arrays for ncread : corrected to account for stride
     read_start = ones(1,dim);
     read_count   = Inf(1,dim);
@@ -147,6 +155,7 @@ for i=0:iend-1
     if (iend-1) == 0, read_count(end) = tindices(2)-tindices(1)+1; end 
     
     labels.time = time(read_start(end):dt:(read_start(end)+read_count(end)*dt -1)); % read_start(end)-1
+    labels.stride = i;
             
     switch axis
         case 'x'
@@ -169,7 +178,7 @@ for i=0:iend-1
                 if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:) = NaN; end;
                 if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
             end
-            
+                        
             labels.xax = ['Y (' yunits ')'];
             labels.yax = 'Z (m)';
             animate(yax,zax,dv,labels,commands);
@@ -241,4 +250,7 @@ for i=0:iend-1
         otherwise
             error('Invalid axis label.');
     end
+    
+    % generic animate call
+    animate(xax,yax,dv,labels,commands);
 end

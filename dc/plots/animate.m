@@ -13,6 +13,7 @@
 %               > tmax  - maximum value of time vector : needed when only
 %                         part of data is being plotted at a time. set by
 %                         default to max(labels.time) if not defined
+%               > stride - which stride are we on when called by mod_movie?
 %           commands - custom commands to execute after plot or one of below. (in string, optional)
 %                    - separate commands using ;
 %               > nocaxis - non-constant colorbar
@@ -84,6 +85,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         labels.revz  = 0;
         labels.time  = [];
         labels.tmax  = size(data,3);
+        lables.strides = 0;
     end
     
     if ~isfield(labels,'tmax'), labels.tmax = labels.time(end); end
@@ -101,8 +103,12 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     
     plotdata = double(squeeze(shiftdim(data,index)));
     
-    datamax = nanmax(plotdata(:));
-    datamin = nanmin(plotdata(:));
+    if labels.stride == 0
+        datamax = nanmax(plotdata(:));
+        datamin = nanmin(plotdata(:));
+    else
+        clim = caxis;
+    end
     
     hfig = gcf;
     ckey = '';
@@ -162,7 +168,6 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         if i < 1, i = 1; end
         
         %% Plot
-        
         switch plotflag
             case 2
                 pcolor(xax,yax,plotdata(:,:,i)'); %shading interp
@@ -186,7 +191,11 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         xlabel(labels.xax);
         ylabel(labels.yax);
         if ~flag(1)
-            if datamax ~=datamin, caxis([datamin datamax]); end
+            if labels.stride > 0
+                caxis(clim);
+            else
+                if datamax ~= datamin, caxis([datamin datamax]); end
+            end
         end
         colorbar;        
         eval(commands); % execute custom commands
