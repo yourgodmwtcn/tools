@@ -3,6 +3,7 @@
 %       [] = animate(xax,yax,data,labels,commands,index,pausetime)
 %           xax,yax - x,y axes (both optional) - can be empty []
 %           data - data to be animated - script squeezes data
+%
 %           labels - Structure with following fields for labeling plot (optional - can be [])
 %               > title
 %               > xax
@@ -13,12 +14,16 @@
 %               > tmax  - maximum value of time vector : needed when only
 %                         part of data is being plotted at a time. set by
 %                         default to max(labels.time) if not defined
-%               > stride - which stride are we on when called by mod_movie?
+%               > stride - which stride are we on when called by mod_movie? (default: 0)
+%               > dt - time step interval from mod_movie (default: 1)
+%
 %           commands - custom commands to execute after plot or one of below. (in string, optional)
 %                    - separate commands using ;
 %               > nocaxis - non-constant colorbar
 %               > pcolor  - use pcolor instead of contourf
 %               > imagesc - use imagesc(nan) instead of contourf. imagescnan is tried first
+%               > contour - use contour instead of contourf
+%
 %           index - dimension to loop through (optional)
 %           pausetime - pause(pausetime) (optional)
 %
@@ -36,7 +41,7 @@
 
 function [] = animate(xax,yax,data,labels,commands,index,pausetime)
 
-    % figure out input
+    %% figure out input
     narg = nargin;
     
     if strcmp(get(gcf,'currentkey'),'escape')
@@ -85,10 +90,13 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         labels.revz  = 0;
         labels.time  = [];
         labels.tmax  = size(data,3);
-        lables.strides = 0;
+        labels.stride = 0;
+        labels.dt = 1;        
     end
     
     if ~isfield(labels,'tmax'), labels.tmax = labels.time(end); end
+    if ~isfield(labels,'dt'), labels.dt = 1; end
+    if ~isfield(labels,'stride'), labels.stride = 0; end
     
     if ~exist('commands','var')
         commands = '';
@@ -117,9 +125,9 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     spaceplay = 1; % if 1, space pauses. if 0, space plays
     %caxisflag = 1; % constant color bar
     
-    flag = [0 0 0];% defaults
+    flag = [0 0 0 0];% defaults
     
-    cmds = {'nocaxis','pcolor','imagesc'};
+    cmds = {'nocaxis','pcolor','imagesc','contour'};
     for i = 1:length(cmds)
         loc = strfind(commands,cmds{i});
         if ~isempty(loc)
@@ -128,11 +136,12 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         end
     end
     
-    plotflag = sum([2 3] .* flag(2:3));
+    plotflag = sum([2 3 4] .* flag(2:4));
 
     i=0;
     while i<=stop-1
 
+        % navigation
         if strcmp(ckey,'space') & isempty(button)
             spaceplay = ~spaceplay;
         end
@@ -148,7 +157,6 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
             pause(pausetime);
         end  
         
-        %if ~just_start, 
         ckey = get(gcf,'currentkey');% end
         
         % navigate : other keys move forward
@@ -177,26 +185,35 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
                 catch ME
                     imagesc(xax,yax,plotdata(:,:,i)'); %shading flat
                 end
+            case 4
+                [C,h] = contour(xax,yax,plotdata(:,:,i)', 15); %shading flat
+                %clabel(C,h);
             otherwise
                 contourf(xax,yax,plotdata(:,:,i)', 40); %shading flat
         end
-        shading flat;
         
+        % colorbar
+        if plotflag ~=4 
+            if ~flag(1)
+                if labels.stride > 0
+                    caxis(clim);
+                else
+                    if datamax ~= datamin, caxis([datamin datamax]); end
+                end
+            end
+        end        
+        shading flat;                
+        colorbar;        
+        
+        % labels
         if labels.revz, revz; end;
         if isempty(labels.time)
             title([labels.title ' t instant = ' num2str(i)]);
         else
-            title([labels.title ' t = ' sprintf('%.2f/%.2f ', labels.time(i),labels.tmax) labels.tunits ' (instant = ' num2str(i) ')']);
+            title([labels.title ' t = ' sprintf('%.2f/%.2f ', labels.time(i),labels.tmax) ...
+                   labels.tunits ' (instant = ' num2str(i+(labels.dt-1)*(i-1)+100*labels.stride) ')']);
         end
         xlabel(labels.xax);
         ylabel(labels.yax);
-        if ~flag(1)
-            if labels.stride > 0
-                caxis(clim);
-            else
-                if datamax ~= datamin, caxis([datamin datamax]); end
-            end
-        end
-        colorbar;        
         eval(commands); % execute custom commands
     end
