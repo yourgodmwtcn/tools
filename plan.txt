@@ -8,7 +8,6 @@ General:
 		- Richardson number
 		- Burger number
 	- movie with changes w.r.t previous time step
-	- vertical stretched grid code for gcm
 	
 ROMS
 	- roms_info
@@ -16,16 +15,16 @@ ROMS
 		
 	- roms_derived quantities.
 		- integrate into the roms_*movie code somehow
+		
+	- 3d plots
 	
 	- conservative mode for huge files
 		- roms_diffmovie
 		- roms_pv
 		
-MITgcm
-	- gcm_diffmovie
-	- gcm_info
-		
 Improvements:
+	- find_file
+	
 	- animate.m
 		- move to string based variable arguments?
 		- fix imagesc

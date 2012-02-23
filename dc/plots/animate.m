@@ -16,6 +16,7 @@
 %                         default to max(labels.time) if not defined
 %               > stride - which stride are we on when called by mod_movie? (default: 0)
 %               > dt - time step interval from mod_movie (default: 1)
+%               > t0 - inital timestep from mod_movie
 %
 %           commands - custom commands to execute after plot or one of below. (in string, optional)
 %                    - separate commands using ;
@@ -97,6 +98,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     if ~isfield(labels,'tmax'), labels.tmax = labels.time(end); end
     if ~isfield(labels,'dt'), labels.dt = 1; end
     if ~isfield(labels,'stride'), labels.stride = 0; end
+    if ~isfield(labels,'t0'), labels.t0 = 0; end
     
     if ~exist('commands','var')
         commands = '';
@@ -208,10 +210,10 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         % labels
         if labels.revz, revz; end;
         if isempty(labels.time)
-            title([labels.title ' t instant = ' num2str(i)]);
+            title([labels.title ' t instant = ' num2str(labels.t0+i+(labels.dt-1)*(i-1)+100*labels.stride)]);
         else
             title([labels.title ' t = ' sprintf('%.2f/%.2f ', labels.time(i),labels.tmax) ...
-                   labels.tunits ' (instant = ' num2str(i+(labels.dt-1)*(i-1)+100*labels.stride) ')']);
+                   labels.tunits ' (instant = ' num2str(labels.t0+i+(labels.dt-1)*(i-1)+100*labels.stride) ')']);
         end
         xlabel(labels.xax);
         ylabel(labels.yax);

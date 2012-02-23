@@ -11,6 +11,8 @@
 %                      (passed to animate.m - optional)
 
 % CHANGELOG:
+% Bugfixes - title index when timesteps(1) ~= 1,                22 Feb 2012
+%          - change depth to -ve by default and warn user
 % Made the animate call generic - woot! & bugfixes              21 Feb 2012
 %   - Imposed same colorbar even when multiple strides are used   
 %   - Fixed bug with Esc quitting when multiple strides are used  
@@ -127,6 +129,7 @@ labels.tmax = time(tindices(1) + dt*floor((tindices(2)-tindices(1))/dt));
 labels.revz  = 0;
 labels.tunits = 'days';
 labels.dt = dt;
+labels.t0 = tindices(1)-1;
 vartitle = [varname ' (' ncreadatt(fname,varname,'units') ') | '];
 
 figure;
@@ -163,22 +166,33 @@ for i=0:iend-1
             
     switch axis
         case 'x'
-            sliceax = xax;            
+            sliceax = xax; 
+            plotx = yax;
+            ploty = zax;
             axind = 1;
             labels.xax = ['Y (' yunits ')'];
             labels.yax = 'Z (m)';
             
         case 'y'
             sliceax = yax;
+            plotx = xax;
+            ploty = zax;
             axind = 2;
             labels.xax = ['X (' xunits ')'];
             labels.yax = 'Z (m)';
 
         case 'z'
             sliceax = zax;
+            plotx = xax;
+            ploty = yax;
             axind = 3;
             labels.xax = ['X (' xunits ')'];
             labels.yax = ['Y (' yunits ')'];
+            
+            if ischar(index) && str2double(index) > 0                
+                warning('Changed input depth %s m to -%s m', index, index);
+                index = num2str(-1 * str2double(index));
+            end
             
             if dim == 3 % catch zeta - free surface elevation
                 stride = [1 1 dt];
@@ -207,7 +221,18 @@ for i=0:iend-1
     end
     dv = double(squeeze(ncread(fname,varname,read_start,read_count,stride)));  
     
-    % take care of walls HERE - mitgcm
+    % take care of walls for mitgcm
+    if gcm
+        s = size(dv);            
+        s(3) = size(dv,3); % correct for single timestep snapshots - in that case s is a 2 element row
+        if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:) = NaN; end;
+        if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
+        
+        if axind == 3
+            if repnan(dv(:,1,:),0)   == zeros([s(1) 1 s(3)]), dv(:,1,:)   = NaN; end;
+            if repnan(dv(:,end,:),0) == zeros([s(1) 1 s(3)]), dv(:,end,:) = NaN; end;
+        end
+    end
     
     s   = size(dv);            
     if s(1) == 1 || s(2) == 1
@@ -215,40 +240,14 @@ for i=0:iend-1
         error('2D simulation?');
     end
     
-    if max(xax(:)) > 1000
-        xax = xax/1000;
+    if max(plotx(:)) > 1000
+        plotx = plotx/1000;
         labels.xax = [labels.xax ' x 10^3'];
     end
-    if max(yax(:)) > 1000
-        yax = yax/1000;
+    if max(ploty(:)) > 1000
+        ploty = ploty/1000;
         labels.yax = [labels.yax ' x 10^3'];
     end
-    
-            
-    animate(xax,yax,dv,labels,commands);
+         
+    animate(plotx,ploty,dv,labels,commands);
 end
-
-%     % take care of walls - X
-%     if gcm
-%         s   = size(dv);            
-%         s(3) = size(dv,3); % correct for single timestep snapshots
-%         if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:) = NaN; end;
-%         if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
-%     end
-%     
-%     % take care of walls - Y
-%     if gcm
-%         s   = size(dv);
-%         s(3) = size(dv,3); % correct for single timestep snapshots
-%         if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:) = NaN; end;
-%         if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
-%     end
-%     
-%     % take care of walls - x
-%     if gcm
-%         if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:)   = NaN; end;
-%         if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
-%         if repnan(dv(:,1,:),0)   == zeros([s(1) 1 s(3)]), dv(:,1,:)   = NaN; end;
-%         if repnan(dv(:,end,:),0) == zeros([s(1) 1 s(3)]), dv(:,end,:) = NaN; end;
-%     end
-
