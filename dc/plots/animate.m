@@ -46,7 +46,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     narg = nargin;
     
     if strcmp(get(gcf,'currentkey'),'escape')
-        warning('Previous ESC detected. Opening new figure.');
+        warning(1000,'Previous ESC detected. Opening new figure.');
         figure;
     end
     
@@ -64,7 +64,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
             yax = [];            
             
         case 4,
-            if strcmp(class(labels),'char')
+            if ischar(class(labels))
                commands = labels;
                labels = [];
             end
@@ -109,7 +109,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     
     %% processing
     
-    if stop == 1, warning('Only one time step.'); end
+    if stop == 1, warning(1001,'Only one time step.'); end
     
     plotdata = double(squeeze(shiftdim(data,index)));
     
@@ -144,7 +144,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     while i<=stop-1
 
         % navigation
-        if strcmp(ckey,'space') & isempty(button)
+        if strcmp(ckey,'space') && isempty(button)
             spaceplay = ~spaceplay;
         end
 

@@ -25,43 +25,8 @@ warning off
 grid = roms_get_grid(fname,fname,0,1);
 warning on
 
-%% parse input
-
-% FROM mod_movie.m - propagate changes back
-if ~exist('tindices','var') || isempty(tindices)
-    tindices = [1 Inf];
-    dt = 1;
-else
-    switch length(tindices)
-        case 1
-            dt = 1;
-            tindices(2) = tindices(1);
-
-        case 2
-            dt = 1;
-
-        case 3
-            dt = tindices(2);
-            tindices(2) = tindices(3);
-            tindices(3) = NaN;
-    end
-end
-
-if tindices(2) < tindices(1)
-    tindices(2) = tindices(1)+tindices(2);
-end
-if isinf(tindices(2)), tindices(2) = vinfo.Size(end); end
-
-stride = [1 1 1 dt];
-
-if (tindices(2)-tindices(1)) == 0
-    iend = 1;
-    dt = tindices(2);
-else
-    iend   = ceil((tindices(2)-tindices(1))/slab/dt);
-end
-% END mod_movie section
-nt = ceil(tindices(2)-tindices(1)+1)/dt;
+% parse input
+[iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 
 %% read data
 
@@ -74,6 +39,7 @@ R0  = ncread(fname,'R0');
 time = ncread(fname,'ocean_time');
 time = time([tindices(1):tindices(2)])/86400;
 
+zrho = permute(grid.z_r,[3 2 1]);
 try
     cpb = progressbar();
 catch ME
@@ -83,23 +49,8 @@ end
 for i=0:iend-1
     % FROM mod_movie.m - propagate changes back
     % start and count arrays for ncread : corrected to account for stride
-    read_start = ones(1,dim);
-    read_count = Inf(1,dim);
-
-    if i == (iend-1)
-        read_count(end) = ceil((tindices(2)-slab*(i))/dt);
-    else
-        read_count(end) = ceil(slab/dt);%ceil(slab*(i+1)/dt);
-    end
-
-    if i == 0
-        read_start(end) = tindices(1);
-    else
-        read_start(end) = slab*i + 1;
-    end
-
-    if (iend-1) == 0, read_count(end) = ceil((tindices(2)-tindices(1))/dt)+1; end 
-    % END mod_movie section
+    
+    [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
     
     if isempty(cpb), fprintf('\nReading Data...\n'); end
     u   = ncread(fname,'u',read_start,read_count,stride); pbar(cpb,i+1,1,iend,4);
@@ -115,14 +66,14 @@ for i=0:iend-1
     rm = mean(rho,2);
 
     % eddy fields
-    up = sub_along_mean(u);
-    vp = sub_along_mean(v);
-    wp = sub_along_mean(w);
-    rp = sub_along_mean(rho);
+    up = bsxfun(@minus,u,mean(u,2));
+    vp = bsxfun(@minus,v,mean(v,2));
+    wp = bsxfun(@minus,w,mean(w,2));
+    rp = bsxfun(@minus,rho,mean(rho,2));
     
-    eke = 0.5*rho(1:end-1,1:end-1,:,:).*(up(:,1:end-1,:,:).^2 + vp(1:end-1,:,:,:).^2);
+    eke = 0.5*rho(1:end-1,1:end-1,:,:).*(up(:,1:end-1,:,:).^2 + vp(1:end-1,:,:,:).^2); % SLOW?!
     mke = 0.5*rm(1:end-1,:,:,:).*(um(:,:,:,:).^2 + vm(1:end-1,:,:,:).^2);
-    pe = 9.81*rho.*repmat(permute(grid.z_r,[3 2 1]),[1 1 1 size(rho,4)]);
+    pe  = 9.81*bsxfun(@times,rho,zrho);
     
     s = size(u);
     
@@ -169,8 +120,7 @@ legend('PE');
 %     vp = v - repmat(mean_v,[1 1 1 s(4)]);
 
 %% local functions
-function [ap] = sub_along_mean(a)
-    ap = bsxfun(@minus,a,mean(a,2));
+
     
 function [] = pbar(cpb,i,j,imax,jmax)
     if ~isempty(cpb)

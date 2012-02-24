@@ -43,6 +43,7 @@
 % roms_diffmovie            - displays movie of variable - variable at
 %                             first "time" instant.
 % roms_pv                   - calculates Ertel PV from ROMS output file
+% roms_energy               - 
 %
 % -------------------------------------------------------------------------
 %                       TIME SERIES STUFF
@@ -101,6 +102,7 @@
 % vgrid                     - Ken's ROMS vertical grid code.
 % spice                     - calculate spiciness
 % intersections             - find intersections of two curves
+% timeit                    - time functions
 %
 % fdep                      - lists dependencies for input .m file
 % exportToZip               - 

@@ -11,6 +11,7 @@
 %                      (passed to animate.m - optional)
 
 % CHANGELOG:
+% Now using roms_ncread_params & roms_tindices                  24 Feb 2012
 % Bugfix in read_count - skipped one timestep everytime         23 Feb 2012
 % Bugfixes - title index when timesteps(1) ~= 1,                22 Feb 2012
 %          - change depth to -ve by default and warn user
@@ -84,38 +85,8 @@ dim    = length(vinfo.Size);
 slab   = 100; % slab for ncread. read 'n' records in at a time - faster response + save some memory?
 midflag = 0;  % 1 if script needs to compute the mid level for plot
 
-if ~exist('tindices','var') || isempty(tindices)
-    tindices = [1 Inf];
-    dt = 1;
-else
-    switch length(tindices)
-        case 1
-            dt = 1;
-            tindices(2) = tindices(1);
-            
-        case 2
-            dt = 1;
-        
-        case 3
-            dt = tindices(2);
-            tindices(2) = tindices(3);
-            tindices(3) = NaN;
-    end
-end
-
-if tindices(2) < tindices(1)
-    tindices(2) = tindices(1)+tindices(2);
-end
-if isinf(tindices(2)), tindices(2) = vinfo.Size(end); end
-
-stride = [1 1 1 dt];
-    
-if (tindices(2)-tindices(1)) == 0
-    iend = 1;
-    dt = tindices(2);
-else
-    iend   = ceil((tindices(2)-tindices(1))/slab/dt);
-end
+if ~exist('tindices','var'), tindices = []; end
+[iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 
 if strcmp(varname,'Eta') || strcmp(varname,'zeta')
     axis = 'z';
@@ -140,29 +111,13 @@ if strcmp(index,'mid'), midflag = 1; end
 for i=0:iend-1
     % if reading data in multiple strides, an escape in the first stride should
     % not results in the next stride getting read / animated.
-    if i>0 & strcmp(get(gcf,'currentkey'),'escape')
+    if i>0 && strcmp(get(gcf,'currentkey'),'escape')
         return;
     end
     
-    % start and count arrays for ncread : corrected to account for stride
-    read_start = ones(1,dim);
-    read_count = Inf(1,dim);
+    [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
     
-    if i == (iend-1)
-        read_count(end) = ceil((tindices(2)-slab*(i))/dt);
-    else
-        read_count(end) = ceil(slab/dt);%ceil(slab*(i+1)/dt);
-    end
-    
-    if i == 0
-        read_start(end) = tindices(1);
-    else
-        read_start(end) = slab*i + 1;
-    end
-    
-    if (iend-1) == 0, read_count(end) = ceil((tindices(2)-tindices(1))/dt)+1; end 
-    
-    labels.time = time(read_start(end):dt:(read_start(end)+read_count(end)*dt -1)); % read_start(end)-1
+    labels.time = time(read_start(end):dt:(read_start(end)+(read_count(end))*dt -1)); % read_start(end)-1
     labels.stride = i;
             
     switch axis

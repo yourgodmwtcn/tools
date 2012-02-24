@@ -7,7 +7,7 @@
 %       missing rows in each column
 
 % CHANGE LOG:
-% Prevent computing median if n > 10^6                          23 Feb 2012
+% Prevent computing median if n > 10^6 + preallocated ind       23 Feb 2012
 % Small bugfixes to output formatting criterion                 21 Feb 2012
 % Changed 'if' output criterion from min -> median              06 Feb 2012
 % Catches structure / cell input and prints error.              16 Jan 2012
@@ -99,6 +99,7 @@ function [] = stat(var1)
     end
     
     mcount = 0;
+    ind = nan(s(2));
     
     % Rank, Var & Std don't work for dim > 2 arrays    
     % Skipping missing columns because that doesnt seem to make much sense for ND arrays
