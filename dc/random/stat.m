@@ -7,6 +7,7 @@
 %       missing rows in each column
 
 % CHANGE LOG:
+% Prevent computing median if n > 10^6                          23 Feb 2012
 % Small bugfixes to output formatting criterion                 21 Feb 2012
 % Changed 'if' output criterion from min -> median              06 Feb 2012
 % Catches structure / cell input and prints error.              16 Jan 2012
@@ -78,10 +79,16 @@ function [] = stat(var1)
         miss = 0;
     end
     
-    med = nanmedian(var1(:));
+    if n < 10^6
+        comp = abs(nanmedian(var1(:))); 
+        med = comp; 
+    else
+        comp = abs(nanmin(var1(:)));
+        med = NaN;
+    end
     
     % Now print standard statistics
-    if (abs(med) > 0.005 || abs(med) == 0) && (abs(med) < 500000)
+    if (comp > 0.005 || comp == 0) && (comp < 500000)
         fprintf(' \n\t %15s: % 6.2f \n\t %15s: % 6.2f \n\t %15s: % 6.2f \n\t %15s: % 6.2f ', ...% ...
                 'Max',nanmax(var1(:)), 'Min', nanmin(var1(:)), 'Mean', nanmean(var1(:)), ...
                 'Median', med);
@@ -98,17 +105,17 @@ function [] = stat(var1)
     % None of the rest is valid for logical arrays either
     if ~(length(s) > 2 || islogical(var1))    
     
-        if n > 10^6, fprintf('\n\n Terminating because array is too large. \n\n'); return; end
+        if n > 10^6, warning('\n\n Terminating because array is too large. \n\n'); return; end
 
         % Ouput var, std   
-        if abs(med) > 0.005 && (abs(med) < 500000)
+        if comp > 0.005 && (comp < 500000)
             fprintf('\n\t %15s: % 6.2f \n\t %15s: % 6.2f', 'Variance', nanvar(var1(:)), 'Std', nanstd(var1(:)));
         else
             fprintf('\n\t %15s: % 1.3e \n\t %15s: % 1.3e', 'Variance', nanvar(var1(:)), 'Std', nanstd(var1(:)));
         end
         
         % Output missing data information
-        if (abs(med) > 0.005 || abs(med) == 0) && (abs(med) < 500000)
+        if (comp > 0.005 || comp == 0) && (comp < 500000)
             fprintf(' \n\t %15s:  %d/%d (%.2f %%) | Difference = %d', ...% ...
                     'Missing', miss, n, miss/(n)*100, n-miss);
         else
@@ -142,7 +149,7 @@ function [] = stat(var1)
     
     else
         % Output missing data information
-        if (abs(med) > 0.005 || abs(med) == 0)  && (abs(med) < 500000)
+        if (comp > 0.005 || comp == 0)  && (comp < 500000)
             fprintf(' \n\t %15s:  %d/%d (%.2f %%) | Difference = %d', ...% ...
                     'Missing', miss, n, miss/(n)*100, n-miss);
         else

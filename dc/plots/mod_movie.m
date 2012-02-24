@@ -11,6 +11,7 @@
 %                      (passed to animate.m - optional)
 
 % CHANGELOG:
+% Bugfix in read_count - skipped one timestep everytime         23 Feb 2012
 % Bugfixes - title index when timesteps(1) ~= 1,                22 Feb 2012
 %          - change depth to -ve by default and warn user
 % Made the animate call generic - woot! & bugfixes              21 Feb 2012
@@ -23,7 +24,7 @@
 % Added 'mid' as possible input for index                       07 Feb 2012
 % Fixed 'z' plane sections & added filename check               06 Feb 2012
 % Fixed display of single timestep                              26 Jan 2012
-% Reducd jump to 100 and fixed many bugs                        26 Jan 2012
+% Reducd slab to 100 and fixed many bugs                        26 Jan 2012
 %   - titles work perfectly now. Added labels.tmax
 %   - throws error if given a 2d simulation and asking for x-y plot
 % Changed to mod_movie.m + identifies model from file           26 Jan 2012
@@ -80,7 +81,7 @@ end
 
 vinfo  = ncinfo(fname,varname);
 dim    = length(vinfo.Size);
-jump   = 100; % jump for ncread. read 'n' records in at a time - faster response + save some memory?
+slab   = 100; % slab for ncread. read 'n' records in at a time - faster response + save some memory?
 midflag = 0;  % 1 if script needs to compute the mid level for plot
 
 if ~exist('tindices','var') || isempty(tindices)
@@ -113,7 +114,7 @@ if (tindices(2)-tindices(1)) == 0
     iend = 1;
     dt = tindices(2);
 else
-    iend   = ceil((tindices(2)-tindices(1))/jump/dt);
+    iend   = ceil((tindices(2)-tindices(1))/slab/dt);
 end
 
 if strcmp(varname,'Eta') || strcmp(varname,'zeta')
@@ -148,15 +149,15 @@ for i=0:iend-1
     read_count = Inf(1,dim);
     
     if i == (iend-1)
-        read_count(end) = ceil((tindices(2)-jump*(i))/dt);
+        read_count(end) = ceil((tindices(2)-slab*(i))/dt);
     else
-        read_count(end) = ceil(jump/dt)-1;%ceil(jump*(i+1)/dt);
+        read_count(end) = ceil(slab/dt);%ceil(slab*(i+1)/dt);
     end
     
     if i == 0
         read_start(end) = tindices(1);
     else
-        read_start(end) = jump*i + 1;
+        read_start(end) = slab*i + 1;
     end
     
     if (iend-1) == 0, read_count(end) = ceil((tindices(2)-tindices(1))/dt)+1; end 
@@ -249,5 +250,5 @@ for i=0:iend-1
         labels.yax = [labels.yax ' x 10^3'];
     end
          
-    animate(plotx,ploty,dv,labels,commands);
+    animate(plotx,ploty,dv,labels,commands,3,0.1);
 end
