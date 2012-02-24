@@ -71,14 +71,7 @@ function [] = stat(var1)
         end
         return
     end
-    
-    miss = find(isnan(var1));
-    if ~isempty(miss)
-        miss = length(miss);
-    else
-        miss = 0;
-    end
-    
+
     if n < 10^6
         comp = abs(nanmedian(var1(:))); 
         med = comp; 
@@ -100,7 +93,14 @@ function [] = stat(var1)
     
     mcount = 0;
     ind = nan(s(2));
-    
+       
+    miss = find(isnan(var1));
+    if ~isempty(miss)
+        miss = length(miss);
+    else
+        miss = 0;
+    end
+       
     % Rank, Var & Std don't work for dim > 2 arrays    
     % Skipping missing columns because that doesnt seem to make much sense for ND arrays
     % None of the rest is valid for logical arrays either

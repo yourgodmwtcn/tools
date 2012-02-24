@@ -1,13 +1,14 @@
 % calculates Ertel PV
-%       [pv] = roms_pv(file,timesteps)
+%       [pv] = roms_pv(fname,tindices)
 
-function [pv] = roms_pv(file,timesteps)
+function [pv] = roms_pv(fname,tindices)
 
 % parameters
 lam = 'rho';
 vinfo = ncinfo(fname,'u');
-dim   = length(vinfo.Size); 
-slab  = 40;
+s     = vinfo.Size;
+dim   = length(s); 
+slab  = 20;
 
 warning off
 grid = roms_get_grid(fname,fname,0,1);
@@ -27,21 +28,19 @@ PE  = EKE;
 R0   = ncread(fname,'R0');
 time = ncread(fname,'ocean_time');
 time = time([tindices(1):tindices(2)])/86400;
-f    = ncread(file,'f',[1 1],[Inf Inf]);
-fmat   = repmat(f,[1 1 s(3) s(4)]);
+f    = ncread(fname,'f',[1 1],[Inf Inf]);
+f = mean(f(:));
+
+pv = nan([s(1)-1 s(2)-2 s(3)-1 tindices(2)-tindices(1)+1]);
 
 for i=0:iend-1
-    
     [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
-
-    u      = ncread(file,'u',read_start,read_count,stride);
-    v      = ncread(file,'v',read_start,read_count,stride);
-    lambda = ncread(file,lam,read_start,read_count,stride); % theta
-
-    s = size(rho);
-    if length(s) == 3
-        s(4) = 1;
-    end
+    tstart = read_start(end);
+    tend   = read_start(end) + read_count(end) -1;
+    
+    u      = ncread(fname,'u',read_start,read_count,stride);
+    v      = ncread(fname,'v',read_start,read_count,stride);
+    lambda = ncread(fname,lam,read_start,read_count,stride); % theta
 
     % calculate gradients
     vx    = bsxfun(@rdivide,diff(v,1,1),diff(grid.x_v',1,1)); %diff(v,1,1)./repmat(diff(grid.x_v',1,1),[1 1 s(3) s(4)]);
@@ -56,26 +55,28 @@ for i=0:iend-1
     ty    = bsxfun(@rdivide,diff(lambda,1,2),diff(grid.y_rho',1,2)); %diff(v,1,2)./repmat(diff(grid.y_v',1,2),[1 1 s(3) s(4)]);
     tz    = bsxfun(@rdivide,diff(lambda,1,3),permute(diff(grid.z_r,1,1),[3 2 1])); %diff(v,1,3)./repmat(permute(diff(grid.z_v,1,1),[3 2 1]),[1 1 1 s(4)]);
     
-
-    coeff1 = (fmat(1:end-1,1:end-1,:,:) + vx - uy);
-    pv1    = coeff1(:,:,1:end-1,:).*tz(1:end-1,1:end-1,:,:);
-    pv2    = (-1)*vz.*ty(:,:,1:end-1,:);
-    pv3    = uz.*tx(:,:,1:end-1,:);
-    pv     = double((pv1 + pv2(1:end-1,:,:,:) + pv3(:,1:end-1,:,:))./rho(1:end-1,1:end-1,1:end-1,:));
+    % PV calculated at interior rho points
+                                % f + vx - uy                      (rho)_z
+    pv(:,:,:,tstart:tend) = double((avgx(avgz(bsxfun(@plus,avgy(vx - uy),f)))  .*  (tz(2:end-1,2:end-1,:,:)) ...
+                   - avgy(vz(2:end-1,:,:,:).*avgz(ty(2:end-1,:,:,:))) ... % vz * (rho)_y
+                   + avgx(uz(:,2:end-1,:,:).*avgz(tx(:,2:end-1,:,:))))./avgz(lambda(2:end-1,2:end-1,:,:))); % uz*(rho)_x
+                               
 end
 
+% Write to netcdf
 
-%     ux    = diff(u,1,1)./repmat(diff(grid.x_u',1,1),[1 1 s(3) s(4)]);
-%     uy    = diff(u,1,2)./repmat(diff(grid.y_u',1,2),[1 1 s(3) s(4)]);
-%     uz    = diff(u,1,3)./repmat(permute(diff(grid.z_u,1,1),[3 2 1]),[1 1 1 s(4)]);
-%     
-%     tx    = diff(lambda,1,1)./repmat(diff(grid.x_rho',1,1),[1 1 s(3) s(4)]);
-%     ty    = diff(lambda,1,2)./repmat(diff(grid.y_rho',1,2),[1 1 s(3) s(4)]);
-%     tz    = diff(lambda,1,3)./repmat(permute(diff(grid.z_r,1,1),[3 2 1]),[1 1 1 s(4)]);
-% get pot. temp.
+function [um] = avgy(um)
+    um = (um(:,1:end-1,:,:)+um(:,2:end,:,:))/2;
 
-%pres   = repmat(reshape(grid.z_r,[s(1) s(2) s(3)]),[1 1 1 s(4)]);
-%theta  = sw_ptmp(32*ones(size(vars.temp)),vars.temp,pres,zeros(size(vars.temp)));
-%lambda = rho; % choose either theta or rho
+function [um] = avgx(um)
+    um = (um(1:end-1,:,:,:)+um(2:end,:,:,:))/2;
 
-%% calculate pv
+function [um] = avgz(um)
+    um = (um(:,:,1:end-1,:)+um(:,:,2:end,:))/2;
+
+    %% old code
+    
+%     pv1    = avgx(avgz(bsxfun(@plus,avgy(vx - uy),f)))  .*  (tz(2:end-1,2:end-1,:,:));
+%     pv2    = (-1)*;
+%     pv3    = uz.*avgz(tx);
+    %pv = double((pv1 + avgy(pv2(2:end-1,:,:,:)) + avgx(pv3(:,2:end-1,:,:)))./avgz(lambda(2:end-1,2:end-1,:,:))); 

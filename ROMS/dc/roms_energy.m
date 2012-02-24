@@ -14,7 +14,7 @@ function [EKE,MKE,PE] = roms_energy(fname,tindices)
 % input
 fname = 'his';
 fname = find_file(fname);
-tindices = [1 Inf];
+tindices = [1 10];
 
 % parameters
 vinfo = ncinfo(fname,'u');
@@ -66,13 +66,19 @@ for i=0:iend-1
     rm = mean(rho,2);
 
     % eddy fields
-    up = bsxfun(@minus,u,mean(u,2));
-    vp = bsxfun(@minus,v,mean(v,2));
-    wp = bsxfun(@minus,w,mean(w,2));
-    rp = bsxfun(@minus,rho,mean(rho,2));
+    up = bsxfun(@minus,u,um);
+    vp = bsxfun(@minus,v,vm);
+    wp = bsxfun(@minus,w,wm);
+    rp = bsxfun(@minus,rho,rm);
     
-    eke = 0.5*rho(1:end-1,1:end-1,:,:).*(up(:,1:end-1,:,:).^2 + vp(1:end-1,:,:,:).^2); % SLOW?!
-    mke = 0.5*rm(1:end-1,:,:,:).*(um(:,:,:,:).^2 + vm(1:end-1,:,:,:).^2);
+    % average so that everything lands up on interior-rho points
+    up = (up(1:end-1,2:end-1,:,:) + up(2:end,2:end-1,:,:))/2;
+    um = (um(1:end-1, :     ,:,:) + um(2:end, :     ,:,:))/2;
+    vp = (vp(2:end-1,1:end-1,:,:) + vp(2:end-1,2:end,:,:))/2;
+    %vm = vm(2:end-1,:,:,:);
+    
+    eke = 0.5*rho(2:end-1,2:end-1,:,:).*(up.^2 + vp.^2); % SLOW?!
+    mke = 0.5*rm(2:end-1,:,:,:).*(um.^2 + vm(2:end-1,:,:,:).^2);
     pe  = 9.81*bsxfun(@times,rho,zrho);
     
     s = size(u);
@@ -121,7 +127,6 @@ legend('PE');
 
 %% local functions
 
-    
 function [] = pbar(cpb,i,j,imax,jmax)
     if ~isempty(cpb)
         txt = sprintf(' Progress: i=%d, j=%d',i,j);
