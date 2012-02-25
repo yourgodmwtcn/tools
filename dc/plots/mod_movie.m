@@ -29,7 +29,7 @@
 %   - titles work perfectly now. Added labels.tmax
 %   - throws error if given a 2d simulation and asking for x-y plot
 % Changed to mod_movie.m + identifies model from file           26 Jan 2012
-% Added stride feature                                          26 Jan 2012
+% Added slab feature                                            26 Jan 2012
 % Added extra commands argument to be passed to animate.m
 % Uses NaN's to remove zeros at walls to prevent this from mucking contour plots
 % Added labels structure
@@ -68,11 +68,6 @@ if gcm
 else
     % set up grid    
     [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname);
-    
-    % convert matrices to vectors
-    xax = xax(:,1);
-    yax = yax(1,:);
-    if ~isempty(zax), zax = zax(:,1,1); end
     
     % set time variable
     time_var = 'ocean_time';

@@ -21,14 +21,16 @@ ROMS
 	- conservative mode for huge files
 		- roms_diffmovie
 	
-	- roms_energy
+	*** roms_energy
 		- write to netcdf
+		- modify roms_var_grid
 	
-	- mod_movie
+	*** mod_movie
 		- fix [4 5 Inf] bug
 		
-	- roms_pv
-		- write to netcdf
+	*** roms_pv
+		- add file exists? check	
+		- fix use of mean f
 		
 Improvements:
 	- find_file

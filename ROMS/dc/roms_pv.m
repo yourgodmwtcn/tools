@@ -1,14 +1,14 @@
 % calculates Ertel PV
 %       [pv] = roms_pv(fname,tindices)
 
-function [pv] = roms_pv(fname,tindices)
+function [pv] = roms_pv(fname,tindices,outname)
 
 % parameters
 lam = 'rho';
 vinfo = ncinfo(fname,'u');
 s     = vinfo.Size;
 dim   = length(s); 
-slab  = 20;
+slab  = 40;
 
 warning off
 grid = roms_get_grid(fname,fname,0,1);
@@ -19,18 +19,45 @@ if ~exist('tindices','var'), tindices = []; end
 
 [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 
-%%
-% caps indicates domain integrated values
-EKE = nan(nt,1);
-MKE = EKE;
-PE  = EKE;
+R0  = ncread(fname,'R0');
+tpv = ncread(fname,'ocean_time');
+tpv = tpv([tindices(1):tindices(2)]);
+f   = ncread(fname,'f',[1 1],[Inf Inf]);
+f   = mean(f(:));
 
-R0   = ncread(fname,'R0');
-time = ncread(fname,'ocean_time');
-time = time([tindices(1):tindices(2)])/86400;
-f    = ncread(fname,'f',[1 1],[Inf Inf]);
-f = mean(f(:));
+xpv = grid.x_rho(1,2:end-1)';
+ypv = grid.y_rho(2:end-1,1)';
+zpv = avg1(grid.z_r(:,1,1));
 
+xname = 'x_pv'; yname = 'y_pv'; zname = 'z_pv'; tname = 'ocean_time';
+
+%% setup netcdf file
+if ~exist('outname','var') || isempty(outname), outname = 'ocean_der.nc'; end
+try
+    nccreate(outname,'pv','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3)-1 tname length(tpv)});
+    nccreate(outname,xname,'Dimensions',{xname s(1)-1});
+    nccreate(outname,yname,'Dimensions',{yname s(2)-2});
+    nccreate(outname,zname,'Dimensions',{zname s(3)-1});
+    nccreate(outname,tname,'Dimensions',{tname length(tpv)});
+    
+    ncwriteatt(outname,'pv','Description','Ertel PV calculated from ROMS output');
+    ncwriteatt(outname,'pv','coordinates','x_pv y_pv z_pv ocean_time');
+    ncwriteatt(outname,'pv','units','N/A');
+    ncwriteatt(outname,xname,'units',ncreadatt(fname,'x_u','units'));
+    ncwriteatt(outname,yname,'units',ncreadatt(fname,'y_u','units'));
+    ncwriteatt(outname,zname,'units','m');
+    ncwriteatt(outname,tname,'units','s');
+    fprintf('\n Created file : %s\n', outname);
+catch ME
+    fprintf('\n Appending to existing file.\n');
+end
+
+ncwrite(outname,xname,xpv);
+ncwrite(outname,yname,ypv);
+ncwrite(outname,zname,zpv);
+ncwrite(outname,'ocean_time',tpv);
+
+%% calculate pv
 pv = nan([s(1)-1 s(2)-2 s(3)-1 tindices(2)-tindices(1)+1]);
 
 for i=0:iend-1
@@ -60,10 +87,11 @@ for i=0:iend-1
     pv(:,:,:,tstart:tend) = double((avgx(avgz(bsxfun(@plus,avgy(vx - uy),f)))  .*  (tz(2:end-1,2:end-1,:,:)) ...
                    - avgy(vz(2:end-1,:,:,:).*avgz(ty(2:end-1,:,:,:))) ... % vz * (rho)_y
                    + avgx(uz(:,2:end-1,:,:).*avgz(tx(:,2:end-1,:,:))))./avgz(lambda(2:end-1,2:end-1,:,:))); % uz*(rho)_x
-                               
+    
+    ncwrite(outname,'pv',pv(:,:,:,tstart:tend),read_start);                             
 end
 
-% Write to netcdf
+fprintf('\n Wrote file : %s \n\n',outname);
 
 function [um] = avgy(um)
     um = (um(:,1:end-1,:,:)+um(:,2:end,:,:))/2;

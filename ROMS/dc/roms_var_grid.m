@@ -1,50 +1,55 @@
 function [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname)
     
     warning off;
-    grid = roms_get_grid(fname,fname,0,1);
     
-    % from John Wilkin's roms_islice.m
-    % determine where on the C-grid these values lie 
-    varcoords = nc_attget(fname,varname,'coordinates');
-    if ~isempty(findstr(varcoords,'_u'))
-      pos = 'u';
-    elseif ~isempty(findstr(varcoords,'_v'))
-      pos = 'v';
-    elseif ~isempty(findstr(varcoords,'_w'))
-      pos = 'w';
-    elseif ~isempty(findstr(varcoords,'_rho'))
-      pos = 'rho';
+    if strcmp(varname,'pv')
+        pos = 'p';
     else
-      error('Unable to parse the coordinates variables to know where the data fall on C-grid')
+        grid = roms_get_grid(fname,fname,0,1);
+
+        % from John Wilkin's roms_islice.m
+        % determine where on the C-grid these values lie 
+        varcoords = nc_attget(fname,varname,'coordinates');
+        if ~isempty(strfind(varcoords,'_u'))
+          pos = 'u';
+        elseif ~isempty(strfind(varcoords,'_v'))
+          pos = 'v';
+        elseif ~isempty(strfind(varcoords,'_w'))
+          pos = 'w';
+        elseif ~isempty(strfind(varcoords,'_rho'))
+          pos = 'r'; % rho
+        else
+          error('Unable to parse the coordinates variables to know where the data fall on C-grid')
+        end
     end
 
     switch pos
         case 'u'
-            xax = grid.lon_u';
-            yax = grid.lat_u';
+            xax = grid.lon_u(1,:)';
+            yax = grid.lat_u(:,1)';
             zax = grid.z_u;
             
             xunits = ncreadatt(fname,'x_u','units');
             yunits = ncreadatt(fname,'y_u','units'); 
             
         case 'v'
-            xax = grid.lon_v';
-            yax = grid.lat_v';
+            xax = grid.lon_v(1,:)';
+            yax = grid.lat_v(:,1)';
             zax = grid.z_v;
             
             xunits = ncreadatt(fname,'x_v','units');
             yunits = ncreadatt(fname,'y_v','units'); 
             
         case 'w'
-            xax = grid.lon_rho';
-            yax = grid.lat_rho';
+            xax = grid.lon_rho(1,:)';
+            yax = grid.lat_rho(:,1)';
             zax = grid.z_w;
             xunits = ncreadatt(fname,'x_rho','units');
             yunits = ncreadatt(fname,'y_rho','units'); 
 
-        otherwise
-            xax = grid.lon_rho';
-            yax = grid.lat_rho';
+        case 'r'
+            xax = grid.lon_rho(1,:)';
+            yax = grid.lat_rho(:,1)';
             
             if strcmp(varname, 'zeta');
                 zax = [];
@@ -53,6 +58,13 @@ function [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname)
             end
             xunits = ncreadatt(fname,'x_rho','units');
             yunits = ncreadatt(fname,'y_rho','units'); 
+        
+        case 'p'
+            xax = ncread(fname,'x_pv');
+            yax = ncread(fname,'y_pv');
+            zax = ncread(fname,'z_pv');
+            xunits = ncreadatt(fname,'x_pv','units');
+            yunits = ncreadatt(fname,'y_pv','units');    
     end
     
     warning on;

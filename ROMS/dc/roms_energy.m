@@ -14,7 +14,7 @@ function [EKE,MKE,PE] = roms_energy(fname,tindices)
 % input
 fname = 'his';
 fname = find_file(fname);
-tindices = [1 10];
+tindices = [1 Inf];
 
 % parameters
 vinfo = ncinfo(fname,'u');
@@ -78,7 +78,8 @@ for i=0:iend-1
     %vm = vm(2:end-1,:,:,:);
     
     eke = 0.5*rho(2:end-1,2:end-1,:,:).*(up.^2 + vp.^2); % SLOW?!
-    mke = 0.5*rm(2:end-1,:,:,:).*(um.^2 + vm(2:end-1,:,:,:).^2);
+    mke = 0.5*bsxfun(@times,rho(2:end-1,:,:,:),(um.^2 + vm(2:end-1,:,:,:).^2));
+    oke = rho(2:end-1,2:end-1,:,:).*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm(2:end-1,:,:,:)));
     pe  = 9.81*bsxfun(@times,rho,zrho);
     
     s = size(u);
@@ -86,10 +87,10 @@ for i=0:iend-1
     tstart = read_start(end);
     tend   = read_start(end) + read_count(end);
 
-    EKE(tstart:tend-1) = squeeze(sum(sum(sum(eke,1),2),3));%zeros(size(eke,4),1);
-    MKE(tstart:tend-1) = squeeze(sum(sum(sum(mke,1),2),3));%zeros(size(mke,4),1);
-    PE(tstart:tend-1)  = squeeze(sum(sum(sum(pe,1),2),3));%zeros(size(pe,4),1);
-    
+    EKE(tstart:tend-1) = squeeze(sum(sum(sum(eke,1),2),3));
+    MKE(tstart:tend-1) = squeeze(sum(sum(sum(mke,1),2),3));
+    OKE(tstart:tend-1) = squeeze(sum(sum(sum(oke,1),2),3));
+    PE(tstart:tend-1)  = squeeze(sum(sum(sum(pe,1),2),3));   
 end
 
 if ~isempty(cpb)
@@ -101,29 +102,25 @@ figure;
 plot(time,PE/nanmax(PE(:)),'b'); hold on;
 plot(time,EKE/nanmax(EKE(:)),'r');
 plot(time,MKE/nanmax(MKE(:)),'k');
+plot(time,OKE/nanmax(OKE(:)),'m');
+ylabel('Normalized Energy');
+xlabel('Time (days)');
+legend('PE','EKE','MKE','OKE');
+
+figure;
+hold on;
+plot(time,EKE,'r');
+plot(time,MKE,'k');
+plot(time,OKE,'m');
 ylabel('Energy');
 xlabel('Time (days)');
-legend('PE','EKE','MKE');
+legend('EKE','MKE','OKE');
 
 figure;
 plot(time,PE);
 ylabel('Energy');
 xlabel('Time (days)');
 legend('PE');
-
-%% old code
-%     % vectorize this?
-%     for i=1:s(4)
-%         temp = eke(:,:,:,i);
-%         int_eke(i) = sum(temp(:));
-%         temp = pe(:,:,:,i);
-%         int_pe(i) = sum(temp(:));
-%     end  
-%     
-
-%     % eddy terms
-%     up = u - repmat(mean_u,[1 1 1 s(4)]);
-%     vp = v - repmat(mean_v,[1 1 1 s(4)]);
 
 %% local functions
 
