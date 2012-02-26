@@ -78,7 +78,7 @@ for i=0:iend-1
     %vm = vm(2:end-1,:,:,:);
     
     eke = 0.5*rho(2:end-1,2:end-1,:,:).*(up.^2 + vp.^2); % SLOW?!
-    mke = 0.5*bsxfun(@times,rho(2:end-1,:,:,:),(um.^2 + vm(2:end-1,:,:,:).^2));
+    mke = 0.5*bsxfun(@times,rho(2:end-1,2:end-1,:,:),(um.^2 + vm(2:end-1,:,:,:).^2));
     oke = rho(2:end-1,2:end-1,:,:).*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm(2:end-1,:,:,:)));
     pe  = 9.81*bsxfun(@times,rho,zrho);
     
@@ -87,10 +87,10 @@ for i=0:iend-1
     tstart = read_start(end);
     tend   = read_start(end) + read_count(end);
 
-    EKE(tstart:tend-1) = squeeze(sum(sum(sum(eke,1),2),3));
-    MKE(tstart:tend-1) = squeeze(sum(sum(sum(mke,1),2),3));
-    OKE(tstart:tend-1) = squeeze(sum(sum(sum(oke,1),2),3));
-    PE(tstart:tend-1)  = squeeze(sum(sum(sum(pe,1),2),3));   
+    EKE(tstart:tend-1) = domain_integrate(eke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));%squeeze(sum(sum(sum(eke,1),2),3));
+    MKE(tstart:tend-1) = domain_integrate(mke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));%squeeze(sum(sum(sum(mke,1),2),3));
+    OKE(tstart:tend-1) = domain_integrate(oke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));%squeeze(sum(sum(sum(oke,1),2),3));
+    PE(tstart:tend-1)  = domain_integrate(pe(2:end-1,2:end-1,:,:),grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));%squeeze(sum(sum(sum(pe,1),2),3));   
 end
 
 if ~isempty(cpb)
