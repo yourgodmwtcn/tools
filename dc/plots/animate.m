@@ -72,6 +72,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     
     data = squeeze(data);
     s = size(data);
+    if length(s) == 2, s(3) = 1; end
        
     if narg <= 5 || ~exist('index','var')
         stop = size(data,3);
@@ -109,9 +110,12 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     
     %% processing
     
-    if stop == 1, warning(1001,'Only one time step.'); end
-    
-    plotdata = double(squeeze(shiftdim(data,index)));
+    if stop == 1, 
+        warning('Only one time step.');
+        plotdata = double(squeeze(data)); % shiftdim screws up single snapshots
+    else        
+        plotdata = double(squeeze(shiftdim(data,index)));
+    end    
     
     if labels.stride == 0
         datamax = nanmax(plotdata(:));

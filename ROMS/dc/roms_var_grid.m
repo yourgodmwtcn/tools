@@ -27,7 +27,7 @@ function [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname)
         case 'u'
             xax = grid.lon_u(1,:)';
             yax = grid.lat_u(:,1)';
-            zax = grid.z_u;
+            zax = grid.z_u(:,1,1);
             
             xunits = ncreadatt(fname,'x_u','units');
             yunits = ncreadatt(fname,'y_u','units'); 
@@ -35,7 +35,7 @@ function [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname)
         case 'v'
             xax = grid.lon_v(1,:)';
             yax = grid.lat_v(:,1)';
-            zax = grid.z_v;
+            zax = grid.z_v(:,1,1);
             
             xunits = ncreadatt(fname,'x_v','units');
             yunits = ncreadatt(fname,'y_v','units'); 
@@ -43,7 +43,7 @@ function [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname)
         case 'w'
             xax = grid.lon_rho(1,:)';
             yax = grid.lat_rho(:,1)';
-            zax = grid.z_w;
+            zax = grid.z_w(:,1,1);
             xunits = ncreadatt(fname,'x_rho','units');
             yunits = ncreadatt(fname,'y_rho','units'); 
 
@@ -54,7 +54,7 @@ function [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname)
             if strcmp(varname, 'zeta');
                 zax = [];
             else
-                zax = grid.z_r;
+                zax = grid.z_r(:,1,1);
             end
             xunits = ncreadatt(fname,'x_rho','units');
             yunits = ncreadatt(fname,'y_rho','units'); 

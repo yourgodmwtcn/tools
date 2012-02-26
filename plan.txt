@@ -31,6 +31,9 @@ ROMS
 	*** roms_pv
 		- add file exists? check	
 		- fix use of mean f
+		- add intPV
+		
+	- UPDATE convergence.m with new version
 		
 Improvements:
 	- find_file
