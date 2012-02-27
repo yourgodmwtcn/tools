@@ -12,9 +12,9 @@
 function [EKE,MKE,PE] = roms_energy(fname,tindices)
 
 % input
-fname = 'his';
-fname = find_file(fname);
-tindices = [1 Inf];
+% fname = 'his';
+% fname = find_file(fname);
+% tindices = [1 Inf];
 
 % parameters
 vinfo = ncinfo(fname,'u');
@@ -55,20 +55,20 @@ for i=0:iend-1
     if isempty(cpb), fprintf('\nReading Data...\n'); end
     u   = ncread(fname,'u',read_start,read_count,stride); pbar(cpb,i+1,1,iend,4);
     v   = ncread(fname,'v',read_start,read_count,stride); pbar(cpb,i+1,2,iend,4);
-    w   = ncread(fname,'w',read_start,read_count,stride); pbar(cpb,i+1,3,iend,4);
+    %w   = ncread(fname,'w',read_start,read_count,stride); pbar(cpb,i+1,3,iend,4);
     rho = R0 + ncread(fname,'rho',read_start,read_count,stride); pbar(cpb,i+1,4,iend,4);
 	if isempty(cpb), fprintf('\n Done reading data... \n'); end
     
     % mean fields
     um = mean(u,2);
     vm = mean(v,2);
-    wm = mean(w,2);
+    %wm = mean(w,2);
     rm = mean(rho,2);
 
     % eddy fields
     up = bsxfun(@minus,u,um);
     vp = bsxfun(@minus,v,vm);
-    wp = bsxfun(@minus,w,wm);
+    %wp = bsxfun(@minus,w,wm);
     rp = bsxfun(@minus,rho,rm);
     
     % average so that everything lands up on interior-rho points
@@ -87,10 +87,10 @@ for i=0:iend-1
     tstart = read_start(end);
     tend   = read_start(end) + read_count(end);
 
-    EKE(tstart:tend-1) = domain_integrate(eke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));%squeeze(sum(sum(sum(eke,1),2),3));
-    MKE(tstart:tend-1) = domain_integrate(mke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));%squeeze(sum(sum(sum(mke,1),2),3));
-    OKE(tstart:tend-1) = domain_integrate(oke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));%squeeze(sum(sum(sum(oke,1),2),3));
-    PE(tstart:tend-1)  = domain_integrate(pe(2:end-1,2:end-1,:,:),grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));%squeeze(sum(sum(sum(pe,1),2),3));   
+    EKE(tstart:tend-1) = domain_integrate(eke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
+    MKE(tstart:tend-1) = domain_integrate(mke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
+    OKE(tstart:tend-1) = domain_integrate(oke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
+    PE(tstart:tend-1)  = domain_integrate(pe(2:end-1,2:end-1,:,:),grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));  
 end
 
 if ~isempty(cpb)
@@ -121,6 +121,8 @@ plot(time,PE);
 ylabel('Energy');
 xlabel('Time (days)');
 legend('PE');
+
+save energy.mat time PE EKE MKE OKE
 
 %% local functions
 

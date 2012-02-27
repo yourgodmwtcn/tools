@@ -90,7 +90,8 @@ for i=0:iend-1
     
     ncwrite(outname,'pv',pv(:,:,:,tstart:tend),read_start);                             
 end
-
+intPV = domain_integrate(pv,xpv,ypv,zpv);
+save pv.mat pv xpv ypv zpv tpv intPV
 fprintf('\n Wrote file : %s \n\n',outname);
 
 function [um] = avgy(um)
