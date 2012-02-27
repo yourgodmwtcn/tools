@@ -11,6 +11,7 @@
 %                      (passed to animate.m - optional)
 
 % CHANGELOG:
+% Changed to use updated roms_var_grid output                   26 Feb 2012
 % Now using roms_ncread_params & roms_tindices                  24 Feb 2012
 % Bugfix in read_count - skipped one timestep everytime         23 Feb 2012
 % Bugfixes - title index when timesteps(1) ~= 1,                22 Feb 2012
@@ -172,7 +173,7 @@ for i=0:iend-1
     end
     dv = double(squeeze(ncread(fname,varname,read_start,read_count,stride)));  
     
-    % take care of walls for mitgcm
+    % take care of walls for mitgcm - NEEDS TO BE CHECKED
     if gcm
         s = size(dv);            
         s(3) = size(dv,3); % correct for single timestep snapshots - in that case s is a 2 element row

@@ -9,6 +9,8 @@ General:
 		- Burger number
 	- movie with changes w.r.t previous time step
 	
+MERGE TO MASTER AFTER FIXING [4 5 Inf] bug
+
 ROMS
 	- roms_info
 		- fix IC plotting

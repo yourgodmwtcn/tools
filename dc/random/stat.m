@@ -7,6 +7,7 @@
 %       missing rows in each column
 
 % CHANGE LOG:
+% Small output bugfix                                           27 Feb 2012
 % Prevent computing median if n > 10^6 + preallocated ind       23 Feb 2012
 % Small bugfixes to output formatting criterion                 21 Feb 2012
 % Changed 'if' output criterion from min -> median              06 Feb 2012
@@ -146,7 +147,11 @@ function [] = stat(var1)
 
         if max(var1(:)) == Inf, fprintf('\n\n');return; end
         % Calculate rank only when there are no NaN's
-        if miss == 0 , fprintf('\n\t %15s:  %d/%d  \n\n','Rank', rank(var1),s(2)); end
+        if miss == 0 
+            fprintf('\n\t %15s:  %d/%d  \n\n','Rank', rank(var1),s(2)); 
+        else
+            fprintf('\n\n');
+        end
     
     else
         % Output missing data information

@@ -3,6 +3,8 @@
 function [L] = roms_length_scales(fname,varname,tindices,do_z)
 
 if ~exist('do_z','var'), do_z = 0; warning('Ignoring z.'); end
+if ~exist('tindices','var'), tindices = [1 Inf]; end
+
 % parameters
 vinfo = ncinfo(fname,varname);
 dim   = length(vinfo.Size); 
@@ -51,7 +53,7 @@ hold on
 plot(time,L(1,:)/1000,'r');
 plot(time,L(2,:)/1000,'g');
 if do_z, plot(time,L(3,:),'b'); end
-xlabel('Length (m/km)');
-ylabel('Time (days)');
+ylabel('Length (m/km)');
+xlabel('Time (days)');
 title([' Length scales : ' varname]);
 legend('L_x (km)','L_y (km)','L_z (m)');
