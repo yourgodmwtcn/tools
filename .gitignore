@@ -3,6 +3,7 @@ data/
 gsw/
 maps/
 netcdf/
+mexcdf/
 MATLAB tips/
 oceanography/
 ROMS/arango/.svn/
