@@ -34,4 +34,4 @@ function [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,tend);
         iend   = ceil((tindices(2)-tindices(1))/slab/dt);
     end
     % END mod_movie section
-    nt = ceil(tindices(2)-tindices(1)+1)/dt;
+    nt = ceil((tindices(2)-tindices(1)+1)/dt);
