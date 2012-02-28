@@ -37,13 +37,13 @@ for i=0:iend-1
             [x,y,z] = meshgrid(xax,yax,zax);
             [xi,yi,zi] = meshgrid(xax,yax,[zax(1):dz:zax(end)]);
             txz = permute(interp3(x,y,z,permute(var(:,:,:,jj),[2 1 3]),xi,yi,zi),[2 1 3]);            
-            L(3,ind) = length_scale(txz,3,dz);
+            L(3,ind) = length_scale(bsxfun(@minus,txz,mean(txz,2)),3,dz);
         else
             txz = var(:,:,:,jj);
         end
         
-        L(1,ind) = length_scale(txz,1,dx);
-        L(2,ind) = length_scale(txz,2,dy);
+        L(1,ind) = length_scale(bsxfun(@minus,txz,mean(txz,2)),1,dx);
+        L(2,ind) = length_scale(bsxfun(@minus,txz,mean(txz,2)),2,dy);
     end
 end
 

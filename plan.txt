@@ -32,13 +32,14 @@ ROMS
 		- fix pause at slab change (AGAIN!)
 		
 	- stat.m and subfunctions
-		
+	- thermal wind code
+	
 	*** roms_pv
 		- add file exists? check	
 		- fix use of mean f
 		- add intPV
 		
-	- UPDATE convergence.m with new version
+	***** UPDATE convergence.m with new version
 		
 Improvements:
 	- find_file
