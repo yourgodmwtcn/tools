@@ -74,8 +74,8 @@ function [] = stat(var1)
     end
 
     if n < 10^6
-        comp = abs(nanmedian(var1(:))); 
-        med = comp; 
+        med = nanmedian(var1(:));
+        comp = abs(med);
     else
         comp = abs(nanmin(var1(:)));
         med = NaN;

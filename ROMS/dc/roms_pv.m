@@ -19,7 +19,7 @@ if ~exist('tindices','var'), tindices = []; end
 
 [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 
-R0  = ncread(fname,'R0');
+rho0  = ncread(fname,'R0');
 tpv = ncread(fname,'ocean_time');
 tpv = tpv([tindices(1):tindices(2)]);
 f   = ncread(fname,'f',[1 1],[Inf Inf]);
@@ -84,9 +84,11 @@ for i=0:iend-1
     
     % PV calculated at interior rho points
                                 % f + vx - uy                      (rho)_z
-    pv(:,:,:,tstart:tend) = double((avgx(avgz(bsxfun(@plus,avgy(vx - uy),f)))  .*  (tz(2:end-1,2:end-1,:,:)) ...
-                   - avgy(vz(2:end-1,:,:,:).*avgz(ty(2:end-1,:,:,:))) ... % vz * (rho)_y
-                   + avgx(uz(:,2:end-1,:,:).*avgz(tx(:,2:end-1,:,:))))./avgz(lambda(2:end-1,2:end-1,:,:))); % uz*(rho)_x
+    pv(:,:,:,tstart:tend) = -1* double((avgx(avgz(bsxfun(@plus,avgy(vx - uy),f)))  .*  tz(2:end-1,2:end-1,:,:) ...
+                   - avgy(vz(2:end-1,:,:,:)).*avgz(avgx(tx(:,2:end-1,:,:))) ... % vz * (rho)_x
+                   + avgx(uz(:,2:end-1,:,:)).*avgz(avgy(ty(2:end-1,:,:,:))))./rho0);%avgz(lambda(2:end-1,2:end-1,:,:))); % uz*(rho)_y
+               
+    pv2 = avgy(vz);
     
     ncwrite(outname,'pv',pv(:,:,:,tstart:tend),read_start);                             
 end

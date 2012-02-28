@@ -29,6 +29,9 @@ ROMS
 	
 	*** mod_movie
 		- fix [4 5 Inf] bug
+		- fix pause at slab change (AGAIN!)
+		
+	- stat.m and subfunctions
 		
 	*** roms_pv
 		- add file exists? check	
