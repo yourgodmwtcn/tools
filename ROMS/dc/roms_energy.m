@@ -1,4 +1,6 @@
-% function [EKE,MKE,PE] = roms_energy(fname,tindices)
+% function [EKE,MKE,PE] = roms_energy(fname,tindices,mean_index)
+% Use mean_index to say which dirn. you want to take the mean for defining
+% mean, eddy contributions.
 
 % CHANGELOG
 % First actual version                                          23 Feb 2012
@@ -9,12 +11,15 @@
 % 3) Try lower values of slab to see which works best
 % 4) Add w contribution to KE
 
-function [EKE,MKE,PE] = roms_energy(fname,tindices)
+function [EKE,MKE,PE] = roms_energy(fname,tindices,mean_index)
 
 % input
 % fname = 'his';
 % fname = find_file(fname);
 % tindices = [1 Inf];
+
+if ~exist('tindices','var'), tindices = [1 Inf]; end
+if ~exist('mean_index','var'), mean_index = 2; end
 
 % parameters
 vinfo = ncinfo(fname,'u');
@@ -60,10 +65,10 @@ for i=0:iend-1
 	if isempty(cpb), fprintf('\n Done reading data... \n'); end
     
     % mean fields
-    um = mean(u,2);
-    vm = mean(v,2);
+    um = mean(u,mean_index);
+    vm = mean(v,mean_index);
     %wm = mean(w,2);
-    rm = mean(rho,2);
+    rm = mean(rho,mean_index);
 
     % eddy fields
     up = bsxfun(@minus,u,um);
@@ -72,14 +77,20 @@ for i=0:iend-1
     rp = bsxfun(@minus,rho,rm);
     
     % average so that everything lands up on interior-rho points
-    up = (up(1:end-1,2:end-1,:,:) + up(2:end,2:end-1,:,:))/2;
-    um = (um(1:end-1, :     ,:,:) + um(2:end, :     ,:,:))/2;
+    up = (up(1:end-1,2:end-1,:,:) + up(2:end,2:end-1,:,:))/2;    
     vp = (vp(2:end-1,1:end-1,:,:) + vp(2:end-1,2:end,:,:))/2;
-    %vm = vm(2:end-1,:,:,:);
+    if mean_index == 1
+        um = um(:,2:end-1,:,:);
+        vm = (vm(:,1:end-1,:,:) + vm(:,2:end,:,:))/2;
+    elseif mean_index == 2
+        um = (um(1:end-1,:,:,:) + um(2:end,:,:,:))/2;
+        vm = vm(2:end-1,:,:,:);
+    end
     
+    % now calculate energy terms
     eke = 0.5*rho(2:end-1,2:end-1,:,:).*(up.^2 + vp.^2); % SLOW?!
-    mke = 0.5*bsxfun(@times,rho(2:end-1,2:end-1,:,:),(um.^2 + vm(2:end-1,:,:,:).^2));
-    oke = rho(2:end-1,2:end-1,:,:).*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm(2:end-1,:,:,:)));
+    mke = 0.5*bsxfun(@times,rho(2:end-1,2:end-1,:,:),(um.^2 + vm.^2));
+    oke = rho(2:end-1,2:end-1,:,:).*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm));
     pe  = 9.81*bsxfun(@times,rho,zrho);
     
     s = size(u);
@@ -122,7 +133,10 @@ ylabel('Energy');
 xlabel('Time (days)');
 legend('PE');
 
-save energy.mat time PE EKE MKE OKE
+% write to file
+ax = 'xyzt';
+fname = ['energy-avg-' ax(mean_index) '.mat']; 
+save(fname,'time','PE','EKE','MKE','OKE');
 
 %% local functions
 
