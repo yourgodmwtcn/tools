@@ -13,11 +13,6 @@
 
 function [EKE,MKE,PE] = roms_energy(fname,tindices,mean_index)
 
-% input
-% fname = 'his';
-% fname = find_file(fname);
-% tindices = [1 Inf];
-
 if ~exist('tindices','var'), tindices = [1 Inf]; end
 if ~exist('mean_index','var'), mean_index = 2; end
 

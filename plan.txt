@@ -34,6 +34,8 @@ ROMS
 	- stat.m and subfunctions
 	- thermal wind code
 	
+	- ADD MAX TIME INSTANTS TO mod_movie/animate
+	
 	*** roms_pv
 		- add file exists? check	
 		- fix use of mean f
