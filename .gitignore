@@ -10,3 +10,6 @@ ROMS/arango/.svn/
 ROMS/ROMS_wilkin/.svn/
 latex/tex/latex/misc/
 misc/matVTK1.0/
+*.asv
+*.m~
+*.prf
