@@ -152,7 +152,7 @@ title('Verification');
 legend('Original','Fit');
 
 A = A(:,1);
-
+time_A = timegr;
 %% plot
 
 figure;
@@ -173,7 +173,7 @@ legend('PE');
 % write to file
 ax = 'xyzt';
 fname = ['energy-avg-' ax(mean_index) '.mat']; 
-save(fname,'time','PE','EKE','MKE','OKE','A');
+save(fname,'time','PE','EKE','MKE','OKE','A','time_A');
 
 %% local functions
 
