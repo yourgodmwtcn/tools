@@ -20,7 +20,7 @@ function [] = liney(y,label,color)
     
     for i=1:length(y)       
         plot(xax,[y(i) y(i)],'--','LineWidth',1.5,'Color',color);
-        set(hAxis,'YTick',sort([ytick y(i)]));
+%        set(hAxis,'YTick',sort([ytick y(i)]));
         %if mod(i,2)
             text(xax(end)-(length(label))/2,y(i),label,'Rotation',0,'VerticalAlignment','Bottom','FontSize',10,'Color',color);%,'FontWeight','Bold');
         %else

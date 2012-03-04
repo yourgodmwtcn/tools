@@ -1,6 +1,6 @@
 % Plots labelled periodogram
 %
-% function [] = dcpgram(data,dt,numpeaks, factor)
+% function [freq,pow,cn,ind] = dcpgram(data,dt,numpeaks, factor)
 %       data - time series
 %       dt - sampling delta_time (default = 1)
 %       numpeaks - top 'x' peaks to be marked

@@ -19,7 +19,7 @@ if ~exist('mean_index','var'), mean_index = 2; end
 % parameters
 vinfo = ncinfo(fname,'u');
 dim   = length(vinfo.Size); 
-slab  = 40;
+slab  = 60;
 
 warning off
 grid = roms_get_grid(fname,fname,0,1);
@@ -45,6 +45,28 @@ try
 catch ME
     cpb = [];
 end
+
+% create output file
+% outname = 'ocean_der.nc';
+% xname = 'x_pv'; yname = 'y_pv'; zname = 'z_pv'; tname = 'ocean_time';
+% try
+%     nccreate(outname,'pv','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3)-1 tname length(tpv)});
+%     nccreate(outname,xname,'Dimensions',{xname s(1)-1});
+%     nccreate(outname,yname,'Dimensions',{yname s(2)-2});
+%     nccreate(outname,zname,'Dimensions',{zname s(3)-1});
+%     nccreate(outname,tname,'Dimensions',{tname length(tpv)});
+%     
+%     ncwriteatt(outname,'pv','Description','Ertel PV calculated from ROMS output');
+%     ncwriteatt(outname,'pv','coordinates','x_pv y_pv z_pv ocean_time');
+%     ncwriteatt(outname,'pv','units','N/A');
+%     ncwriteatt(outname,xname,'units',ncreadatt(fname,'x_u','units'));
+%     ncwriteatt(outname,yname,'units',ncreadatt(fname,'y_u','units'));
+%     ncwriteatt(outname,zname,'units','m');
+%     ncwriteatt(outname,tname,'units','s');
+%     fprintf('\n Created file : %s\n', outname);
+% catch ME
+%     fprintf('\n Appending to existing file.\n');
+% 
 
 for i=0:iend-1
     % FROM mod_movie.m - propagate changes back
@@ -103,15 +125,35 @@ if ~isempty(cpb)
     cpb.stop();
 end
 
-%% plot
-figure;
-plot(time,PE/nanmax(PE(:)),'b'); hold on;
-plot(time,EKE/nanmax(EKE(:)),'r');
-plot(time,MKE/nanmax(MKE(:)),'k');
-plot(time,OKE/nanmax(OKE(:)),'m');
-ylabel('Normalized Energy');
+%% Calculate growth rate
+clear A
+k=1;
+jump = 3;
+
+for i=1:jump:length(EKE)-jump
+    A(k,:) = polyfit(time(i:i+jump),log(EKE(i:i+jump)),1);%fitexp([1:jump+1]',eke(i:i+jump),[1 1 0.5]);
+    k=k+1;
+end
+timegr = (time(1:jump:length(EKE)-2) + time(jump+1: jump : length(EKE)))/2;
+plot(timegr,A(:,1),'b*-')
+liney(0)
+ylabel('Growth Rate (d^{-1})')
 xlabel('Time (days)');
-legend('PE','EKE','MKE','OKE');
+
+% Verify
+eke2 = exp(A(:,1).*timegr + A(:,2));
+figure
+plot(time,(EKE),'b*');
+hold on
+plot(timegr,eke2,'r');
+ylabel('Energy');
+xlabel('Time (days)');
+title('Verification');
+legend('Original','Fit');
+
+A = A(:,1);
+
+%% plot
 
 figure;
 hold on;
@@ -131,7 +173,7 @@ legend('PE');
 % write to file
 ax = 'xyzt';
 fname = ['energy-avg-' ax(mean_index) '.mat']; 
-save(fname,'time','PE','EKE','MKE','OKE');
+save(fname,'time','PE','EKE','MKE','OKE','A');
 
 %% local functions
 
