@@ -58,8 +58,8 @@ xlabel('Time (days)');
 title([' Length scales : ' varname]);
 legend('L_x (km)','L_y (km)','L_z (m)');
 
-Lx = median(L(1,:)')/1000;
-Ly = median(L(2,:)')/1000;
-Lz = median(L(3,:)')/1000;
+Lx = nanmedian(L(1,:)')/1000;
+Ly = nanmedian(L(2,:)')/1000;
+Lz = nanmedian(L(3,:)')/1000;
 
 save('length_scales.mat','Lx','Ly','Lz','L');
