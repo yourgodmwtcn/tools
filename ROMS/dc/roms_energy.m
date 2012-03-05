@@ -126,15 +126,16 @@ if ~isempty(cpb)
 end
 
 %% Calculate growth rate
-clear A
+clear A timegr
 k=1;
 jump = 3;
 
-for i=1:jump:length(EKE)-jump
+for i=1:1:length(EKE)-jump
     A(k,:) = polyfit(time(i:i+jump),log(EKE(i:i+jump)),1);%fitexp([1:jump+1]',eke(i:i+jump),[1 1 0.5]);
+    timegr(k,:) = (time(i+jump)+time(i))/2;
     k=k+1;
 end
-timegr = (time(1:jump:length(EKE)-2) + time(jump+1: jump : length(EKE)))/2;
+%timegr = (time(1:jump-2:length(EKE)-2) + time(jump+1: jump-2 : length(EKE)))/2;
 plot(timegr,A(:,1),'b*-')
 liney(0)
 ylabel('Growth Rate (d^{-1})')
