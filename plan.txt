@@ -29,12 +29,10 @@ ROMS
 	
 	*** mod_movie
 		- fix [4 5 Inf] bug
-		- fix pause at slab change (AGAIN!)
 		
 	- stat.m and subfunctions
-	- thermal wind code
+	- thermal wind code - use ROMS_wilkin tools
 	
-	- ADD MAX TIME INSTANTS TO mod_movie/animate
 	
 	*** roms_pv
 		- add file exists? check	

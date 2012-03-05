@@ -136,6 +136,8 @@ for i=1:1:length(EKE)-jump
     k=k+1;
 end
 %timegr = (time(1:jump-2:length(EKE)-2) + time(jump+1: jump-2 : length(EKE)))/2;
+figure
+subplot(211)
 plot(timegr,A(:,1),'b*-')
 liney(0)
 ylabel('Growth Rate (d^{-1})')
@@ -143,7 +145,7 @@ xlabel('Time (days)');
 
 % Verify
 eke2 = exp(A(:,1).*timegr + A(:,2));
-figure
+subplot(212)
 plot(time,(EKE),'b*');
 hold on
 plot(timegr,eke2,'r');

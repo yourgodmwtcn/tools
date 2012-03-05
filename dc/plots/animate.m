@@ -46,7 +46,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     narg = nargin;
     
     if strcmp(get(gcf,'currentkey'),'escape')
-        warning(1000,'Previous ESC detected. Opening new figure.');
+        warning('Previous ESC detected. Opening new figure.');
         figure;
     end
     
