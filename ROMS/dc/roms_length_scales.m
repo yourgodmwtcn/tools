@@ -47,6 +47,10 @@ for i=0:iend-1
     end
 end
 
+L = L(:,3:end);
+time = time(3:end);
+time_L = time;
+
 % plot
 figure
 hold on
@@ -62,4 +66,4 @@ Lx = nanmedian(L(1,:)')/1000;
 Ly = nanmedian(L(2,:)')/1000;
 Lz = nanmedian(L(3,:)')/1000;
 
-save('length_scales.mat','Lx','Ly','Lz','L');
+save('length_scales.mat','Lx','Ly','Lz','L','time_L');
