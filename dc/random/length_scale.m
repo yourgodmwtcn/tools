@@ -14,16 +14,17 @@ function [ll] = length_scale(data,index,dx)
     for i=1:jump1:s(2)
         for j=1:jump2:s(3)
             ind = sub2ind([10 10],ceil(i/jump1),ceil(j/jump2));
-            [covx(ind,:),lagx] = xcov(data(:,i,j),'biased');
+            [covx(ind,:),lagx] = xcov(data(:,i,j)-mean(data(:,i,j)),'biased');
         end
     end
     
     mean_covx = mean(covx,1);
     i1 = s(1);
     i2 = find(mean_covx(i1:end) < 0);
+    if numel(i2) == 0, ll = NaN; return; end
     i2 = s(1)-1 + i2(1);
     
-    p = polyfit(lagx(i1:i2)*dx,mean_covx(i1:i2),i2-i1);
-    r = roots(p);
-    ll = r(find(r < lagx(i2)*dx) && find(r > 0));
+    p = polyfit(lagx(i2-1:i2)*dx,mean_covx(i2-1:i2),1);
+    ll = roots(p);
+    %ll = r((r < lagx(i2)*dx) & (r > 0));
    % ll = abs(lagx(find_approx(mean_covx,0,1))*dx);
