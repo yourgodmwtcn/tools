@@ -27,6 +27,8 @@ warning off
 grid = roms_get_grid(fname,fname,0,1);
 warning on
 
+area = max(grid.x_rho(:)-grid.x_rho(1))*max(grid.y_rho(:)-grid.y_rho(1));
+
 % parse input
 [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 
@@ -114,10 +116,10 @@ for i=0:iend-1
     end
     
     % now calculate energy terms
-    eke = 0.5*rho(2:end-1,2:end-1,:,:).*(up.^2 + vp.^2); % SLOW?!
-    mke = 0.5*bsxfun(@times,rho(2:end-1,2:end-1,:,:),(um.^2 + vm.^2));
-    %oke = rho(2:end-1,2:end-1,:,:).*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm));
-    pe  = 9.81*bsxfun(@times,rho,zrho);
+    eke = 0.5*rho(2:end-1,2:end-1,:,:).*(up.^2 + vp.^2)./area; % SLOW?!
+    mke = 0.5*bsxfun(@times,rho(2:end-1,2:end-1,:,:),(um.^2 + vm.^2))./area;
+    %oke = rho(2:end-1,2:end-1,:,:).*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm))./area;
+    pe  = 9.81*bsxfun(@times,rho,zrho)./area;
     
     tstart = ceil(read_start(end)/ntavg);
     tend   = floor(tstart + s(4)/ntavg -1);
