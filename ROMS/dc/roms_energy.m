@@ -1,4 +1,4 @@
-% function [EKE,MKE,PE] = roms_energy(fname,tindices,mean_index)
+% function [EKE,MKE,PE] = roms_energy(fname,tindices,ntavg,mean_index)
 % Use mean_index to say which dirn. you want to take the mean for defining
 % mean, eddy contributions.
 % Normalizes energy by horizontal area
@@ -85,17 +85,23 @@ for i=0:iend-1
     rho = R0 + ncread(fname,'rho',read_start,read_count,stride); pbar(cpb,i+1,4,iend,4);
 	if isempty(cpb), fprintf('\n Done reading data... \n'); end
     
-    % mean fields - average in y and over 4 timesteps
-    um = time_mean(u,ntavg);
-    vm = time_mean(v,ntavg);
+    % mean fields - average over 4 timesteps
+    um = time_mean(u,ntavg,mean_index);
+    vm = time_mean(v,ntavg,mean_index);
     %wm = mean(w,2);
-    rm = time_mean(rho,ntavg);
+    rm = time_mean(rho,ntavg,mean_index);
     
     s = size(u);
 
     % eddy fields
-    ind1 = floor(ntavg/2)  :ntavg:s(4)-mod(s(4),ntavg);
-    ind2 = ceil(ntavg/2+1) :ntavg:s(4)-mod(s(4),ntavg);
+    ind1 = ceil(ntavg/2)  :ntavg:s(4)-mod(s(4),ntavg);
+    
+    if ntavg == 1
+        ind2 = ind1; 
+    else
+        ind2 = ceil(ntavg/2+1) :ntavg:s(4)-mod(s(4),ntavg);
+    end
+    
     % pull out rho at timesteps where i'm calculating eddy fields.
     rho  = (rho(:,:,:,ind1) + rho(:,:,:,ind2))/2;
     
@@ -138,36 +144,34 @@ if ~isempty(cpb)
 end
 
 %% Calculate growth rate
-clear A timegr
 k=1;
-jump = 5;
+jump = 5; % fit 5 consecutive points
 
 for i=1:1:length(EKE)-jump
     A(k,:) = polyfit(time_E(i:i+jump),log(EKE(i:i+jump)),1);%fitexp([1:jump+1]',eke(i:i+jump),[1 1 0.5]);
-    timegr(k,:) = (time_E(i+jump)+time_E(i))/2;
+    time_A(k,:) = (time_E(i+jump)+time_E(i))/2;
     k=k+1;
 end
 %timegr = (time(1:jump-2:length(EKE)-2) + time(jump+1: jump-2 : length(EKE)))/2;
 figure
 subplot(211)
-plot(timegr,A(:,1),'b*-')
+plot(time_A,A(:,1),'b*-')
 liney(0)
 ylabel('Growth Rate (d^{-1})')
 xlabel('Time (days)');
 
 % Verify
-eke2 = exp(A(:,1).*timegr + A(:,2));
+eke2 = exp(A(:,1).*time_A + A(:,2));
 subplot(212)
 plot(time_E,(EKE),'b*');
 hold on
-plot(timegr,eke2,'r');
+plot(time_A,eke2,'r');
 ylabel('Energy');
 xlabel('Time (days)');
 title('Verification');
 legend('Original','Fit');
 
 A = A(:,1);
-time_A = timegr;
 
 %% plot
 
@@ -193,10 +197,10 @@ save(fname,'time_E','PE','EKE','MKE','A','time_A','ntavg');
 
 %% local functions
 
-function [datam] = time_mean(data,n)
+function [datam] = time_mean(data,n,mean_index)
     for ii = 1:n:size(data,4)-n+1
         ind = ceil(ii/n);
-        datam(:,:,:,ind) = mean(mean(data(:,:,:,ii:ii+n-1),4),2);
+        datam(:,:,:,ind) = mean(mean(data(:,:,:,ii:ii+n-1),4),mean_index);
     end
         
 function [] = pbar(cpb,i,j,imax,jmax)
