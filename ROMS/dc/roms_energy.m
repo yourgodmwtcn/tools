@@ -1,6 +1,7 @@
 % function [EKE,MKE,PE] = roms_energy(fname,tindices,mean_index)
 % Use mean_index to say which dirn. you want to take the mean for defining
 % mean, eddy contributions.
+% Normalizes energy by horizontal area
 
 % CHANGELOG
 % First actual version                                          23 Feb 2012
@@ -11,10 +12,11 @@
 % 3) Try lower values of slab to see which works best
 % 4) Add w contribution to KE
 
-function [EKE,MKE,PE] = roms_energy(fname,tindices,mean_index)
+function [EKE,MKE,PE] = roms_energy(fname,tindices,ntavg,mean_index)
 
 if ~exist('tindices','var'), tindices = [1 Inf]; end
 if ~exist('mean_index','var'), mean_index = 2; end
+if ~exist('ntavg','var'), ntavg = 3; end % average over ntavg timesteps
 
 % parameters
 vinfo = ncinfo(fname,'u');
@@ -31,7 +33,6 @@ warning on
 %% read data
 
 % caps indicates domain integrated values
-ntavg = 2; % average over four timesteps
 EKE = nan(floor(nt/ntavg),1);
 MKE = EKE;
 PE  = EKE;
@@ -87,10 +88,12 @@ for i=0:iend-1
     vm = time_mean(v,ntavg);
     %wm = mean(w,2);
     rm = time_mean(rho,ntavg);
+    
+    s = size(u);
 
     % eddy fields
-    ind1 = ntavg/2  :ntavg:size(u,4);
-    ind2 = ntavg/2+1:ntavg:size(u,4);
+    ind1 = floor(ntavg/2)  :ntavg:s(4)-mod(s(4),ntavg);
+    ind2 = ceil(ntavg/2+1) :ntavg:s(4)-mod(s(4),ntavg);
     % pull out rho at timesteps where i'm calculating eddy fields.
     rho  = (rho(:,:,:,ind1) + rho(:,:,:,ind2))/2;
     
@@ -116,12 +119,10 @@ for i=0:iend-1
     %oke = rho(2:end-1,2:end-1,:,:).*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm));
     pe  = 9.81*bsxfun(@times,rho,zrho);
     
-    s = size(u);
-    
     tstart = ceil(read_start(end)/ntavg);
     tend   = floor(tstart + s(4)/ntavg -1);
 
-    time_e(tstart:tend,1) = (time(read_start(end)+ind1-1) + time(read_start(end)+ind2-1))/2;
+    time_E(tstart:tend,1) = (time(read_start(end)+ind1-1) + time(read_start(end)+ind2-1))/2;
     EKE(tstart:tend) = domain_integrate(eke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
     MKE(tstart:tend) = domain_integrate(mke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
    % OKE(tstart:tend) = domain_integrate(oke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
@@ -140,8 +141,8 @@ k=1;
 jump = 5;
 
 for i=1:1:length(EKE)-jump
-    A(k,:) = polyfit(time_e(i:i+jump),log(EKE(i:i+jump)),1);%fitexp([1:jump+1]',eke(i:i+jump),[1 1 0.5]);
-    timegr(k,:) = (time_e(i+jump)+time_e(i))/2;
+    A(k,:) = polyfit(time_E(i:i+jump),log(EKE(i:i+jump)),1);%fitexp([1:jump+1]',eke(i:i+jump),[1 1 0.5]);
+    timegr(k,:) = (time_E(i+jump)+time_E(i))/2;
     k=k+1;
 end
 %timegr = (time(1:jump-2:length(EKE)-2) + time(jump+1: jump-2 : length(EKE)))/2;
@@ -155,7 +156,7 @@ xlabel('Time (days)');
 % Verify
 eke2 = exp(A(:,1).*timegr + A(:,2));
 subplot(212)
-plot(time_e,(EKE),'b*');
+plot(time_E,(EKE),'b*');
 hold on
 plot(timegr,eke2,'r');
 ylabel('Energy');
@@ -165,19 +166,20 @@ legend('Original','Fit');
 
 A = A(:,1);
 time_A = timegr;
+
 %% plot
 
 figure;
 hold on;
-plot(time_e,EKE,'r');
-plot(time_e,MKE,'k');
+plot(time_E,EKE,'r');
+plot(time_E,MKE,'k');
 %plot(time,OKE,'m');
 ylabel('Energy');
 xlabel('Time (days)');
 legend('EKE','MKE');
 
 figure;
-plot(time_e,PE);
+plot(time_E,PE);
 ylabel('Energy');
 xlabel('Time (days)');
 legend('PE');
@@ -185,7 +187,7 @@ legend('PE');
 % write to file
 ax = 'xyzt';
 fname = ['energy-avg-' ax(mean_index) '.mat']; 
-save(fname,'time_e','PE','EKE','MKE','A','time_A');
+save(fname,'time_E','PE','EKE','MKE','A','time_A','ntavg');
 
 %% local functions
 
