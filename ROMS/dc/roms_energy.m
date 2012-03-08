@@ -31,7 +31,8 @@ warning on
 %% read data
 
 % caps indicates domain integrated values
-EKE = nan(nt,1);
+ntavg = 2; % average over four timesteps
+EKE = nan(floor(nt/ntavg),1);
 MKE = EKE;
 PE  = EKE;
 
@@ -81,15 +82,20 @@ for i=0:iend-1
     rho = R0 + ncread(fname,'rho',read_start,read_count,stride); pbar(cpb,i+1,4,iend,4);
 	if isempty(cpb), fprintf('\n Done reading data... \n'); end
     
-    % mean fields
-    um = mean(u,mean_index);
-    vm = mean(v,mean_index);
+    % mean fields - average in y and over 4 timesteps
+    um = time_mean(u,ntavg);
+    vm = time_mean(v,ntavg);
     %wm = mean(w,2);
-    rm = mean(rho,mean_index);
+    rm = time_mean(rho,ntavg);
 
     % eddy fields
-    up = bsxfun(@minus,u,um);
-    vp = bsxfun(@minus,v,vm);
+    ind1 = ntavg/2  :ntavg:size(u,4);
+    ind2 = ntavg/2+1:ntavg:size(u,4);
+    % pull out rho at timesteps where i'm calculating eddy fields.
+    rho  = (rho(:,:,:,ind1) + rho(:,:,:,ind2))/2;
+    
+    up = bsxfun(@minus,(u(:,:,:,ind1) + u(:,:,:,ind2))/2,um);
+    vp = bsxfun(@minus,(v(:,:,:,ind1) + v(:,:,:,ind2))/2,vm);
     %wp = bsxfun(@minus,w,wm);
     rp = bsxfun(@minus,rho,rm);
     
@@ -107,18 +113,21 @@ for i=0:iend-1
     % now calculate energy terms
     eke = 0.5*rho(2:end-1,2:end-1,:,:).*(up.^2 + vp.^2); % SLOW?!
     mke = 0.5*bsxfun(@times,rho(2:end-1,2:end-1,:,:),(um.^2 + vm.^2));
-    oke = rho(2:end-1,2:end-1,:,:).*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm));
+    %oke = rho(2:end-1,2:end-1,:,:).*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm));
     pe  = 9.81*bsxfun(@times,rho,zrho);
     
     s = size(u);
     
-    tstart = read_start(end);
-    tend   = read_start(end) + read_count(end);
+    tstart = ceil(read_start(end)/ntavg);
+    tend   = floor(tstart + s(4)/ntavg -1);
 
-    EKE(tstart:tend-1) = domain_integrate(eke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
-    MKE(tstart:tend-1) = domain_integrate(mke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
-    OKE(tstart:tend-1) = domain_integrate(oke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
-    PE(tstart:tend-1)  = domain_integrate(pe(2:end-1,2:end-1,:,:),grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));  
+    time_e(tstart:tend,1) = (time(read_start(end)+ind1-1) + time(read_start(end)+ind2-1))/2;
+    EKE(tstart:tend) = domain_integrate(eke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
+    MKE(tstart:tend) = domain_integrate(mke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
+   % OKE(tstart:tend) = domain_integrate(oke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
+    PE(tstart:tend)  = domain_integrate(pe(2:end-1,2:end-1,:,:),grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));  
+    
+    % Write to netcdf file here
 end
 
 if ~isempty(cpb)
@@ -128,11 +137,11 @@ end
 %% Calculate growth rate
 clear A timegr
 k=1;
-jump = 3;
+jump = 5;
 
 for i=1:1:length(EKE)-jump
-    A(k,:) = polyfit(time(i:i+jump),log(EKE(i:i+jump)),1);%fitexp([1:jump+1]',eke(i:i+jump),[1 1 0.5]);
-    timegr(k,:) = (time(i+jump)+time(i))/2;
+    A(k,:) = polyfit(time_e(i:i+jump),log(EKE(i:i+jump)),1);%fitexp([1:jump+1]',eke(i:i+jump),[1 1 0.5]);
+    timegr(k,:) = (time_e(i+jump)+time_e(i))/2;
     k=k+1;
 end
 %timegr = (time(1:jump-2:length(EKE)-2) + time(jump+1: jump-2 : length(EKE)))/2;
@@ -146,7 +155,7 @@ xlabel('Time (days)');
 % Verify
 eke2 = exp(A(:,1).*timegr + A(:,2));
 subplot(212)
-plot(time,(EKE),'b*');
+plot(time_e,(EKE),'b*');
 hold on
 plot(timegr,eke2,'r');
 ylabel('Energy');
@@ -160,15 +169,15 @@ time_A = timegr;
 
 figure;
 hold on;
-plot(time,EKE,'r');
-plot(time,MKE,'k');
-plot(time,OKE,'m');
+plot(time_e,EKE,'r');
+plot(time_e,MKE,'k');
+%plot(time,OKE,'m');
 ylabel('Energy');
 xlabel('Time (days)');
-legend('EKE','MKE','OKE');
+legend('EKE','MKE');
 
 figure;
-plot(time,PE);
+plot(time_e,PE);
 ylabel('Energy');
 xlabel('Time (days)');
 legend('PE');
@@ -176,10 +185,16 @@ legend('PE');
 % write to file
 ax = 'xyzt';
 fname = ['energy-avg-' ax(mean_index) '.mat']; 
-save(fname,'time','PE','EKE','MKE','OKE','A','time_A');
+save(fname,'time_e','PE','EKE','MKE','A','time_A');
 
 %% local functions
 
+function [datam] = time_mean(data,n)
+    for ii = 1:n:size(data,4)-n+1
+        ind = ceil(ii/n);
+        datam(:,:,:,ind) = mean(mean(data(:,:,:,ii:ii+n-1),4),2);
+    end
+        
 function [] = pbar(cpb,i,j,imax,jmax)
     if ~isempty(cpb)
         txt = sprintf(' Progress: i=%d, j=%d',i,j);
