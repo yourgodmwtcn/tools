@@ -85,11 +85,11 @@ for i=0:iend-1
     rho = R0 + ncread(fname,'rho',read_start,read_count,stride); pbar(cpb,i+1,4,iend,4);
 	if isempty(cpb), fprintf('\n Done reading data... \n'); end
     
-    % mean fields - average in y and over 4 timesteps
-    um = time_mean(u,ntavg);
-    vm = time_mean(v,ntavg);
+    % mean fields - average over 4 timesteps
+    um = time_mean(u,ntavg,mean_index);
+    vm = time_mean(v,ntavg,mean_index);
     %wm = mean(w,2);
-    rm = time_mean(rho,ntavg);
+    rm = time_mean(rho,ntavg,mean_index);
     
     s = size(u);
 
@@ -193,10 +193,10 @@ save(fname,'time_E','PE','EKE','MKE','A','time_A','ntavg');
 
 %% local functions
 
-function [datam] = time_mean(data,n)
+function [datam] = time_mean(data,n,mean_index)
     for ii = 1:n:size(data,4)-n+1
         ind = ceil(ii/n);
-        datam(:,:,:,ind) = mean(mean(data(:,:,:,ii:ii+n-1),4),2);
+        datam(:,:,:,ind) = mean(mean(data(:,:,:,ii:ii+n-1),4),mean_index);
     end
         
 function [] = pbar(cpb,i,j,imax,jmax)
