@@ -14,8 +14,6 @@ ROMS
 		- fix IC plotting
 			
 	*** roms_energy
-		- write to netcdf
-		- modify roms_var_grid
 		- roms_extract
 	
 	- add roms_extract to mod_movie, roms_pv, roms_energy

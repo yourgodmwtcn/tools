@@ -32,7 +32,7 @@ zpv = avg1(grid.z_r(:,1,1));
 xname = 'x_pv'; yname = 'y_pv'; zname = 'z_pv'; tname = 'ocean_time';
 
 %% setup netcdf file
-if ~exist('outname','var') || isempty(outname), outname = 'ocean_der.nc'; end
+if ~exist('outname','var') || isempty(outname), outname = 'ocean_pv.nc'; end
 try
     nccreate(outname,'pv','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3)-1 tname length(tpv)});
     nccreate(outname,xname,'Dimensions',{xname s(1)-1});

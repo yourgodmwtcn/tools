@@ -63,15 +63,12 @@ if gcm
     
     % Set up grid
     [xax,yax,zax,xunits,yunits] = gcm_var_grid(fname,varname);
-    
-    % set time variable
-    time_var = 'T';
+    time = double(ncread(fname,'T'))./3600/24;
+
 else
     % set up grid    
-    [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname);
-    
-    % set time variable
-    time_var = 'ocean_time';
+    [xax,yax,zax,time,xunits,yunits] = roms_var_grid(fname,varname);
+    time = time./3600/24;
 end
 
 %% fix input and get needed info
@@ -92,7 +89,7 @@ end
 if ~exist('commands','var'), commands = ''; end
 
 %% Plot according to options
-time = double(ncread(fname,time_var))./3600/24;
+
 labels.tmax = time(tindices(1) + dt*floor((tindices(2)-tindices(1))/dt));
 labels.revz  = 0;
 labels.tunits = 'days';

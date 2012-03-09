@@ -1,9 +1,11 @@
-function [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname)
+function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
     
     warning off;
     
     if strcmp(varname,'pv')
         pos = 'p';
+    elseif strcmp(varname,'eke') | strcmp(varname,'mke') | strcmp(varname,'pe')
+        pos = 'e';
     else
         grid = roms_get_grid(fname,fname,0,1);
 
@@ -28,6 +30,7 @@ function [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname)
             xax = grid.lon_u(1,:)';
             yax = grid.lat_u(:,1)';
             zax = grid.z_u(:,1,1);
+            tax = ncread(fname,'ocean_time');
             
             xunits = ncreadatt(fname,'x_u','units');
             yunits = ncreadatt(fname,'y_u','units'); 
@@ -36,6 +39,7 @@ function [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname)
             xax = grid.lon_v(1,:)';
             yax = grid.lat_v(:,1)';
             zax = grid.z_v(:,1,1);
+            tax = ncread(fname,'ocean_time');
             
             xunits = ncreadatt(fname,'x_v','units');
             yunits = ncreadatt(fname,'y_v','units'); 
@@ -44,12 +48,15 @@ function [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname)
             xax = grid.lon_rho(1,:)';
             yax = grid.lat_rho(:,1)';
             zax = grid.z_w(:,1,1);
+            tax = ncread(fname,'ocean_time');
+            
             xunits = ncreadatt(fname,'x_rho','units');
             yunits = ncreadatt(fname,'y_rho','units'); 
 
         case 'r'
             xax = grid.lon_rho(1,:)';
             yax = grid.lat_rho(:,1)';
+            tax = ncread(fname,'ocean_time');
             
             if strcmp(varname, 'zeta');
                 zax = [];
@@ -63,8 +70,18 @@ function [xax,yax,zax,xunits,yunits] = roms_var_grid(fname,varname)
             xax = ncread(fname,'x_pv');
             yax = ncread(fname,'y_pv');
             zax = ncread(fname,'z_pv');
+            tax = ncread(fname,'ocean_time');
+            
             xunits = ncreadatt(fname,'x_pv','units');
-            yunits = ncreadatt(fname,'y_pv','units');    
+            yunits = ncreadatt(fname,'y_pv','units');   
+            
+       case 'e'
+            xax = ncread(fname,'x_en');
+            yax = ncread(fname,'y_en');
+            zax = ncread(fname,'z_en');
+            tax = ncread(fname,'t_en');
+            xunits = ncreadatt(fname,'x_en','units');
+            yunits = ncreadatt(fname,'y_en','units');   
     end
     
     warning on;
