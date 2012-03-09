@@ -8,8 +8,6 @@ General:
 		- Richardson number
 		- Burger number
 	- movie with changes w.r.t previous time step
-	
-MERGE TO MASTER AFTER FIXING [4 5 Inf] bug
 
 ROMS
 	- roms_info
@@ -20,8 +18,6 @@ ROMS
 		- modify roms_var_grid
 		- roms_extract
 	
-	*** mod_movie
-		- fix [4 5 Inf] bug		
 	- add roms_extract to mod_movie, roms_pv, roms_energy
 	- stat.m and subfunctions
 	- thermal wind code - use ROMS_wilkin tools

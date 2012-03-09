@@ -148,11 +148,11 @@ k=1;
 jump = 5; % fit 5 consecutive points
 
 for i=1:1:length(EKE)-jump
-    A(k,:) = polyfit(time_E(i:i+jump),log(EKE(i:i+jump)),1);%fitexp([1:jump+1]',eke(i:i+jump),[1 1 0.5]);
+    A(k,:) = polyfit(time_E(i:i+jump),log(EKE(i:i+jump)),1);
     time_A(k,:) = (time_E(i+jump)+time_E(i))/2;
     k=k+1;
 end
-%timegr = (time(1:jump-2:length(EKE)-2) + time(jump+1: jump-2 : length(EKE)))/2;
+
 figure
 subplot(211)
 plot(time_A,A(:,1),'b*-')

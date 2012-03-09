@@ -1,4 +1,3 @@
-
 function [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,tend);
 
     if isempty(tindices)

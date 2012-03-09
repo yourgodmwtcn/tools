@@ -1,6 +1,5 @@
 %   [L] = roms_length_scales(fname,varname,tindices,volume,do_z)
 
-
 function [L] = roms_length_scales(fname,varname,tindices,volume,do_z)
 
 if ~exist('do_z','var'), do_z = 0; warning('Ignoring z.'); end
