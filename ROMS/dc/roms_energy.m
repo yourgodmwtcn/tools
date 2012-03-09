@@ -2,21 +2,21 @@
 % Use mean_index to say which dirn. you want to take the mean for defining
 % mean, eddy contributions.
 % Normalizes energy by horizontal area
+% Calculates growth rate in s^(-1)
 
 % CHANGELOG
 % First actual version                                          23 Feb 2012
 
 % Todo list
-% 1) add netcdf output
 % 2) Is there a bug in PE calculation?
-% 3) Try lower values of slab to see which works best
 % 4) Add w contribution to KE
 
 function [EKE,MKE,PE] = roms_energy(fname,tindices,ntavg,mean_index)
 
+if ~exist('fname','var'), fname = 'ocean_his.nc'; end
 if ~exist('tindices','var'), tindices = [1 Inf]; end
 if ~exist('mean_index','var'), mean_index = 2; end
-if ~exist('ntavg','var'), ntavg = 3; end % average over ntavg timesteps
+if ~exist('ntavg','var'), ntavg = 4; end % average over ntavg timesteps
 
 ax = 'xyzt';
 
@@ -50,6 +50,10 @@ zrho = permute(grid.z_r,[3 2 1]);
 
 %% create output file
 outname = ['ocean_energy-' ax(mean_index) '.nc'];
+if exist(outname,'file')
+    in = input('File exists. Do you want to overwrite (1/0)? ');
+    if in == 1, delete(outname); end
+end
 xname = 'x_en'; yname = 'y_en'; zname = 'z_en'; tname = 't_en';
 try
     nccreate(outname,'eke','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3) tname Inf});
@@ -87,7 +91,7 @@ catch ME
     cpb = [];
 end
 
-
+tend = 0;
 for i=0:iend-1
     % FROM mod_movie.m - propagate changes back
     % start and count arrays for ncread : corrected to account for stride
@@ -102,21 +106,30 @@ for i=0:iend-1
 	if isempty(cpb), fprintf('\n Done reading data... \n'); end
     
     % mean fields - average over 4 timesteps
-    um = time_mean(u,ntavg,mean_index);
-    vm = time_mean(v,ntavg,mean_index);
+    um = time_mean2(u,ntavg,mean_index);
+    vm = time_mean2(v,ntavg,mean_index);
     %wm = mean(w,2);
-    rm = time_mean(rho,ntavg,mean_index);
+    rm = time_mean2(rho,ntavg,mean_index);
     
     s = size(u);
 
     % eddy fields
-    ind1 = ceil(ntavg/2)  :ntavg:s(4)-mod(s(4),ntavg);
-    
-    if ntavg == 1
-        ind2 = ind1; 
+    if mod(ntavg,2) == 0
+        ind1 = 2:1:s(4)-1;
+        ind2 = 3:1:s(4)-1;
     else
-        ind2 = ceil(ntavg/2+1) :ntavg:s(4)-mod(s(4),ntavg);
+        ind1 = 2:1:s(4)-1;
+        ind2 = ind1;
     end
+    
+    
+    %ind1 = ceil(ntavg/2)  :ntavg:s(4)-mod(s(4),ntavg);
+    
+%     if ntavg == 1
+%         ind2 = ind1; 
+%     else
+%         ind2 = ceil(ntavg/2+1) :ntavg:s(4)-mod(s(4),ntavg);
+%     end
     
     % pull out rho at timesteps where i'm calculating eddy fields.
     rho  = (rho(:,:,:,ind1) + rho(:,:,:,ind2))/2;
@@ -129,6 +142,7 @@ for i=0:iend-1
     % average so that everything lands up on interior-rho points
     up = (up(1:end-1,2:end-1,:,:) + up(2:end,2:end-1,:,:))/2;    
     vp = (vp(2:end-1,1:end-1,:,:) + vp(2:end-1,2:end,:,:))/2;
+    % same for mean fields
     if mean_index == 1
         um = um(:,2:end-1,:,:);
         vm = (vm(:,1:end-1,:,:) + vm(:,2:end,:,:))/2;
@@ -143,8 +157,11 @@ for i=0:iend-1
     %oke = rho(2:end-1,2:end-1,:,:).*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm))./area;
     pe  = 9.81*bsxfun(@times,rho(2:end-1,2:end-1,:,:),zrho(2:end-1,2:end-1,:))./area;
     
-    tstart = ceil(read_start(end)/ntavg);
-    tend   = floor(tstart + s(4)/ntavg -1);
+%     tstart = ceil(read_start(end)/ntavg);
+%     tend   = floor(tstart + s(4)/ntavg -1);
+
+    tstart = tend+1;
+    tend = tstart + s(4)-3;
 
     t_en(tstart:tend,1) = (time(read_start(end)+ind1-1) + time(read_start(end)+ind2-1))/2;
     EKE(tstart:tend) = domain_integrate(eke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
@@ -235,6 +252,11 @@ function [datam] = time_mean(data,n,mean_index)
         datam(:,:,:,ind) = mean(mean(data(:,:,:,ii:ii+n-1),4),mean_index);
     end
         
+function [datam] = time_mean2(data,n,mean_index)
+    for ii = 1:size(data,4)-n+1
+        datam(:,:,:,ii) = mean(mean(data(:,:,:,ii:ii+n-1),4),mean_index);
+    end
+    
 function [] = pbar(cpb,i,j,imax,jmax)
     if ~isempty(cpb)
         txt = sprintf(' Progress: i=%d, j=%d',i,j);
