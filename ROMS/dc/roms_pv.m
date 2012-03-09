@@ -33,6 +33,10 @@ xname = 'x_pv'; yname = 'y_pv'; zname = 'z_pv'; tname = 'ocean_time';
 
 %% setup netcdf file
 if ~exist('outname','var') || isempty(outname), outname = 'ocean_pv.nc'; end
+if exist(outname,'file')
+    in = input('File exists. Do you want to overwrite (1/0)? ');
+    if in == 1, delete(outname); end
+end
 try
     nccreate(outname,'pv','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3)-1 tname length(tpv)});
     nccreate(outname,xname,'Dimensions',{xname s(1)-1});
