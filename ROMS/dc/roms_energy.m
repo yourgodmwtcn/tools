@@ -115,7 +115,7 @@ for i=0:iend-1
 
     % eddy fields
     if mod(ntavg,2) == 0
-        ind1 = 2:1:s(4)-1;
+        ind1 = 2:1:s(4)-2;
         ind2 = 3:1:s(4)-1;
     else
         ind1 = 2:1:s(4)-1;
@@ -161,7 +161,7 @@ for i=0:iend-1
 %     tend   = floor(tstart + s(4)/ntavg -1);
 
     tstart = tend+1;
-    tend = tstart + s(4)-3;
+    tend = tstart + s(4)-ntavg;
 
     t_en(tstart:tend,1) = (time(read_start(end)+ind1-1) + time(read_start(end)+ind2-1))/2;
     EKE(tstart:tend) = domain_integrate(eke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
@@ -183,7 +183,6 @@ end
 
 try 
     nccreate(outname,tname,'Dimensions',{tname length(t_en)});
-    nc
     ncwriteatt(outname,tname,'units','s');
 catch ME
 end
