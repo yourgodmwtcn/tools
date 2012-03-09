@@ -26,5 +26,3 @@ function [ll] = length_scale(data,index,dx)
     
     p = polyfit(lagx(i2-1:i2)*dx,mean_covx(i2-1:i2),1);
     ll = roots(p);
-    %ll = r((r < lagx(i2)*dx) & (r > 0));
-   % ll = abs(lagx(find_approx(mean_covx,0,1))*dx);

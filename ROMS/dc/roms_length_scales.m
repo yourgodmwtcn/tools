@@ -1,9 +1,11 @@
-%   [L] = roms_length_scales(fname,varname,tindices,do_z)
+%   [L] = roms_length_scales(fname,varname,tindices,volume,do_z)
 
-function [L] = roms_length_scales(fname,varname,tindices,do_z)
+
+function [L] = roms_length_scales(fname,varname,tindices,volume,do_z)
 
 if ~exist('do_z','var'), do_z = 0; warning('Ignoring z.'); end
 if ~exist('tindices','var'), tindices = [1 Inf]; end
+if ~exist('volume','var'), volume = []; end
 
 % parameters
 vinfo = ncinfo(fname,varname);
@@ -12,10 +14,10 @@ slab  = 40;
 
 % parse input
 [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
+[xax,yax,zax,vol] = roms_extract(fname,varname,volume);
 
 time = ncread(fname,'ocean_time');
 time = time([tindices(1):tindices(2)])/86400;
-[xax,yax,zax,~,~] = roms_var_grid(fname,varname);
 
 % figure out dx,dy,dz
 dx = median(diff(xax));
@@ -25,9 +27,10 @@ dz = 3; % interpolate to 3m grid
 L = nan(3,nt);
 
 for i=0:iend-1
-    % start and count arrays for ncread : corrected to account for stride
-    [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
-    var   = ncread(fname,varname,read_start,read_count,stride);
+    % start and count arrays for ncread : corrected to account for stride &
+    % extraction volume
+    [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt,vol);
+    var = ncread(fname,varname,read_start,read_count,stride);
     
     for jj=1:size(var,4)
         ind = jj + i*slab;

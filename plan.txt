@@ -14,30 +14,23 @@ MERGE TO MASTER AFTER FIXING [4 5 Inf] bug
 ROMS
 	- roms_info
 		- fix IC plotting
-		
-	- roms_derived quantities.
-		- integrate into the roms_*movie code somehow
-		
-	- 3d plots
-	
-	- conservative mode for huge files
-		- roms_diffmovie
-	
+			
 	*** roms_energy
 		- write to netcdf
 		- modify roms_var_grid
+		- roms_extract
 	
 	*** mod_movie
-		- fix [4 5 Inf] bug
-		
+		- fix [4 5 Inf] bug		
+	- add roms_extract to mod_movie, roms_pv, roms_energy
 	- stat.m and subfunctions
 	- thermal wind code - use ROMS_wilkin tools
-	
 	
 	*** roms_pv
 		- add file exists? check	
 		- fix use of mean f
 		- add intPV
+		- throw out edges
 		
 	***** UPDATE convergence.m with new version
 		
