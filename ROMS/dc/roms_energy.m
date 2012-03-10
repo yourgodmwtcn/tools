@@ -1,4 +1,4 @@
-% function [EKE,MKE,PE] = roms_energy(fname,tindices,ntavg,mean_index)
+% function [EKE,MKE,PE] = roms_energy(fname,tindices,ntavg,mean_index,write_out)
 % Use mean_index to say which dirn. you want to take the mean for defining
 % mean, eddy contributions.
 % Normalizes energy by horizontal area
@@ -11,12 +11,13 @@
 % 2) Is there a bug in PE calculation?
 % 4) Add w contribution to KE
 
-function [EKE,MKE,PE] = roms_energy(fname,tindices,ntavg,mean_index)
+function [EKE,MKE,PE] = roms_energy(fname,tindices,ntavg,mean_index,write_out)
 
 if ~exist('fname','var'), fname = 'ocean_his.nc'; end
 if ~exist('tindices','var'), tindices = [1 Inf]; end
 if ~exist('mean_index','var'), mean_index = 2; end
 if ~exist('ntavg','var'), ntavg = 4; end % average over ntavg timesteps
+if ~exist('write_out','var'), write_out = 0; end
 
 ax = 'xyzt';
 
@@ -49,39 +50,43 @@ time = time([tindices(1):tindices(2)]);
 zrho = permute(grid.z_r,[3 2 1]);
 
 %% create output file
-outname = ['ocean_energy-' ax(mean_index) '.nc'];
-if exist(outname,'file')
-    in = input('File exists. Do you want to overwrite (1/0)? ');
-    if in == 1, delete(outname); end
-end
-xname = 'x_en'; yname = 'y_en'; zname = 'z_en'; tname = 't_en';
-try
-    nccreate(outname,'eke','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3) tname Inf});
-    nccreate(outname,xname,'Dimensions',{xname s(1)-1});
-    nccreate(outname,yname,'Dimensions',{yname s(2)-2});
-    nccreate(outname,zname,'Dimensions',{zname s(3)});
-    
-    nccreate(outname,'mke','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3) tname Inf});   
-    nccreate(outname,'pe','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3) tname Inf});
-        
-    ncwriteatt(outname,'eke','Description','EKE/horizontal area field');
-    ncwriteatt(outname,'eke','coordinates','x_en y_en z_en t_en');
-    ncwriteatt(outname,'eke','units','J/m^2');
-    
-    ncwriteatt(outname,'mke','Description','MKE/horizontal area field');
-    ncwriteatt(outname,'mke','coordinates','x_en y_en z_en t_en');
-    ncwriteatt(outname,'mke','units','J/m^2');
-    
-    ncwriteatt(outname,'pe','Description','PE/horizontal area field');
-    ncwriteatt(outname,'pe','coordinates','x_en y_en z_en t_en');
-    ncwriteatt(outname,'pe','units','J/m^2');
-    
-    ncwriteatt(outname,xname,'units',ncreadatt(fname,'x_u','units'));
-    ncwriteatt(outname,yname,'units',ncreadatt(fname,'y_u','units'));
-    ncwriteatt(outname,zname,'units','m');
-    fprintf('\n Created file : %s\n', outname);
-catch ME
-    fprintf('\n Appending to existing file.\n');
+
+if write_out
+    outname = ['ocean_energy-' ax(mean_index) '.nc'];
+    if exist(outname,'file')
+        %in = input('File exists. Do you want to overwrite (1/0)? ');
+        in =1;
+        if in == 1, delete(outname); end
+    end
+    xname = 'x_en'; yname = 'y_en'; zname = 'z_en'; tname = 't_en';
+    try
+        nccreate(outname,'eke','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3) tname Inf});
+        nccreate(outname,xname,'Dimensions',{xname s(1)-1});
+        nccreate(outname,yname,'Dimensions',{yname s(2)-2});
+        nccreate(outname,zname,'Dimensions',{zname s(3)});
+
+        nccreate(outname,'mke','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3) tname Inf});   
+        nccreate(outname,'pe','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3) tname Inf});
+
+        ncwriteatt(outname,'eke','Description','EKE/horizontal area field');
+        ncwriteatt(outname,'eke','coordinates','x_en y_en z_en t_en');
+        ncwriteatt(outname,'eke','units','J/m^2');
+
+        ncwriteatt(outname,'mke','Description','MKE/horizontal area field');
+        ncwriteatt(outname,'mke','coordinates','x_en y_en z_en t_en');
+        ncwriteatt(outname,'mke','units','J/m^2');
+
+        ncwriteatt(outname,'pe','Description','PE/horizontal area field');
+        ncwriteatt(outname,'pe','coordinates','x_en y_en z_en t_en');
+        ncwriteatt(outname,'pe','units','J/m^2');
+
+        ncwriteatt(outname,xname,'units',ncreadatt(fname,'x_u','units'));
+        ncwriteatt(outname,yname,'units',ncreadatt(fname,'y_u','units'));
+        ncwriteatt(outname,zname,'units','m');
+        fprintf('\n Created file : %s\n', outname);
+    catch ME
+        fprintf('\n Appending to existing file.\n');
+    end
 end
 
 %% Calculate!
@@ -170,27 +175,30 @@ for i=0:iend-1
     PE(tstart:tend)  = domain_integrate(pe,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
     
     read_start(end) = tstart;
-    
-    % Write to netcdf file here
-    ncwrite(outname,'eke',eke,read_start);   
-    ncwrite(outname,'mke',mke,read_start);  
-    ncwrite(outname,'pe' , pe,read_start);  
+    if write_out
+        % Write to netcdf file here
+        ncwrite(outname,'eke',eke,read_start);   
+        ncwrite(outname,'mke',mke,read_start);  
+        ncwrite(outname,'pe' , pe,read_start);  
+    end
 end
 
 if ~isempty(cpb)
     cpb.stop();
 end
 
-try 
-    nccreate(outname,tname,'Dimensions',{tname length(t_en)});
-    ncwriteatt(outname,tname,'units','s');
-catch ME
-end
+if write_out
+    try 
+        nccreate(outname,tname,'Dimensions',{tname length(t_en)});
+        ncwriteatt(outname,tname,'units','s');
+    catch ME
+    end
 
-ncwrite(outname,xname,grid.x_rho(1,2:end-1)');
-ncwrite(outname,yname,grid.y_rho(2:end-1,1));
-ncwrite(outname,zname,grid.z_r(:,1,1));
-ncwrite(outname,tname,t_en);
+    ncwrite(outname,xname,grid.x_rho(1,2:end-1)');
+    ncwrite(outname,yname,grid.y_rho(2:end-1,1));
+    ncwrite(outname,zname,grid.z_r(:,1,1));
+    ncwrite(outname,tname,t_en);
+end
     
 %% Calculate growth rate
 k=1;
