@@ -15,8 +15,8 @@ slab  = 40;
 [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 [xax,yax,zax,vol] = roms_extract(fname,varname,volume);
 
-time = ncread(fname,'ocean_time');
-time = time([tindices(1):tindices(2)])/86400;
+time_L = ncread(fname,'ocean_time');
+time_L = time_L([tindices(1):tindices(2)]);
 
 % figure out dx,dy,dz
 dx = median(diff(xax));
@@ -50,15 +50,14 @@ for i=0:iend-1
 end
 
 L = L(:,3:end);
-time = time(3:end);
-time_L = time;
+time_L = time_L(3:end);
 
 % plot
 figure
 hold on
-plot(time,L(1,:)/1000,'r');
-plot(time,L(2,:)/1000,'g');
-if do_z, plot(time,L(3,:),'b'); end
+plot(time_L/86400,L(1,:)/1000,'r');
+plot(time_L/86400,L(2,:)/1000,'g');
+if do_z, plot(time_L/86400,L(3,:),'b'); end
 ylabel('Length (m/km)');
 xlabel('Time (days)');
 title([' Length scales : ' varname]);
