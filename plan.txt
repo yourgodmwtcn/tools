@@ -16,10 +16,6 @@ ROMS
 	*** roms_energy
 		- roms_extract
 		- fix offset when using multiple slabs
-		
-	- convergence problems
-		- x length scales
-		- max EKE? 
 	
 	- add roms_extract to mod_movie, roms_pv, roms_energy
 	- stat.m and subfunctions

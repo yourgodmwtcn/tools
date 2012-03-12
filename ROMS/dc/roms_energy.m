@@ -212,7 +212,7 @@ end
 
 figure
 subplot(211)
-plot(time_A,A(:,1),'b*-')
+plot(time_A/86400,A(:,1),'b*-')
 liney(0)
 ylabel('Growth Rate (s^{-1})')
 xlabel('Time (days)');
@@ -220,9 +220,9 @@ xlabel('Time (days)');
 % Verify
 eke2 = exp(A(:,1).*time_A + A(:,2));
 subplot(212)
-plot(t_en,(EKE),'b*');
+plot(t_en/86400,(EKE),'b*');
 hold on
-plot(time_A,eke2,'r');
+plot(time_A/86400,eke2,'r');
 ylabel('Energy');
 xlabel('Time (days)');
 title('Verification');
@@ -234,15 +234,15 @@ A = A(:,1);
 
 figure;
 hold on;
-plot(t_en,EKE,'r');
-plot(t_en,MKE,'k');
+plot(t_en/86400,EKE,'r');
+plot(t_en/86400,MKE,'k');
 %plot(time,OKE,'m');
 ylabel('Energy');
 xlabel('Time (days)');
 legend('EKE','MKE');
 
 figure;
-plot(t_en,PE);
+plot(t_en/86400,PE);
 ylabel('Energy');
 xlabel('Time (days)');
 legend('PE');

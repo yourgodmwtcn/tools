@@ -69,4 +69,4 @@ Lz = nanmedian(L(3,:)')/1000;
 
 if exist('length_scales.mat','file'), delete('length_scales.mat'); end
 
-save('length_scales.mat','Lx','Ly','Lz','L','time_L');
+save('length_scales.mat','Lx','Ly','Lz','L','time_L','volume');
