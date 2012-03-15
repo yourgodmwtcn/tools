@@ -9,7 +9,6 @@
 
 % Todo list
 % 2) Is there a bug in PE calculation?
-% 4) Add w contribution to KE
 
 function [EKE,MKE,PE] = roms_energy(fname,tindices,ntavg,mean_index,write_out)
 
@@ -44,6 +43,8 @@ MKE = EKE;
 PE  = EKE;
 
 R0  = ncread(fname,'R0');
+h   = ncread(fname,'h');
+h   = h(2:end-1,2:end-1);
 time = ncread(fname,'ocean_time');
 time = time([tindices(1):tindices(2)]);
 
@@ -104,20 +105,21 @@ for i=0:iend-1
     [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
     
     if isempty(cpb), fprintf('\nReading Data...\n'); end
-    u   = ncread(fname,'u',read_start,read_count,stride); pbar(cpb,i+1,1,iend,4);
-    v   = ncread(fname,'v',read_start,read_count,stride); pbar(cpb,i+1,2,iend,4);
-    %w   = ncread(fname,'w',read_start,read_count,stride); pbar(cpb,i+1,3,iend,4);
-    rho = R0 + ncread(fname,'rho',read_start,read_count,stride); pbar(cpb,i+1,4,iend,4);
+    u   = ncread(fname,'u',read_start,read_count,stride); pbar(cpb,i+1,1,iend,5);
+    v   = ncread(fname,'v',read_start,read_count,stride); pbar(cpb,i+1,2,iend,5);
+    w   = ncread(fname,'w',read_start,read_count,stride); pbar(cpb,i+1,3,iend,5);
+    rho = ncread(fname,'rho',read_start,read_count,stride); pbar(cpb,i+1,4,iend,5);
+    zeta = ncread(fname,'zeta',[read_start(1:2) read_start(end)],[read_count(1:2) read_count(end)],[stride(1:2) stride(end)]); pbar(cpb,i+1,5,iend,5);
 	if isempty(cpb), fprintf('\n Done reading data... \n'); end
     
     % mean fields - average over 4 timesteps
     um = time_mean2(u,ntavg,mean_index);
     vm = time_mean2(v,ntavg,mean_index);
-    %wm = mean(w,2);
+    wm = time_mean2(w,ntavg,mean_index);
     rm = time_mean2(rho,ntavg,mean_index);
     
     s = size(u);
-
+    
     % eddy fields
     if mod(ntavg,2) == 0
         ind1 = 2:1:s(4)-2;
@@ -136,43 +138,48 @@ for i=0:iend-1
 %         ind2 = ceil(ntavg/2+1) :ntavg:s(4)-mod(s(4),ntavg);
 %     end
     
-    % pull out rho at timesteps where i'm calculating eddy fields.
-    rho  = (rho(:,:,:,ind1) + rho(:,:,:,ind2))/2;
+    % pull out rho & zeta at timesteps where i'm calculating eddy fields.
+    rho  = (rho(2:end-1,2:end-1,:,ind1) + rho(2:end-1,2:end-1,:,ind2))/2;
+    zeta = (zeta(2:end-1,2:end-1,ind1) + zeta(2:end-1,2:end-1,ind2))/2;
     
     up = bsxfun(@minus,(u(:,:,:,ind1) + u(:,:,:,ind2))/2,um);
     vp = bsxfun(@minus,(v(:,:,:,ind1) + v(:,:,:,ind2))/2,vm);
-    %wp = bsxfun(@minus,w,wm);
-    rp = bsxfun(@minus,rho,rm);
+    wp = bsxfun(@minus,(w(:,:,:,ind1) + w(:,:,:,ind2))/2,wm);
     
     % average so that everything lands up on interior-rho points
     up = (up(1:end-1,2:end-1,:,:) + up(2:end,2:end-1,:,:))/2;    
     vp = (vp(2:end-1,1:end-1,:,:) + vp(2:end-1,2:end,:,:))/2;
+    wp = (wp(2:end-1,2:end-1,1:end-1,:) + wp(2:end-1,2:end-1,2:end,:))/2;
+    
     % same for mean fields
     if mean_index == 1
         um = um(:,2:end-1,:,:);
-        vm = (vm(:,1:end-1,:,:) + vm(:,2:end,:,:))/2;
+        vm = (vm(:,1:end-1,:,:) + vm(:,2:end,:,:))/2;        
+        wm = (wm(:,2:end-1,1:end-1,:) + wm(:,2:end-1,2:end,:))/2;
     elseif mean_index == 2
         um = (um(1:end-1,:,:,:) + um(2:end,:,:,:))/2;
-        vm = vm(2:end-1,:,:,:);
+        vm = vm(2:end-1,:,:,:);        
+        wm = (wm(2:end-1,:,1:end-1,:) + wm(2:end-1,:,2:end,:))/2;
     end
     
+    tstart = tend+1;
+    tend = tstart + s(4)-ntavg;
+    
     % now calculate energy terms
-    eke = 0.5*rho(2:end-1,2:end-1,:,:).*(up.^2 + vp.^2)./area; % SLOW?!
-    mke = 0.5*bsxfun(@times,rho(2:end-1,2:end-1,:,:),(um.^2 + vm.^2))./area;
-    %oke = rho(2:end-1,2:end-1,:,:).*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm))./area;
-    pe  = 9.81*bsxfun(@times,rho(2:end-1,2:end-1,:,:),zrho(2:end-1,2:end-1,:))./area;
+    eke = 0.5*R0.*(up.^2 + vp.^2 + wp.^2)./area; % Boussinesq
+    mke = 0.5*bsxfun(@times,R0*ones([s(1)-1 s(2)-2 s(3) tend-tstart+1]),(um.^2 + vm.^2 + wm.^2))./area; % again Boussinesq
+    oke = rho.*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm))./area;% -> should average (integrate) to zero theoretically
+    pe  = -9.81*bsxfun(@times,rho,zrho(2:end-1,2:end-1,:))./area;
     
 %     tstart = ceil(read_start(end)/ntavg);
 %     tend   = floor(tstart + s(4)/ntavg -1);
 
-    tstart = tend+1;
-    tend = tstart + s(4)-ntavg;
-
     t_en(tstart:tend,1) = (time(read_start(end)+ind1-1) + time(read_start(end)+ind2-1))/2;
     EKE(tstart:tend) = domain_integrate(eke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
     MKE(tstart:tend) = domain_integrate(mke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
-   % OKE(tstart:tend) = domain_integrate(oke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
-    PE(tstart:tend)  = domain_integrate(pe,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
+    PE(tstart:tend)  = domain_integrate2(-R0*9.81*(zeta.^2)/2,grid.x_rho(1,2:end-1),grid.y_rho(2:end-1,1))./area ...        
+                           + domain_integrate2(R0*9.81*h.^2/2,grid.x_rho(1,2:end-1),grid.y_rho(2:end-1,1))./area ...
+                               + domain_integrate(pe,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1)); 
     
     read_start(end) = tstart;
     if write_out
@@ -263,6 +270,10 @@ function [datam] = time_mean2(data,n,mean_index)
     for ii = 1:size(data,4)-n+1
         datam(:,:,:,ii) = mean(mean(data(:,:,:,ii:ii+n-1),4),mean_index);
     end
+
+function [out] = domain_integrate2(in,xax,yax)
+
+    out = squeeze(trapz(xax,trapz(yax,in,2),1));
     
 function [] = pbar(cpb,i,j,imax,jmax)
     if ~isempty(cpb)
