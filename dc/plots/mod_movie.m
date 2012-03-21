@@ -36,7 +36,7 @@
 % Added labels structure
 % Original roms_movie version
 
-function [] = mod_movie(fname, varname, volume,tindices, axis, index, commands)
+function [] = mod_movie(fname, varname, tindices, volume, axis, index, commands)
 
 % fname = find_file(fname);
 % if isempty(fname) 
