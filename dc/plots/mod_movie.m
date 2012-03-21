@@ -36,7 +36,7 @@
 % Added labels structure
 % Original roms_movie version
 
-function [] = mod_movie(fname, varname, tindices, axis, index, commands)
+function [] = mod_movie(fname, varname, volume,tindices, axis, index, commands)
 
 % fname = find_file(fname);
 % if isempty(fname) 
@@ -67,7 +67,8 @@ if gcm
 
 else
     % set up grid    
-    [xax,yax,zax,time,xunits,yunits] = roms_var_grid(fname,varname);
+    [xax,yax,zax,vol] = roms_extract(fname,varname,volume);
+    [~,~,~,time,xunits,yunits] = roms_var_grid(fname,varname);
     time = time./3600/24;
 end
 
@@ -108,7 +109,7 @@ for i=0:iend-1
         return;
     end
     
-    [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
+    [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt,vol);
     
     labels.time = time(read_start(end):dt:(read_start(end)+(read_count(end))*dt -1)); % read_start(end)-1
     labels.stride = i;

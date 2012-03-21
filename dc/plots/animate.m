@@ -108,6 +108,16 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     if isempty(xax), xax = 1:s(1); end;
     if isempty(yax), yax = 1:s(2); end;
     
+    %% Build colormap
+
+    radius = 50;
+    theta = linspace(0, pi/2, 256).';
+    a = radius * cos(theta);
+    b = radius * sin(theta);
+    L = linspace(0, 100, 256).';
+    Lab = [L, a, b];
+    map = applycform(Lab, makecform('lab2srgb'));
+    
     %% processing
     
     if stop == 1, 
@@ -208,8 +218,9 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
                 end
             end
         end        
-        shading flat;                
-        colorbar;        
+        shading flat;
+       % colormap(map);
+        colorbar;  
         
         % labels
         if labels.revz, revz; end;

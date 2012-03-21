@@ -21,5 +21,5 @@ function [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,d
     % parse vol
     if exist('vol','var')
         read_start(1:3) = vol(:,1)';
-        read_end(1:3)   = vol(:,2)';
+        read_count(1:3) = vol(:,2)' - vol(:,1)' + 1;
     end

@@ -253,6 +253,6 @@ PE = tpe;
 t_en = timm*86400;
 MKE = mke;
 A = afit;
-time_A = tfit;
+time_A = tfit*86400;
 
 save('energy-ken.mat','EKE','PE','MKE','t_en','A','time_A');
