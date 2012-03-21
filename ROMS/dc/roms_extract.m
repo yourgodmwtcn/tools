@@ -47,6 +47,12 @@ function [xax,yax,zax,vol] = roms_extract(fname,varname,volume)
                 
                 if isinf(volume{i,3}), volume{i,3} = length(zax); end
                 
+                if volume{i,3} < volume{i,2}
+                    temp = volume{i,3};
+                    volume{i,3} = volume{i,2};
+                    volume{i,2} = temp;
+                end
+                
                 zax = zax(volume{i,2}:volume{i,3});
                 
                 vol(3,1) = volume{i,2};
