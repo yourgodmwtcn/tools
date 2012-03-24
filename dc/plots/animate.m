@@ -111,12 +111,16 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     %% Build colormap
 
     radius = 50;
-    theta = linspace(0, pi/2, 256).';
+    num = 40;
+    theta = linspace(0, pi/2, num).';
     a = radius * cos(theta);
     b = radius * sin(theta);
-    L = linspace(0, 100, 256).';
+    L = linspace(0, 100, num).';
     Lab = [L, a, b];
     map = applycform(Lab, makecform('lab2srgb'));
+    
+    
+        %map = cbrewer('seq','RdPu',20);
     
     %% processing
     
@@ -170,7 +174,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
             if button == 32, spaceplay = 1; end % resumes when paused
             if button == 27, break; end % exit when Esc is pressed.
         else
-            pause(pausetime);
+            pause(0.02);%(pausetime);
         end  
         
         ckey = get(gcf,'currentkey');% end
@@ -192,6 +196,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         if i < 1, i = 1; end
         
         %% Plot
+        hold off; % just in case
         switch plotflag
             case 2
                 pcolor(xax,yax,plotdata(:,:,i)'); %shading interp
@@ -219,7 +224,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
             end
         end        
         shading flat;
-       % colormap(map);
+        %colormap(map);
         colorbar;  
         
         % labels
