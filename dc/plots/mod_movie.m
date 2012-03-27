@@ -1,11 +1,15 @@
 % Movie of field 'varname' from 'fname' sliced along 'index' of 'axis'.
-%       mod_movie(model,fname, varname, tindices, axis, index, commands)
+%       mod_movie(fname, varname, tindices, volume,axis, index, commands)
 %           fname - filename
 %           varname - variable name
 %           tindices - time indices to animate [start (stride) end] OR [start count] OR [start] - single snapshot
+%           volume - cell array with location of selection edges
+%                       {'x' x1 x2; 'y' y1 y2; ...} 
+%                    x1,x2 etc. can be numbers (index) or string with
+%                    actual dimensional values
 %           axis - axis of slice ('x','y' or 'z')
 %           index - index along 'axis' to slice or
-%                 - location in proper units (finds nearest point)
+%                 - location in proper units (string; finds nearest point)
 %                 - 'mid' will find midpoint of 'axis' for you
 %           commands - extra commands to be executed after each plot
 %                      (passed to animate.m - optional)

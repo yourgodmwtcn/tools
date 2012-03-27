@@ -19,7 +19,9 @@ ROMS
 	
 	- add roms_extract to mod_movie, roms_pv, roms_energy
 	- stat.m and subfunctions
-	- thermal wind code - use ROMS_wilkin tools
+	
+	- ROMS TIMESTEP [3 4] bug!!!
+					& [1 5] gives 2 4 5 wtf?
 	
 	*** roms_pv
 		- add file exists? check	

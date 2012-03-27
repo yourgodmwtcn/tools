@@ -19,12 +19,14 @@
 %               > t0 - inital timestep from mod_movie
 %
 %           commands - custom commands to execute after plot or one of below. (in string, optional)
-%                    - separate commands using ;
-%               > nocaxis - non-constant colorbar
-%               > pause   - start paused
-%               > pcolor  - use pcolor instead of contourf
-%               > imagesc - use imagesc(nan) instead of contourf. imagescnan is tried first
-%               > contour - use contour instead of contourf
+%                    - separate commands using ; 
+%                    - Built-in options are: 
+%                          > nocaxis - non-constant colorbar
+%                          > pause   - start paused
+%                          > fancy_cmap - LAB space colormap
+%                          > pcolor  - use pcolor instead of contourf
+%                          > imagesc - use imagesc(nan) instead of contourf. imagescnan is tried first
+%                          > contour - use contour instead of contourf
 %
 %           index - dimension to loop through (optional)
 %           pausetime - pause(pausetime) (optional)
@@ -109,11 +111,8 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     if isempty(xax), xax = 1:s(1); end;
     if isempty(yax), yax = 1:s(2); end;
        
-    
-        %map = cbrewer('seq','RdPu',20);
-    
     %% processing
-    
+  
     if stop == 1, 
         warning('Only one time step.');
         plotdata = double(squeeze(data)); % shiftdim screws up single snapshots
@@ -133,8 +132,8 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     button = [];
     pflag = 0;
     spaceplay = 1; % if 1, space pauses. if 0, space plays
-    %caxisflag = 1; % constant color bar
     
+    %% parse options
     flag = [0 0 0 0 0 0];% defaults
     
     cmds = {'nocaxis','pcolor','imagesc','contour','pause','fancy_cmap'};
@@ -201,18 +200,18 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         hold off; % just in case
         switch plotflag
             case 2
-                pcolor(xax,yax,plotdata(:,:,i)'); %shading interp
+                pcolor(xax,yax,plotdata(:,:,i)');
             case 3
                 try
                     imagescnan(xax,yax,plotdata(:,:,i)');
                 catch ME
-                    imagesc(xax,yax,plotdata(:,:,i)'); %shading flat
+                    imagesc(xax,yax,plotdata(:,:,i)');
                 end
             case 4
-                [C,h] = contour(xax,yax,plotdata(:,:,i)', 25); %shading flat
+                [C,h] = contour(xax,yax,plotdata(:,:,i)', 25);
                 %clabel(C,h);
             otherwise
-                contourf(xax,yax,plotdata(:,:,i)', 40); %shading flat
+                contourf(xax,yax,plotdata(:,:,i)', 40);
         end
         
         % colorbar
