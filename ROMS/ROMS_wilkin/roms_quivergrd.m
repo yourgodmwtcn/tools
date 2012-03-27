@@ -1,5 +1,5 @@
 function [han,data] = roms_quivergrd(u,v,grd,d,uscale,varargin)
-% $Id: roms_quivergrd.m 379 2009-10-08 13:27:33Z wilkin $
+% $Id: roms_quivergrd.m 410 2012-03-01 15:03:48Z wilkin $
 % Makes a quiver plot of u,v data on the ROMS C-grid
 % [han,data] = roms_quivergrd(u,v,grd,d,uscale,varargin{:})
 %                                                     ^^^^^
@@ -100,12 +100,14 @@ v = imag(uveitheta);
 % clip the zeros and NaNs (this eliminates zero-length vectors (dots) from
 % the quiver plot
 if 1
-  keep = find(isnan(u)~=1 & u~=0 & isnan(v)~=1 & v~=0 ...
-    & isnan(x)~=1 & isnan(y)~=1);
-  x = x(keep);
-  y = y(keep);
-  u = u(keep);
-  v = v(keep);
+  % keep = find(isnan(u)~=1 & u~=0 & isnan(v)~=1 & v~=0 ...
+  %  & isnan(x)~=1 & isnan(y)~=1);
+  clip = find(isnan(x)==1 | isnan(y)==1 | isnan(u)==1 | isnan(v)==1 ...
+   | (u==0 & v==0) ); 
+  x(clip) = [];
+  y(clip) = [];
+  u(clip) = [];
+  v(clip) = [];
 end
 
 % flag the vectors outside the axes to avoid the dots at the vector

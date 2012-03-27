@@ -1,5 +1,5 @@
 function grd = roms_get_grid(grd_file,scoord,tindex,calc_zuv)
-% $Id: roms_get_grid.m 398 2011-08-24 14:24:01Z wilkin $
+% $Id: roms_get_grid.m 409 2012-02-16 15:51:31Z wilkin $
 % grd = roms_get_grid(grd_file)
 % grd = roms_get_grid(grd_file,scoord);
 % grd = roms_get_grid(grd_file,outfile);
@@ -53,6 +53,13 @@ function grd = roms_get_grid(grd_file,scoord,tindex,calc_zuv)
 % available using svn from https://www.myroms.org/svn/src/matlab/utility
 % Made do calc_zuv the default
 
+if exist('stretching')~=2
+  disp(['You need to add stretching.m and set_depth.m to your matlab ' ...
+        'path'])
+  error(['from e.g.  https://www.myroms.org/svn/src/matlab/' ...
+        'utility]'])
+end
+  
 if isstruct(grd_file)
   % if the first input is already a grd structure
   % the intention is to add vertical coordinates below
@@ -214,10 +221,15 @@ if nargin > 1
       if length(tindex)==1
         % tindex is a single index to zeta in a roms output file
         if ~ischar(scoord)
-          error([ 'Cannot process zeta from file in the case that ' ...
+%          error([ 'Cannot process zeta from file in the case that ' ...
+%            ' scoord parameters are input as a vector'])
+          warning([ 'Cannot process zeta from file(2) in the case that ' ...
             ' scoord parameters are input as a vector'])
+          disp(['Reading zeta from ' grd_file ' for record ' int2str(tindex)])
+          zeta = nc_varget(grd_file,'zeta',[tindex-1 0 0],[1 -1 -1]);
+        else
+          zeta = nc_varget(scoord,'zeta',[tindex-1 0 0],[1 -1 -1]);
         end
-        zeta = nc_varget(scoord,'zeta',[tindex-1 0 0],[1 -1 -1]);
         if isempty(zeta)
           warning([ 'zeta not found in ' scoord '. Assuming zeta=0.'])
           zeta = zeros(size(grd.h));

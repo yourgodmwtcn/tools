@@ -1,5 +1,5 @@
 function [thedata,thegrid,han] = roms_zview(file,var,time,depth,grd,vec_d,uscale,varargin)
-% $Id: roms_zview.m 401 2011-08-24 14:26:43Z wilkin $
+% $Id: roms_zview.m 408 2012-02-16 15:47:19Z wilkin $
 % [theData,theGrid,theHan] = roms_zview(file,var,time,depth,grd,vec_d,uscale,varargin)
 %
 % Inputs:
@@ -63,7 +63,7 @@ if ~isstruct(file)
     fdnums = roms_get_date(file,-1);
     dnum = datenum(time);
     if dnum >= fdnums(1) && dnum <= fdnums(end)
-      [~,time] = min(abs(dnum-fdnums));
+      [unused,time] = min(abs(dnum-fdnums));
       time = time(1);
     else
       warning(' ')

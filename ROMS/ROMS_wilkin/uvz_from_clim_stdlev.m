@@ -179,7 +179,7 @@ for mon = 1:size(uclm,1)
   end
 end
 
-ArakawaGrid = 'A';
+ArakawaGrid = 'C';
 
 switch ArakawaGrid
 

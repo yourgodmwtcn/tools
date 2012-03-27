@@ -6,7 +6,11 @@ function varlist = roms_varlist(category,model)
 % categories are: physics, physics2d, physics3d, mixing3d, s-param, 
 % s-coord, grid, fennel, dom, biodiags, bulkflux
 
-% $Id: roms_varlist.m 403 2011-11-10 13:36:52Z wilkin $
+% $Id: roms_varlist.m 407 2012-02-16 15:44:10Z wilkin $
+
+if nargin == 0
+  type(mfilename)
+end
 
 if nargin < 2
   model = 'roms';

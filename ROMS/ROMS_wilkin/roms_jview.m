@@ -1,5 +1,5 @@
 function [Data,han] = roms_jview(file,var,time,jindex,grd,dateformat)
-% $Id: roms_jview.m 358 2008-04-07 14:15:03Z zhang $
+% $Id: roms_jview.m 405 2012-02-16 15:41:45Z wilkin $
 % [data,han] = roms_jview(file,var,time,jindex,grd,dateformat)
 %
 % file   = roms his/avg/rst etc nc file
@@ -58,6 +58,19 @@ if jindex<0
 end
 
 [data,z,lon,lat] = roms_jslice(file,var,time,jindex,grd);
+data = double(data);
+
+global logdata log_chl
+if logdata
+    data = log10(data);
+end
+if log_chl
+  data = max(0.01,data);
+  data = (log10(data)+1.4)/0.012;
+  ct = [0.01 .03 .1 .3 1 3 10 30 66.8834];
+  logct = (log10(ct)+1.4)/0.012;
+  cax = range(logct);
+end
 
 % pcolor plot of the variable
 switch xcoord
@@ -67,6 +80,13 @@ switch xcoord
   case 'lat'
     hant = pcolorjw(lat,z,data);
     labstr = [' - MeanLon ' num2str(mean(lon(:)),4)];
+end
+
+if log_chl
+  caxis(cax);
+  hancb = colorbar;
+  set(hancb,'ytick',logct(1:end-1),'yticklabel',ct)
+  set(get(hancb,'xlabel'),'string','mg m^{-3}')
 end
 
 % time information
@@ -79,7 +99,8 @@ try
   % tunits = nc_attget(file,'ocean_time','units');
   % tstr = [' - Date ' datestr(t+datenum(parsetnc(tunits)),dateformat) ];
 catch
-  warning([ 'Problem parsing date from file ' file ' for time index ' time]) 
+  warning([ 'Problem parsing date from file ' file ' for time index ' time])
+  tstr = [];
 end
 
 titlestr = ...

@@ -7,6 +7,7 @@
 %       missing rows in each column
 
 % CHANGE LOG:
+% Output formatting bugfix when median = 0 but max,min aren't   24 Mar 2012
 % Small output bugfix                                           27 Feb 2012
 % Prevent computing median if n > 10^6 + preallocated ind       23 Feb 2012
 % Small bugfixes to output formatting criterion                 21 Feb 2012
@@ -76,6 +77,7 @@ function [] = stat(var1)
     if n < 10^6
         med = nanmedian(var1(:));
         comp = abs(med);
+        if comp == 0, comp = nanmax(abs(var1(:))); end
     else
         comp = abs(nanmin(var1(:)));
         med = NaN;

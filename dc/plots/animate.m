@@ -21,6 +21,7 @@
 %           commands - custom commands to execute after plot or one of below. (in string, optional)
 %                    - separate commands using ;
 %               > nocaxis - non-constant colorbar
+%               > pause   - start paused
 %               > pcolor  - use pcolor instead of contourf
 %               > imagesc - use imagesc(nan) instead of contourf. imagescnan is tried first
 %               > contour - use contour instead of contourf
@@ -107,18 +108,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     
     if isempty(xax), xax = 1:s(1); end;
     if isempty(yax), yax = 1:s(2); end;
-    
-    %% Build colormap
-
-    radius = 50;
-    num = 40;
-    theta = linspace(0, pi/2, num).';
-    a = radius * cos(theta);
-    b = radius * sin(theta);
-    L = linspace(0, 100, num).';
-    Lab = [L, a, b];
-    map = applycform(Lab, makecform('lab2srgb'));
-    
+       
     
         %map = cbrewer('seq','RdPu',20);
     
@@ -145,9 +135,9 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     spaceplay = 1; % if 1, space pauses. if 0, space plays
     %caxisflag = 1; % constant color bar
     
-    flag = [0 0 0 0];% defaults
+    flag = [0 0 0 0 0 0];% defaults
     
-    cmds = {'nocaxis','pcolor','imagesc','contour'};
+    cmds = {'nocaxis','pcolor','imagesc','contour','pause','fancy_cmap'};
     for i = 1:length(cmds)
         loc = strfind(commands,cmds{i});
         if ~isempty(loc)
@@ -157,6 +147,18 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     end
     
     plotflag = sum([2 3 4] .* flag(2:4));
+    if flag(5), spaceplay = 0; fprintf('\n Hit a key to advance frame. \n\n'); end
+    
+    if flag(6) % Build colormap
+        radius = 50;
+        num = 40;
+        theta = linspace(0, pi/2, num).';
+        a = radius * cos(theta);
+        b = radius * sin(theta);
+        L = linspace(0, 100, num).';
+        Lab = [L, a, b];
+        fancy_map = applycform(Lab, makecform('lab2srgb'));
+    end
 
     i=0;
     while i<=stop-1
@@ -180,10 +182,10 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         ckey = get(gcf,'currentkey');% end
         
         % navigate : other keys move forward
-        if strcmp(ckey,'leftarrow') | strcmp(ckey,'downarrow') | button == 28 | button == 31 
+        if strcmp(ckey,'leftarrow') | strcmp(ckey,'downarrow') | button == 28 | button == 31 | button == 3
             pflag = 1; spaceplay = 0;
             i = i-2;
-        else if strcmp(ckey,'rightarrow') | strcmp(ckey,'uparrow') | button == 29 | button == 30 
+        else if strcmp(ckey,'rightarrow') | strcmp(ckey,'uparrow') | button == 29 | button == 30 | button == 1
                 pflag = 1; spaceplay = 0;
             end
         end
@@ -207,7 +209,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
                     imagesc(xax,yax,plotdata(:,:,i)'); %shading flat
                 end
             case 4
-                [C,h] = contour(xax,yax,plotdata(:,:,i)', 15); %shading flat
+                [C,h] = contour(xax,yax,plotdata(:,:,i)', 25); %shading flat
                 %clabel(C,h);
             otherwise
                 contourf(xax,yax,plotdata(:,:,i)', 40); %shading flat
@@ -224,7 +226,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
             end
         end        
         shading flat;
-        %colormap(map);
+        if flag(6), colormap(fancy_map); end
         colorbar;  
         
         % labels

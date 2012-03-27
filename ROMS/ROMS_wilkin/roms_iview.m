@@ -1,5 +1,5 @@
 function [Data,han] = roms_iview(file,var,time,iindex,grd,dateformat)
-% $Id: roms_iview.m 400 2011-08-24 14:25:41Z wilkin $
+% $Id: roms_iview.m 406 2012-02-16 15:42:35Z wilkin $
 % [data,han] = roms_iview(file,var,time,iindex,grd,dateformat)
 %
 % file   = roms his/avg/rst etc nc file
@@ -63,6 +63,7 @@ if iindex<0
 end
 
 [data,z,lon,lat] = roms_islice(file,var,time,iindex,grd);
+data = double(data);
 
 % pcolor plot of the variable
 switch xcoord
