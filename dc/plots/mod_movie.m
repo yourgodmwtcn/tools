@@ -70,6 +70,11 @@ if gcm
     time = double(ncread(fname,'T'))./3600/24;
 
 else
+    if length(varname) == 1
+        varname = lower(varname); 
+    else
+        varname(1) = lower(varname(1));
+    end
     % set up grid    
     [xax,yax,zax,vol] = roms_extract(fname,varname,volume);
     [~,~,~,time,xunits,yunits] = roms_var_grid(fname,varname);
@@ -100,7 +105,11 @@ labels.revz  = 0;
 labels.tunits = 'days';
 labels.dt = dt;
 labels.t0 = tindices(1)-1;
-vartitle = [varname ' (' ncreadatt(fname,varname,'units') ') | '];
+try % shouldn't work only for salt / other stuff i create
+    vartitle = [varname ' (' ncreadatt(fname,varname,'units') ') | '];
+catch ME
+    vartitle = [varname];
+end 
 
 figure;
 
@@ -162,6 +171,7 @@ for i=0:iend-1
     %% generic animate call
     
     % given location instead of index
+    if strcmp(lower(index),'end'),  index = vinfo.Size(axind); end
     if midflag, index = num2str((sliceax(1)+sliceax(end))/2); end
     if ischar(index), index = find_approx(sliceax,str2double(index),1); end
     

@@ -84,15 +84,15 @@ function [] = stat(var1)
     end
     
     % Now print standard statistics
-    if (comp > 0.005 || comp == 0) && (comp < 500000)
-        fprintf(' \n\t %15s: % 6.3f \n\t %15s: % 6.3f \n\t %15s: % 6.3f \n\t %15s: % 6.3f ', ...% ...
-                'Max',nanmax(var1(:)), 'Min', nanmin(var1(:)), 'Mean', nanmean(var1(:)), ...
-                'Median', med);
-    else
+%     if (comp > 0.005 || comp == 0) && (comp < 500000)
+%         fprintf(' \n\t %15s: % 6.3f \n\t %15s: % 6.3f \n\t %15s: % 6.3f \n\t %15s: % 6.3f ', ...% ...
+%                 'Max',nanmax(var1(:)), 'Min', nanmin(var1(:)), 'Mean', nanmean(var1(:)), ...
+%                 'Median', med);
+%     else
         fprintf(' \n\t %15s: % 1.3e \n\t %15s: % 1.3e \n\t %15s: % 1.3e \n\t %15s: % 1.3e ', ...% ...
                 'Max',nanmax(var1(:)), 'Min',nanmin(var1(:)), 'Mean',nanmean(var1(:)), ...
                 'Median',med);
-    end
+%     end
     
     mcount = 0;
     ind = nan(s(2));

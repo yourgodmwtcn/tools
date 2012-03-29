@@ -208,8 +208,9 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
                     imagesc(xax,yax,plotdata(:,:,i)');
                 end
             case 4
-                [C,h] = contour(xax,yax,plotdata(:,:,i)', 25);
-                %clabel(C,h);
+                [C,h] = contour(xax,yax,plotdata(:,:,i)', 25,'k');
+                format short
+                clabel(C,h,'FontSize',9);
             otherwise
                 contourf(xax,yax,plotdata(:,:,i)', 40);
         end
@@ -226,7 +227,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         end        
         shading flat;
         if flag(6), colormap(fancy_map); end
-        colorbar;  
+        if plotflag ~=4 ,  colorbar;  end
         
         % labels
         if labels.revz, revz; end;
