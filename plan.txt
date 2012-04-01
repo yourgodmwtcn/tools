@@ -29,14 +29,8 @@ ROMS
 		- add intPV
 		- throw out edges
 		
-	***** UPDATE convergence.m with new version
-		
 Improvements:
 	- find_file
-	
-	- animate.m
-		- move to string based variable arguments?
-		- fix imagesc
 		
 	- convergence.m
 		- make into function form

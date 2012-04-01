@@ -1,7 +1,7 @@
 % calculates Ertel PV
 %       [pv] = roms_pv(fname,tindices)
 
-function [pv] = roms_pv(fname,tindices,outname)
+function [pv,xpv,ypv,zpv] = roms_pv(fname,tindices,outname)
 
 % parameters
 lam = 'rho';
@@ -91,9 +91,7 @@ for i=0:iend-1
     pv(:,:,:,tstart:tend) = -1* double((avgx(avgz(bsxfun(@plus,avgy(vx - uy),f)))  .*  tz(2:end-1,2:end-1,:,:) ...
                    - avgy(vz(2:end-1,:,:,:)).*avgz(avgx(tx(:,2:end-1,:,:))) ... % vz * (rho)_x
                    + avgx(uz(:,2:end-1,:,:)).*avgz(avgy(ty(2:end-1,:,:,:))))./rho0);%avgz(lambda(2:end-1,2:end-1,:,:))); % uz*(rho)_y
-               
-    pv2 = avgy(vz);
-    
+
     ncwrite(outname,'pv',pv(:,:,:,tstart:tend),read_start);                             
 end
 intPV = domain_integrate(pv,xpv,ypv,zpv);
