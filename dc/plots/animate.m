@@ -159,6 +159,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         fancy_map = applycform(Lab, makecform('lab2srgb'));
     end
 
+    set(gcf,'Renderer','zbuffer'); % performance!
     i=0;
     while i<=stop-1
 
@@ -208,7 +209,8 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
                     imagesc(xax,yax,plotdata(:,:,i)');
                 end
             case 4
-                [C,h] = contour(xax,yax,plotdata(:,:,i)', 25,'k');
+                set(gcf,'Renderer','painters');
+                [C,h] = contour(xax,yax,plotdata(:,:,i)', 20,'k');
                 format short
                 clabel(C,h,'FontSize',9);
             otherwise

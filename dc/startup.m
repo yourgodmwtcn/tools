@@ -9,7 +9,7 @@ rehash toolboxcache
 % figure properties
 %set(0,'DefaultTextInterpreter','latex')
 set(0,'DefaultFigureColor','w')
-set(0,'DefaultFigureRenderer','painters')
+set(0,'DefaultFigureRenderer','zbuffer')
 set(0,'DefaultFigurePaperPositionMode', 'auto');
 set(0,'DefaultTextFontName', 'AvantGarde');
 set(0,'DefaultTextColor','k')
