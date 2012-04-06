@@ -28,6 +28,13 @@ ROMS
 		- fix use of mean f
 		- add intPV
 		- throw out edges
+
+	- SI analysis tools
+	     - isotherm angles
+	     - steppiness
+	     - spreading of cells
+		 - write energy transfer calculation code
+		 - compute SI & BI length scales, growth rates from output fields
 		
 Improvements:
 	- find_file

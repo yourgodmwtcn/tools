@@ -5,7 +5,7 @@
 
 function [] = roms_info(fname,plot)
 
-    fname = find_file(fname);
+    %fname = find_file(fname);
 
     if ~exist('plot','var')
         plot = 0;
