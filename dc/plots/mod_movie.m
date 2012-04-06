@@ -89,7 +89,7 @@ slab   = 100; % slab for ncread. read 'n' records in at a time - faster response
 midflag = 0;  % 1 if script needs to compute the mid level for plot
 
 if ~exist('tindices','var'), tindices = []; end
-[iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
+[iend,tindices,dt,ntcola,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 
 if strcmp(varname,'Eta') || strcmp(varname,'zeta')
     axis = 'z';
@@ -108,7 +108,7 @@ labels.t0 = tindices(1)-1;
 try % shouldn't work only for salt / other stuff i create
     vartitle = [varname ' (' ncreadatt(fname,varname,'units') ') | '];
 catch ME
-    vartitle = [varname];
+    vartitle = varname;
 end 
 
 figure;

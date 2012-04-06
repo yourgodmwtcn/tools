@@ -92,7 +92,33 @@ for i=0:iend-1
                    - avgy(vz(2:end-1,:,:,:)).*avgz(avgx(tx(:,2:end-1,:,:))) ... % vz * (rho)_x
                    + avgx(uz(:,2:end-1,:,:)).*avgz(avgy(ty(2:end-1,:,:,:))))./rho0);%avgz(lambda(2:end-1,2:end-1,:,:))); % uz*(rho)_y
 
-    ncwrite(outname,'pv',pv(:,:,:,tstart:tend),read_start);                             
+    ncwrite(outname,'pv',pv(:,:,:,tstart:tend),read_start); 
+    
+    debug = 1;
+    
+    if debug
+        pv1 = -avgx(avgz(bsxfun(@plus,avgy(vx - uy),f)))  .*  tz(2:end-1,2:end-1,:,:);
+        pv2 = avgy(vz(2:end-1,:,:,:)).*avgz(avgx(tx(:,2:end-1,:,:)));
+        pv3 = avgx(uz(:,2:end-1,:,:)).*avgz(avgy(ty(2:end-1,:,:,:)));
+        
+        tind = 1;
+        yind = 3;
+        
+        figure;
+        contourf(xpv,zpv,squeeze(pv1(:,yind,:,tind))',20);colorbar
+        title('(f + v_x -u_y)\rho_z');
+        figure;
+        contourf(xpv,zpv,squeeze(pv2(:,yind,:,tind))',20);colorbar
+        title('v_z \rho_x');
+        figure;
+        contourf(xpv,zpv,squeeze(pv3(:,yind,:,tind))',20);colorbar
+        title('u_x \rho_y');
+        figure;
+        contourf(xpv,zpv,squeeze(pv(:,yind,:,tind))',20);colorbar
+        title('Full PV');
+        colormap(hsv);
+        pause;
+    end
 end
 intPV = domain_integrate(pv,xpv,ypv,zpv);
 save pv.mat pv xpv ypv zpv tpv intPV
