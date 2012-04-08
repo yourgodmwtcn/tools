@@ -4,7 +4,7 @@
 function [pv,xpv,ypv,zpv] = roms_pv(fname,tindices,outname)
 
 % parameters
-lam = 'rho';
+%lam = 'rho';
 vinfo = ncinfo(fname,'u');
 s     = vinfo.Size;
 dim   = length(s); 
@@ -30,6 +30,18 @@ ypv = grid.y_rho(2:end-1,1)';
 zpv = avg1(grid.z_r(:,1,1));
 
 xname = 'x_pv'; yname = 'y_pv'; zname = 'z_pv'; tname = 'ocean_time';
+
+grid1.xv = grid.x_v(1,:)';
+grid1.yv = grid.y_v(:,1);
+grid1.zv = grid.z_v(:,1,1);
+
+grid1.xu = grid.x_u(1,:)';
+grid1.yu = grid.y_u(:,1);
+grid1.zu = grid.z_u(:,1,1);
+
+grid1.xr = grid.x_rho(1,:)';
+grid1.yr = grid.y_rho(:,1);
+grid1.zr = grid.z_r(:,1,1);
 
 %% setup netcdf file
 if ~exist('outname','var') || isempty(outname), outname = 'ocean_pv.nc'; end
@@ -71,67 +83,16 @@ for i=0:iend-1
     
     u      = ncread(fname,'u',read_start,read_count,stride);
     v      = ncread(fname,'v',read_start,read_count,stride);
-    lambda = ncread(fname,lam,read_start,read_count,stride); % theta
-
-    % calculate gradients
-    vx    = bsxfun(@rdivide,diff(v,1,1),diff(grid.x_v',1,1)); %diff(v,1,1)./repmat(diff(grid.x_v',1,1),[1 1 s(3) s(4)]);
-    vy    = bsxfun(@rdivide,diff(v,1,2),diff(grid.y_v',1,2)); %diff(v,1,2)./repmat(diff(grid.y_v',1,2),[1 1 s(3) s(4)]);
-    vz    = bsxfun(@rdivide,diff(v,1,3),permute(diff(grid.z_v,1,1),[3 2 1])); %diff(v,1,3)./repmat(permute(diff(grid.z_v,1,1),[3 2 1]),[1 1 1 s(4)]);
-
-    ux    = bsxfun(@rdivide,diff(u,1,1),diff(grid.x_u',1,1)); %diff(v,1,1)./repmat(diff(grid.x_v',1,1),[1 1 s(3) s(4)]);
-    uy    = bsxfun(@rdivide,diff(u,1,2),diff(grid.y_u',1,2)); %diff(v,1,2)./repmat(diff(grid.y_v',1,2),[1 1 s(3) s(4)]);
-    uz    = bsxfun(@rdivide,diff(u,1,3),permute(diff(grid.z_u,1,1),[3 2 1])); %diff(v,1,3)./repmat(permute(diff(grid.z_v,1,1),[3 2 1]),[1 1 1 s(4)]);
-
-    tx    = bsxfun(@rdivide,diff(lambda,1,1),diff(grid.x_rho',1,1)); %diff(v,1,1)./repmat(diff(grid.x_v',1,1),[1 1 s(3) s(4)]);
-    ty    = bsxfun(@rdivide,diff(lambda,1,2),diff(grid.y_rho',1,2)); %diff(v,1,2)./repmat(diff(grid.y_v',1,2),[1 1 s(3) s(4)]);
-    tz    = bsxfun(@rdivide,diff(lambda,1,3),permute(diff(grid.z_r,1,1),[3 2 1])); %diff(v,1,3)./repmat(permute(diff(grid.z_v,1,1),[3 2 1]),[1 1 1 s(4)]);
+    rho = ncread(fname,'rho',read_start,read_count,stride); % theta
     
-    % PV calculated at interior rho points
-                                % f + vx - uy                      (rho)_z
-    pv(:,:,:,tstart:tend) = -1* double((avgx(avgz(bsxfun(@plus,avgy(vx - uy),f)))  .*  tz(2:end-1,2:end-1,:,:) ...
-                   - avgy(vz(2:end-1,:,:,:)).*avgz(avgx(tx(:,2:end-1,:,:))) ... % vz * (rho)_x
-                   + avgx(uz(:,2:end-1,:,:)).*avgz(avgy(ty(2:end-1,:,:,:))))./rho0);%avgz(lambda(2:end-1,2:end-1,:,:))); % uz*(rho)_y
+    [pv(:,:,:,tstart:tend),xpv,ypv,zpv] = pv_cgrid(grid1,u,v,rho,f,rho0);
 
     ncwrite(outname,'pv',pv(:,:,:,tstart:tend),read_start); 
     
-    debug = 1;
-    
-    if debug
-        pv1 = -avgx(avgz(bsxfun(@plus,avgy(vx - uy),f)))  .*  tz(2:end-1,2:end-1,:,:);
-        pv2 = avgy(vz(2:end-1,:,:,:)).*avgz(avgx(tx(:,2:end-1,:,:)));
-        pv3 = avgx(uz(:,2:end-1,:,:)).*avgz(avgy(ty(2:end-1,:,:,:)));
-        
-        tind = 1;
-        yind = 3;
-        
-        figure;
-        contourf(xpv,zpv,squeeze(pv1(:,yind,:,tind))',20);colorbar
-        title('(f + v_x -u_y)\rho_z');
-        figure;
-        contourf(xpv,zpv,squeeze(pv2(:,yind,:,tind))',20);colorbar
-        title('v_z \rho_x');
-        figure;
-        contourf(xpv,zpv,squeeze(pv3(:,yind,:,tind))',20);colorbar
-        title('u_x \rho_y');
-        figure;
-        contourf(xpv,zpv,squeeze(pv(:,yind,:,tind))',20);colorbar
-        title('Full PV');
-        colormap(hsv);
-        pause;
-    end
 end
 intPV = domain_integrate(pv,xpv,ypv,zpv);
 save pv.mat pv xpv ypv zpv tpv intPV
 fprintf('\n Wrote file : %s \n\n',outname);
-
-function [um] = avgy(um)
-    um = (um(:,1:end-1,:,:)+um(:,2:end,:,:))/2;
-
-function [um] = avgx(um)
-    um = (um(1:end-1,:,:,:)+um(2:end,:,:,:))/2;
-
-function [um] = avgz(um)
-    um = (um(:,:,1:end-1,:)+um(:,:,2:end,:))/2;
 
     %% old code
     
