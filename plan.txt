@@ -22,6 +22,8 @@ ROMS
 	
 	- ROMS TIMESTEP [3 4] bug!!!
 					& [1 5] gives 2 4 5 wtf?
+					
+	- remove length scale calculation when EKE is small
 	
 	*** roms_pv
 		- add file exists? check	
@@ -30,7 +32,7 @@ ROMS
 		- throw out edges
 
 	- SI analysis tools
-	     - isotherm angles
+	     - isotherm angles - DONE
 	     - steppiness
 	     - spreading of cells
 		 - write energy transfer calculation code

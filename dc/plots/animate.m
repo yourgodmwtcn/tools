@@ -204,9 +204,11 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
                 pcolor(xax,yax,plotdata(:,:,i)');
             case 3
                 try
-                    imagescnan(xax,yax,plotdata(:,:,i)');
+                    imagescnan(yax,xax,plotdata(:,:,i)');
+                    set(gca,'yDir','normal');
                 catch ME
                     imagesc(xax,yax,plotdata(:,:,i)');
+                    set(gca,'yDir','normal')
                 end
             case 4
                 set(gcf,'Renderer','painters');
