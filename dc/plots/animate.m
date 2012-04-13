@@ -33,6 +33,7 @@
 %
 % USAGE:
 %       animate(data)
+%       animate(data,commands)
 %       animate(xax,yax,data)
 %       animate([],[],data,...
 %       animate(xax,yax,data,commands)
@@ -231,7 +232,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         end        
         shading flat;
         if flag(6), colormap(fancy_map); end
-        if plotflag ~=4 ,  colorbar;  end
+        if plotflag ~= 4, colorbar;  end
         
         % labels
         if labels.revz, revz; end;
