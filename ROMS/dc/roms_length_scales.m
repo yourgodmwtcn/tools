@@ -11,6 +11,9 @@ vinfo = ncinfo(fname,varname);
 dim   = length(vinfo.Size); 
 slab  = 40;
 
+% average over 4 timesteps
+ntavg = 4;
+
 % parse input
 [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 [xax,yax,zax,vol] = roms_extract(fname,varname,volume);
@@ -39,13 +42,14 @@ for i=0:iend-1
             [x,y,z] = meshgrid(xax,yax,zax);
             [xi,yi,zi] = meshgrid(xax,yax,[zax(1):dz:zax(end)]);
             txz = permute(interp3(x,y,z,permute(var(:,:,:,jj),[2 1 3]),xi,yi,zi),[2 1 3]);            
-            L(3,ind) = length_scale(bsxfun(@minus,txz,mean(txz,2)),3,dz);
+            %L(3,ind) = length_scale(bsxfun(@minus,txz,mean(txz,2)),3,dz);
+            L(3,ind) = length_scale(txz,3,dz);
         else
             txz = var(:,:,:,jj);
         end
-        
-        L(1,ind) = length_scale(bsxfun(@minus,txz,mean(txz,2)),1,dx);
-        L(2,ind) = length_scale(bsxfun(@minus,txz,mean(txz,2)),2,dy);
+       
+        L(1,ind) = length_scale(txz,1,dx);
+        L(2,ind) = length_scale(txz,2,dy);
     end
 end
 
@@ -70,3 +74,9 @@ Lz = nanmedian(L(3,:)')/1000;
 if exist('length_scales.mat','file'), delete('length_scales.mat'); end
 
 save('length_scales.mat','Lx','Ly','Lz','L','time_L','volume');
+
+%% Local Functions
+function [datam] = time_mean2(data,n,mean_index)
+    for ii = 1:size(data,4)-n+1
+        datam(:,:,:,ii) = mean(mean(data(:,:,:,ii:ii+n-1),4),mean_index);
+    end

@@ -1,4 +1,5 @@
 % For single timestep
+%       [ll] = length_scale(data,index,dx)
 
 function [ll] = length_scale(data,index,dx)
 

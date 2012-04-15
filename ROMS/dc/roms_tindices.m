@@ -23,6 +23,7 @@ function [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,tend);
         tindices(2) = tindices(1)+tindices(2);
     end
     if isinf(tindices(2)), tindices(2) = tend; end
+    if isinf(tindices(1)), tindices(1) = tend; end
 
     stride = [1 1 1 dt];
 
@@ -34,3 +35,5 @@ function [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,tend);
     end
     % END mod_movie section
     nt = ceil((tindices(2)-tindices(1)+1)/dt);
+    
+    

@@ -3,6 +3,7 @@
 % mean, eddy contributions.
 % Normalizes energy by horizontal area
 % Calculates growth rate in s^(-1)
+% write_out controls whether netcdf file with energy files is written. By defualt, mat files are created with integrated energy diagnostics.
 
 % CHANGELOG
 % First actual version                                          23 Feb 2012
@@ -272,7 +273,6 @@ function [datam] = time_mean2(data,n,mean_index)
     end
 
 function [out] = domain_integrate2(in,xax,yax)
-
     out = squeeze(trapz(xax,trapz(yax,in,2),1));
     
 function [] = pbar(cpb,i,j,imax,jmax)
