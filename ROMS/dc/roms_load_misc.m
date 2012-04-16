@@ -8,12 +8,10 @@ function [misc] = roms_load_misc(fname)
     vars = {'nl_tnu2','nl_visc2','rdrg','rdrg2','rho0','R0','Tcoef','Scoef','h','f'};
     
     for i=1:length(vars)
-        command = ['misc.' vars{i} '= ncread(''' fname ''',''' vars{i} ''');'];
         try
-            eval(command);
+            misc.(vars{i}) = ncread(fname,vars{i}); %eval(command);
         catch ME
-            command = ['misc.' vars{i} '= NaN;'];
-            eval(command);
+            misc.(vars{i}) = NaN;
         end
     end
     
