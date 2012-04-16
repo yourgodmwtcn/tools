@@ -6,6 +6,8 @@ if ~exist('do_z','var'), do_z = 0; warning('Ignoring z.'); end
 if ~exist('tindices','var'), tindices = [1 Inf]; end
 if ~exist('volume','var'), volume = []; end
 
+outname = ['length_scales_' varname '.mat'];
+
 % parameters
 vinfo = ncinfo(fname,varname);
 dim   = length(vinfo.Size); 
@@ -71,9 +73,9 @@ Lx = nanmedian(L(1,:)')/1000;
 Ly = nanmedian(L(2,:)')/1000;
 Lz = nanmedian(L(3,:)')/1000;
 
-if exist('length_scales.mat','file'), delete('length_scales.mat'); end
+if exist(outname,'file'), delete(outname); end
 
-save('length_scales.mat','Lx','Ly','Lz','L','time_L','volume');
+save(outname,'Lx','Ly','Lz','L','time_L','volume');
 
 %% Local Functions
 function [datam] = time_mean2(data,n,mean_index)

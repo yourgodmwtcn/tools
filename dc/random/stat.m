@@ -34,6 +34,9 @@ function [] = stat(var1)
 
     if ischar(var1)
        name = var1;
+       %cmd = ['stat(' var1 ');'];
+       %evalin('caller',cmd);
+       %return;
        var1 = evalin('caller',var1);
     end   
     
