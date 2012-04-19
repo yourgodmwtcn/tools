@@ -19,7 +19,7 @@ function [] = roms_info(fname,plot)
     grid = roms_get_grid(fname,fname,0,1);
     warning on;
     
-    title  = ncreadatt(fname,'/','title');
+    title_file  = ncreadatt(fname,'/','title');
     lbc    = ncreadatt(fname,'/','NLM_LBC');
     hist   = ncreadatt(fname,'/','history');
     ntimes = ncread(fname,'ntimes');
@@ -91,7 +91,7 @@ function [] = roms_info(fname,plot)
             '\n\t\t %10s: %4d = %5.2f hrs | %3s: %4d = %5.2f hrs ', ...
             '\n\t\t %10s: %4d = %5.2f hrs | %3s: %4d = %5.2f hrs ', ...
             '\n\n'], ...
-            title,hist, lbcf, ...
+            title_file,hist, lbcf, ...
             'Domain: X',X,xunit,Lm,xdiff(1),xdiff(2), 'Y', Y,yunit,Mm, ydiff(1),ydiff(2), 'Z', Z,'m',N,zdiff(1),zdiff(2), ...
             'T',length(ocean_time),ocean_time(1),dt,ocean_time(end), dtfast,    ...
             'Stretching', Vtransform, Vstretching,theta_s,theta_b,Tcline, 'Spherical', spherical, ...
@@ -113,43 +113,43 @@ function [] = roms_info(fname,plot)
         % plot
         figure;
         subplot(241)
-        contourf(grid.x_u(:,1),squeeze(grid.z_u(1,1,:)),squeeze(u(:,ymid,:))');
+        contourf(squeeze(grid.x_u(1,:)),squeeze(grid.z_u(:,1,1)),squeeze(u(:,ymid,:))');
         colorbar;
         title('u');
         xlabel('x'); ylabel('z');
 
         subplot(242)
-        contourf(grid.x_v(:,1),squeeze(grid.z_v(1,1,:)),squeeze(v(:,ymid,:))');
+        contourf(grid.x_v(1,:),squeeze(grid.z_v(:,1,1)),squeeze(v(:,ymid,:))',20);
         colorbar;
         title('v');
         xlabel('x'); ylabel('z');
 
         subplot(243)
-        contourf(grid.x_rho(:,1),squeeze(grid.z_r(1,1,:)),squeeze(temp(:,ymid,:))');
+        contourf(grid.x_rho(1,:),squeeze(grid.z_r(:,1,1)),squeeze(temp(:,ymid,:))',20);
         colorbar;
         title('temp');
         xlabel('x'); ylabel('z');
 
         subplot(245)
-        contourf(grid.x_u(:,1),grid.y_u(1,:),squeeze(u(:,:,zmid))');
+        contourf(grid.x_u(1,:),grid.y_u(:,1),squeeze(u(:,:,zmid))');
         colorbar;
         title('u');
         xlabel('x'); ylabel('y');
 
         subplot(246)
-        contourf(grid.x_v(:,1),grid.y_v(1,:),squeeze(v(:,:,zmid))');
+        contourf(grid.x_v(1,:),grid.y_v(:,1),squeeze(v(:,:,zmid))');
         colorbar;
         title('v');
         xlabel('x'); ylabel('y');
 
         subplot(247)
-        contourf(grid.x_rho(:,1),grid.y_rho(1,:),squeeze(temp(:,:,zmid))');
+        contourf(grid.x_rho(1,:),grid.y_rho(:,1),squeeze(temp(:,:,zmid))');
         colorbar;
         title('temp');
         xlabel('x'); ylabel('y');
 
         subplot(248)
-        contourf(grid.x_rho(:,1),squeeze(grid.y_rho(1,:)),squeeze(zeta(:,:,1))');
+        contourf(grid.x_rho(1,:),squeeze(grid.y_rho(:,1)),squeeze(zeta(:,:,1))');
         colorbar;
         title('zeta');
         xlabel('x'); ylabel('y');

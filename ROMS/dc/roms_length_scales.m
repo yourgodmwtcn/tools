@@ -2,7 +2,6 @@
 %           options - cell array with following strings
 %                   ignore1/ignore2/ignore3 - use (2:end-1) for dimension 1,2,3
 %                   mean1,mean2,mean3       - remove mean along dimension 1,2,3
-%
 
 function [L] = roms_length_scales(fname,varname,tindices,volume,do_z,options)
 

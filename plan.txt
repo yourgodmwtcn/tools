@@ -9,10 +9,7 @@ General:
 		- Burger number
 	- movie with changes w.r.t previous time step
 
-ROMS
-	- roms_info
-		- fix IC plotting
-			
+ROMS			
 	*** roms_energy
 		- roms_extract
 		- fix offset when using multiple slabs
@@ -20,19 +17,14 @@ ROMS
 	- add roms_extract to mod_movie, roms_pv, roms_energy
 	- stat.m and subfunctions
 	
-	- ROMS TIMESTEP [3 4] bug!!!
-					& [1 5] gives 2 4 5 wtf?
-	
 	*** roms_pv
-		- add file exists? check	
 		- fix use of mean f
-		- add intPV
 		- throw out edges
 
 	- SI analysis tools
 	     - spreading of cells
 		 - write energy transfer calculation code
-		 - compute theoretical SI & BI length scales from output fields
+		 - compute theoretical BI length scales from output fields
 		
 Improvements:
 	- find_file
