@@ -27,7 +27,7 @@
 %   - Passes stride number (i) and dt to animate.m
 % Extended tindices options and fixed major bug in              14 Feb 2012
 %      displaying subsets
-% Added 'mid' as possible input for index                       07 Feb 2012
+% Added 'mid' as possible input for index            3           07 Feb 2012
 % Fixed 'z' plane sections & added filename check               06 Feb 2012
 % Fixed display of single timestep                              26 Jan 2012
 % Reducd slab to 100 and fixed many bugs                        26 Jan 2012
@@ -117,7 +117,7 @@ if strcmp(index,'mid'), midflag = 1; end
 
 for i=0:iend-1
     % if reading data in multiple strides, an escape in the first stride should
-    % not results in the next stride getting read / animated.
+    % not result in the next stride getting read / animated.
     if i>0 && strcmp(get(gcf,'currentkey'),'escape')
         return;
     end

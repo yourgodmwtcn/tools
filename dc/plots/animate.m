@@ -147,7 +147,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     end
     
     plotflag = sum([2 3 4] .* flag(2:4));
-    if flag(5), spaceplay = 0; fprintf('\n Hit a key to advance frame. \n\n'); end
+    if flag(5) && stop ~= 1, spaceplay = 0; fprintf('\n Hit a key to advance frame. \n\n'); end
     
     if flag(6) % Build colormap
         radius = 50;

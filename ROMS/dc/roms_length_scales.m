@@ -49,14 +49,17 @@ for i=0:iend-1
         else
             txz = var(:,:,:,jj);
         end
+        
+        % Take care of periodic boundaries
+%        txz(:,1,:) = txz(:,end,:);
        
         L(1,ind) = length_scale(txz,1,dx);
         L(2,ind) = length_scale(txz,2,dy);
     end
 end
 
-L = L(:,3:end);
-time_L = time_L(3:end);
+%L = L(:,3:end);
+%time_L = time_L(3:end);
 
 % plot
 figure
@@ -76,9 +79,3 @@ Lz = nanmedian(L(3,:)')/1000;
 if exist(outname,'file'), delete(outname); end
 
 save(outname,'Lx','Ly','Lz','L','time_L','volume');
-
-%% Local Functions
-function [datam] = time_mean2(data,n,mean_index)
-    for ii = 1:size(data,4)-n+1
-        datam(:,:,:,ii) = mean(mean(data(:,:,:,ii:ii+n-1),4),mean_index);
-    end
