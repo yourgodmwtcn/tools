@@ -22,7 +22,7 @@ function [] = liney(y,label,color)
         plot(xax,[y(i) y(i)],'--','LineWidth',1.5,'Color',color);
 %        set(hAxis,'YTick',sort([ytick y(i)]));
         %if mod(i,2)
-            text(xax(end)-(length(label))/2,y(i),label,'Rotation',0,'VerticalAlignment','Bottom','FontSize',10,'Color',color);%,'FontWeight','Bold');
+            text(double(xax(end)-(length(label)))/2,double(y(i)),label,'Rotation',0,'VerticalAlignment','Bottom','FontSize',10,'Color',color);%,'FontWeight','Bold');
         %else
         %    text(x(i),yax(mod(i,2)+2),num2str(1./factor./x(i)),'Rotation',90,'VerticalAlignment','Bottom','FontWeight','Bold');
         %end

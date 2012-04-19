@@ -105,9 +105,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     if ~isfield(labels,'stride'), labels.stride = 0; end
     if ~isfield(labels,'t0'), labels.t0 = 0; end
     
-    if ~exist('commands','var')
-        commands = '';
-    end
+    if ~exist('commands','var'), commands = '';     end
     
     if isempty(xax), xax = 1:s(1); end;
     if isempty(yax), yax = 1:s(2); end;
@@ -135,15 +133,10 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     spaceplay = 1; % if 1, space pauses. if 0, space plays
     
     %% parse options
-    flag = [0 0 0 0 0 0];% defaults
-    
     cmds = {'nocaxis','pcolor','imagesc','contour','pause','fancy_cmap'};
-    for i = 1:length(cmds)
-        loc = strfind(commands,cmds{i});
-        if ~isempty(loc)
-            flag(i) = 1;
-            commands = [commands(1:loc-1) commands(loc+length(cmds{i}):end)];
-        end
+    flag = zeros(1,length(cmds));
+    if ~isempty(commands),
+        [flag, commands] = parse_commands(cmds,commands);
     end
     
     plotflag = sum([2 3 4] .* flag(2:4));
@@ -217,7 +210,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
                 format short
                 clabel(C,h,'FontSize',9);
             otherwise
-                contourf(xax,yax,plotdata(:,:,i)', 40);
+                contourf(xax,yax,plotdata(:,:,i)');
         end
         
         % colorbar

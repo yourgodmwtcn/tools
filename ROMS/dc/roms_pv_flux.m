@@ -62,10 +62,6 @@ function [pvflux] = roms_pv_flux(hisname,pvname,tindices,axis,ind,plot)
             case 'u'
                 vel = avg1(vel(:,2:end-1,:,:),3);
         end
-                
-
-        % make daxis the right shape so that I can use bsxfun
-        daxis = permute(diff(gridpv{ax}),per{ax});
     
         % calculate flux
         pvflux(tstart:tend) = squeeze( -1 * trapz(gridpv{avgind(2)}, ... % integrate along second axis
