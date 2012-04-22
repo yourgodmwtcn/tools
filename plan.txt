@@ -3,9 +3,6 @@
 
 General:
 	- Derived quantities
-		- energy
-		- pv
-		- Richardson number
 		- Burger number
 	- movie with changes w.r.t previous time step
 

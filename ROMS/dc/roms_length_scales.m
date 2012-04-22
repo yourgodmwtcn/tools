@@ -17,7 +17,7 @@ outname = ['length_scales_' varname '.mat'];
 % parameters
 vinfo = ncinfo(fname,varname);
 dim   = length(vinfo.Size); 
-slab  = 40;
+slab  = 20;
 
 % average over 4 timesteps
 ntavg = 4;
@@ -30,9 +30,10 @@ time_L = ncread(fname,'ocean_time');
 time_L = time_L([tindices(1):tindices(2)]);
 
 % figure out options
+cmdlist= {'ignore1','ignore2','ignore3','mean1','mean2','mean3'};
+flags = zeros(size(cmdlist));
 if ~isempty(options), 
-    cmdlist= {'ignore1','ignore2','ignore3','mean1','mean2','mean3'};
-    [flag,options] = parse_commands(cmdlist,options); 
+    [flags,options] = parse_commands(cmdlist,options); 
 end
 
 % figure out dx,dy,dz
@@ -56,30 +57,22 @@ for i=0:iend-1
             [x,y,z] = meshgrid(xax,yax,zax);
             [xi,yi,zi] = meshgrid(xax,yax,[zax(1):dz:zax(end)]);
             txz = permute(interp3(x,y,z,permute(var(:,:,:,jj),[2 1 3]),xi,yi,zi),[2 1 3]);            
-            %L(3,ind) = length_scale(bsxfun(@minus,txz,mean(txz,2)),3,dz);
-            L(3,ind) = length_scale(txz,3,dz);
-        else
-            % if user wants to exclude boundaries
-            if flag(1), txz = var(2:end-1,:,:,jj);
-            else if flag(2), txz = var(:,2:end-1,:,jj);
-                else if flag(3), txz = var(:,:,2:end-1,jj);
-                    else
-                        txz = var(:,:,:,jj);
-                    end
-                end
-            end
         end
         
+        % if user wants to exclude boundaries
+        txz = var(:,:,:,jj);
+        if flags(1), txz = txz(2:end-1,:,:); end
+        if flags(2), txz = txz(:,2:end-1,:); end
+        if flags(3), txz = txz(:,:,2:end-1); end
+
         % Now remove instantaneous means if option is selected.
-        if flag(4), txz = bsxfun(@minus,txz,mean(txz,1)); 
-        else if flag(5), txz = bsxfun(@minus,txz,mean(txz,2)); 
-            else if flag(6), txz = bsxfun(@minus,txz,mean(txz,3)); 
-                end
-            end
-        end
-               
+        if flags(4), txz = bsxfun(@minus,txz,mean(txz,1)); end
+        if flags(5), txz = bsxfun(@minus,txz,mean(txz,2)); end
+        if flags(6), txz = bsxfun(@minus,txz,mean(txz,3)); end
+
         L(1,ind) = length_scale(txz,1,dx);
         L(2,ind) = length_scale(txz,2,dy);
+        if do_z, L(3,ind) = length_scale(txz,3,dz); end
     end
 end
 

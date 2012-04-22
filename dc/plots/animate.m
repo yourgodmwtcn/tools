@@ -134,15 +134,15 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     
     %% parse options
     cmds = {'nocaxis','pcolor','imagesc','contour','pause','fancy_cmap'};
-    flag = zeros(1,length(cmds));
+    flags = zeros(1,length(cmds));
     if ~isempty(commands),
-        [flag, commands] = parse_commands(cmds,commands);
+        [flags, commands] = parse_commands(cmds,commands);
     end
     
-    plotflag = sum([2 3 4] .* flag(2:4));
-    if flag(5) && stop ~= 1, spaceplay = 0; fprintf('\n Hit a key to advance frame. \n\n'); end
+    plotflag = sum([2 3 4] .* flags(2:4));
+    if flags(5) && stop ~= 1, spaceplay = 0; fprintf('\n Hit a key to advance frame. \n\n'); end
     
-    if flag(6) % Build colormap
+    if flags(6) % Build colormap
         radius = 50;
         num = 40;
         theta = linspace(0, pi/2, num).';
@@ -210,12 +210,12 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
                 format short
                 clabel(C,h,'FontSize',9);
             otherwise
-                contourf(xax,yax,plotdata(:,:,i)');
+                contourf(xax,yax,plotdata(:,:,i)'); shading flat
         end
         
         % colorbar
         if plotflag ~=4 
-            if ~flag(1)
+            if ~flags(1)
                 if labels.stride > 0
                     caxis(clim);
                 else
@@ -224,7 +224,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
             end
         end        
         shading flat;
-        if flag(6), colormap(fancy_map); end
+        if flags(6), colormap(fancy_map); end
         if plotflag ~= 4, colorbar;  end
         
         % labels

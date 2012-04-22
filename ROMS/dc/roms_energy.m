@@ -25,7 +25,7 @@ ax = 'xyzt';
 vinfo = ncinfo(fname,'u');
 dim   = length(vinfo.Size); 
 s = vinfo.Size;
-slab  = 40;
+slab  = 20;
 
 warning off
 grid = roms_get_grid(fname,fname,0,1);

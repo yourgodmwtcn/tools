@@ -1,4 +1,6 @@
-function vgrid(vxform,vstretch,param,hc,h,n)
+function [s,z] =vgrid(vxform,vstretch,param,hc,h,n,plots)
+    
+    if ~exist('plots','var'), plots = 0; end
 
 %   Experiment with the the ROMS 3 vertical stretching functions
 %   Call as
@@ -83,24 +85,26 @@ else
     z = 0*s;
 end
 
-figure
-plot(s,z,'+')
-ylabel('z (m)')
-if round(vxform) == 1
-    title(['Original form, vstretch = ' int2str(vstretch)])
-else
-     title(['New form, vstretch = ' int2str(vstretch)])
+    dz = NaN*z;
+    dz(2:end-1) = (z(3:end)-z(1:end-2))/2;
+    dzmax = max(dz)
+    dzmin = min(dz)
+
+if plots
+    figure
+    plot(s,z,'+')
+    ylabel('z (m)')
+    if round(vxform) == 1
+        title(['Original form, vstretch = ' int2str(vstretch)])
+    else
+         title(['New form, vstretch = ' int2str(vstretch)])
+    end
+
+    xlabel([num2str(param) '  ' int2str(hc) '  ' int2str(n)])
+
+    figure
+    plot(s,dz,'+')
+    xlabel('s')
+    ylabel('\Deltaz (m)')
 end
-
-xlabel([num2str(param) '  ' int2str(hc) '  ' int2str(n)])
-
-dz = NaN*z;
-dz(2:end-1) = (z(3:end)-z(1:end-2))/2;
-dzmax = max(dz)
-dzmin = min(dz)
-
-figure
-plot(s,dz,'+')
-xlabel('s')
-ylabel('\Deltaz (m)')
 
