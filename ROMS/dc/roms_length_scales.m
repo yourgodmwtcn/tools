@@ -17,7 +17,7 @@ outname = ['length_scales_' varname '.mat'];
 % parameters
 vinfo = ncinfo(fname,varname);
 dim   = length(vinfo.Size); 
-slab  = 20;
+slab  = roms_slab(fname);
 
 % average over 4 timesteps
 ntavg = 4;

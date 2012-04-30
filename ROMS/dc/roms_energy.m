@@ -25,7 +25,7 @@ ax = 'xyzt';
 vinfo = ncinfo(fname,'u');
 dim   = length(vinfo.Size); 
 s = vinfo.Size;
-slab  = 20;
+slab  = roms_slab(fname,1,ntavg);
 
 warning off
 grid = roms_get_grid(fname,fname,0,1);
@@ -105,6 +105,13 @@ for i=0:iend-1
     
     [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
     
+    
+    % Read extra timesteps to account for averaging.
+    if i > 0
+        read_start(end) = read_start(end) - ntavg + 1;
+        read_count(end) = read_count(end) + ntavg - 1;
+    end
+    
     if isempty(cpb), fprintf('\nReading Data...\n'); end
     u   = ncread(fname,'u',read_start,read_count,stride); pbar(cpb,i+1,1,iend,5);
     v   = ncread(fname,'v',read_start,read_count,stride); pbar(cpb,i+1,2,iend,5);
@@ -129,7 +136,6 @@ for i=0:iend-1
         ind1 = 2:1:s(4)-1;
         ind2 = ind1;
     end
-    
     
     %ind1 = ceil(ntavg/2)  :ntavg:s(4)-mod(s(4),ntavg);
     
