@@ -9,13 +9,10 @@ General:
 ROMS			
 	*** roms_energy
 		- roms_extract
-		- fix offset when using multiple slabs
 	
 	- add roms_extract to mod_movie, roms_pv, roms_energy
 	- stat.m and subfunctions
-	
-	- determine slab size
-	
+		
 	*** roms_pv
 		- fix use of mean f
 		- throw out edges

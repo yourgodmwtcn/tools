@@ -105,7 +105,6 @@ for i=0:iend-1
     
     [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
     
-    
     % Read extra timesteps to account for averaging.
     if i > 0
         read_start(end) = read_start(end) - ntavg + 1;
