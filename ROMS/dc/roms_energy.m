@@ -11,13 +11,14 @@
 % Todo list
 % 2) Is there a bug in PE calculation?
 
-function [EKE,MKE,PE] = roms_energy(fname,tindices,ntavg,mean_index,write_out)
+function [EKE,MKE,PE] = roms_energy(fname,tindices,volume,ntavg,mean_index,write_out)
 
 if ~exist('fname','var'), fname = 'ocean_his.nc'; end
 if ~exist('tindices','var'), tindices = [1 Inf]; end
 if ~exist('mean_index','var'), mean_index = 2; end
 if ~exist('ntavg','var'), ntavg = 4; end % average over ntavg timesteps
 if ~exist('write_out','var'), write_out = 0; end
+if ~exist('volume','var'), volume = {}; end
 
 ax = 'xyzt';
 
@@ -35,6 +36,17 @@ area = max(grid.x_rho(:)-grid.x_rho(1))*max(grid.y_rho(:)-grid.y_rho(1));
 
 % parse input
 [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
+[xr,yr,zr,volr] = roms_extract(fname,'rho',volume);
+
+% mess around with volr to replicate boundaries as in https://www.myroms.org/wiki/index.php/Grid_Generation
+volu = volr; volv = volr; volw = volr;
+if ~isinf(volu(1,2)), volu(1,2) = volr(1,2)-1; end
+if ~isinf(volv(2,2)), volv(2,2) = volr(2,2)-1; end
+volw = volr;
+
+% trim to interior rho points
+xr = xr(2:end-1);
+yr = yr(2:end-1);
 
 %% read data
 
@@ -48,8 +60,6 @@ h   = ncread(fname,'h');
 h   = h(2:end-1,2:end-1);
 time = ncread(fname,'ocean_time');
 time = time([tindices(1):tindices(2)]);
-
-zrho = permute(grid.z_r,[3 2 1]);
 
 %% create output file
 
@@ -103,7 +113,7 @@ for i=0:iend-1
     % FROM mod_movie.m - propagate changes back
     % start and count arrays for ncread : corrected to account for stride
     
-    [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
+    [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt,volu);
     
     % Read extra timesteps to account for averaging.
     if i > 0
@@ -112,9 +122,16 @@ for i=0:iend-1
     end
     
     if isempty(cpb), fprintf('\nReading Data...\n'); end
+    [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt,volu);
      u   = ncread(fname,'u',read_start,read_count,stride); pbar(cpb,i+1,1,iend,5);
+     
+     [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt,volv);
      v   = ncread(fname,'v',read_start,read_count,stride); pbar(cpb,i+1,2,iend,5);
+     
+     [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt,volw);
      w   = ncread(fname,'w',read_start,read_count,stride); pbar(cpb,i+1,3,iend,5);
+     
+     [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt,volr);
      rho = ncread(fname,'rho',read_start,read_count,stride); pbar(cpb,i+1,4,iend,5);
     zeta = ncread(fname,'zeta',[read_start(1:2) read_start(end)],[read_count(1:2) read_count(end)],[stride(1:2) stride(end)]); pbar(cpb,i+1,5,iend,5);
 	if isempty(cpb), fprintf('\n Done reading data... \n'); end
@@ -139,14 +156,6 @@ for i=0:iend-1
             ind2 = ind1;
         end
     end
-    
-    %ind1 = ceil(ntavg/2)  :ntavg:s(4)-mod(s(4),ntavg);
-    
-%     if ntavg == 1
-%         ind2 = ind1; 
-%     else
-%         ind2 = ceil(ntavg/2+1) :ntavg:s(4)-mod(s(4),ntavg);
-%     end
     
     % pull out rho & zeta at timesteps where i'm calculating eddy fields.
     rho  = (rho(2:end-1,2:end-1,:,ind1) + rho(2:end-1,2:end-1,:,ind2))/2;
@@ -181,16 +190,13 @@ for i=0:iend-1
     eke = 0.5*R0.*(up.^2 + vp.^2 + wp.^2)./area; % Boussinesq
     mke = 0.5*bsxfun(@times,R0*ones(size(up)),(um.^2 + vm.^2 + wm.^2))./area; % again Boussinesq
     oke = rho.*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm))./area;% -> should average (integrate) to zero theoretically
-    pe  = 9.81*bsxfun(@times,rho,zrho(2:end-1,2:end-1,:))./area;
+    pe  = 9.81*bsxfun(@times,rho,permute(zr,[2 3 1 4]))./area;
     
-%     tstart = ceil(read_start(end)/ntavg);
-%     tend   = floor(tstart + s(4)/ntavg -1);
-
     t_en(tstart:tend,1) = (time(read_start(end)+ind1-1) + time(read_start(end)+ind2-1))/2;
-    EKE(tstart:tend) = domain_integrate(eke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
-    MKE(tstart:tend) = domain_integrate(mke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
-    PE(tstart:tend)  = domain_integrate(pe,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
-    %PE(tstart:tend)  = domain_integrate2(-R0*9.81*(zeta.^2)/2,grid.x_rho(1,2:end-1),grid.y_rho(2:end-1,1))./area ...        
+    EKE(tstart:tend) = domain_integrate(eke,xr,yr,zr);
+    MKE(tstart:tend) = domain_integrate(mke,xr,yr,zr);
+    PE(tstart:tend)  = domain_integrate( pe,xr,yr,zr);
+    %PE(tstart:tend)  = domain_integrate2(-R0*9.81*(zeta.^2)/2,grid.x_rho(1,2:end-1),grid.y_rho(2:end-1,1))./area ...  % OTHER PE CODE - OLD      
     %                      + domain_integrate2(R0*9.81*h.^2/2,grid.x_rho(1,2:end-1),grid.y_rho(2:end-1,1))./area ...
     %                           + domain_integrate(pe,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1)); 
     
@@ -269,7 +275,7 @@ legend('PE');
 
 % write to file
 fname = ['energy-avg-' ax(mean_index) '.mat']; 
-save(fname,'t_en','PE','EKE','MKE','A','time_A','ntavg');
+save(fname,'t_en','PE','EKE','MKE','A','time_A','ntavg','volume');
 
 %% local functions
 
