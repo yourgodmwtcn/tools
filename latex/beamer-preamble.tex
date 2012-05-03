@@ -1,0 +1,61 @@
+\documentclass{beamer}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{booktabs}    %  fancy tables
+\usepackage[T1]{fontenc} % fancy fonts
+\usepackage{mathpazo}    % fancy math fonts
+%\usepackage{fullpage}
+%\usepackage[dvips]{geometry}
+\usepackage{pdfsync}
+\usepackage{subfig}
+\usepackage[sort]{natbib}
+\usepackage{rotating}
+\usepackage{pdflscape}
+\usepackage{hyperref}
+
+\renewcommand{\baselinestretch}{1.5} % Line spacing 1.5
+\geometry{centering,text={18cm,22cm}}
+
+\clubpenalty = 10000
+\widowpenalty = 10000
+\setlength{\parskip}{1.2ex}
+\setlength{\parindent}{0em}
+
+
+% Here are a few math abbreviations that may be useful. Note that math 
+% variables should generally be set in italic, vectors in bold italic, and
+% constants, such as e and i should be upright. Operators like the 'd' in 
+% dx  and 'D' in D/Dt should also be upright. 
+\newcommand{\ir}{\mathrm{i}}
+\newcommand{\dr}{\mathrm{d}}
+\newcommand{\D}{\mathrm{D}}
+\newcommand{\e}{\, \mathrm{e}} \newcommand{\er}{\mathrm{e}}
+\newcommand{\vb}{\bm {v}\xspace}
+\newcommand{\ub}{\bm {u}\xspace}
+
+% The following makes ODEs and PDEs easier to write.
+% For an example, see the second problem below. - Vallis Solution template
+\newcommand{\dd}[3][]{{\dr^{#1} #2 \over \dr #3^{#1}}}
+\newcommand{\pp}[3][]{{\partial^{#1} #2 \over \partial #3^{#1}}}
+\newcommand{\DD}[1]{{\D#1 \over \D t}}
+
+% Example: \dd \psi x + \pp[2]y x  -> dpsi/dx + d2y/dx2
+
+% Table code
+%\begin{table}[h]
+%	\centering
+%	\begin{tabular}{ccc}
+%		\hline
+%		 		& 	&  \\ \hline
+%				&	& 	\\ 
+% 		\hline
+%	\end{tabular}
+%	\caption{}
+%	\label{tab:}
+%\end{table}
+
+% Bibliography Code
+%\bibliographystyle{elsarticle-harv}
+%\bibliography{BIBFILENAME WITHOUT EXT}{}

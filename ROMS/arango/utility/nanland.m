@@ -36,7 +36,7 @@ function Fout = nanland(Finp, Ginp)
 %    pcolor(G.lon_rho, G.lat_rho, nanland(salt(:,:,20),G.mask_rho))
 %
 
-% svn $Id: nanland.m 595 2012-01-17 19:44:46Z arango $
+% svn $Id: nanland.m 614 2012-05-02 21:52:32Z arango $
 %=========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
@@ -66,26 +66,26 @@ end
 
 if (ischar(Ginp)),
 
-  [dnames,dsizes,recdim]=nc_dim(Ginp);
-  for n=1:length(dsizes),
-    name=deblank(dnames(n,:));
+  D=nc_dinfo(Ginp);
+  for n=1:length(D),
+    name=char(D(n).Name);
     switch name
       case 'xi_rho',
-        Lr=dsizes(n);
+        Lr=D(n).Length;
       case 'xi_psi',
-        Lp=dsizes(n);
+        Lp=D(n).Length;
       case 'xi_u',
-        Lu=dsizes(n);
+        Lu=D(n).Length;
       case 'xi_v',
-        Lv=dsizes(n);
+        Lv=D(n).Length;
       case 'eta_rho',
-        Mr=dsizes(n);
+        Mr=D(n).Length;
       case 'eta_psi',
-        Mp=dsizes(n);
+        Mp=D(n).Length;
       case 'eta_u',
-        Mu=dsizes(n);
+        Mu=D(n).Length;
       case 'eta_v',
-        Mv=dsizes(n);
+        Mv=D(n).Length;
     end
   end
 

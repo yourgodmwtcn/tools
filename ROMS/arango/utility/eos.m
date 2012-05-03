@@ -53,18 +53,12 @@ function [F]=eos(gname,fname,tindex);
 %    and Oceanic Techn., vol. 12, pp. 381-389.
 %
 
-% svn $Id: eos.m 586 2012-01-03 20:19:25Z arango $
+% svn $Id: eos.m 614 2012-05-02 21:52:32Z arango $
 %===========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
 %    See License_ROMS.txt                           Hernan G. Arango        %
 %===========================================================================%
-
-% Deactivate printing information when reading data from NetCDF file.
-
-global IPRINT
-
-IPRINT=0;
 
 %----------------------------------------------------------------------------
 %  Set equation of state expansion coefficients.

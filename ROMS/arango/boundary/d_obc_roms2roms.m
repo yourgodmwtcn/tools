@@ -7,7 +7,7 @@
 %  this as a prototype for their application.
 %
 
-% svn $Id: d_obc_roms2roms.m 598 2012-01-19 20:44:24Z arango $
+% svn $Id: d_obc_roms2roms.m 614 2012-05-02 21:52:32Z arango $
 %=========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
@@ -337,7 +337,8 @@ for Rec = StrRec:EndRec,
 %  Process next boundary record. If processing OpenDAP files, force Java
 %  garbage collection.
 
-  if (nc_url(NWAdata)),
+  [~,url,~] = nc_interface(NWAdata);
+  if (url),
     java.lang.System.gc
   end
 
