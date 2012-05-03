@@ -112,10 +112,10 @@ for i=0:iend-1
     end
     
     if isempty(cpb), fprintf('\nReading Data...\n'); end
-    u   = ncread(fname,'u',read_start,read_count,stride); pbar(cpb,i+1,1,iend,5);
-    v   = ncread(fname,'v',read_start,read_count,stride); pbar(cpb,i+1,2,iend,5);
-    w   = ncread(fname,'w',read_start,read_count,stride); pbar(cpb,i+1,3,iend,5);
-    rho = ncread(fname,'rho',read_start,read_count,stride); pbar(cpb,i+1,4,iend,5);
+     u   = ncread(fname,'u',read_start,read_count,stride); pbar(cpb,i+1,1,iend,5);
+     v   = ncread(fname,'v',read_start,read_count,stride); pbar(cpb,i+1,2,iend,5);
+     w   = ncread(fname,'w',read_start,read_count,stride); pbar(cpb,i+1,3,iend,5);
+     rho = ncread(fname,'rho',read_start,read_count,stride); pbar(cpb,i+1,4,iend,5);
     zeta = ncread(fname,'zeta',[read_start(1:2) read_start(end)],[read_count(1:2) read_count(end)],[stride(1:2) stride(end)]); pbar(cpb,i+1,5,iend,5);
 	if isempty(cpb), fprintf('\n Done reading data... \n'); end
     
@@ -131,9 +131,13 @@ for i=0:iend-1
     if mod(ntavg,2) == 0
         ind1 = 2:1:s(4)-2;
         ind2 = 3:1:s(4)-1;
-    else
+    else if ntavg ~=1
         ind1 = 2:1:s(4)-1;
         ind2 = ind1;
+        else
+            ind1 = 1:size(um,4);
+            ind2 = ind1;
+        end
     end
     
     %ind1 = ceil(ntavg/2)  :ntavg:s(4)-mod(s(4),ntavg);
@@ -152,19 +156,21 @@ for i=0:iend-1
     vp = bsxfun(@minus,(v(:,:,:,ind1) + v(:,:,:,ind2))/2,vm);
     wp = bsxfun(@minus,(w(:,:,:,ind1) + w(:,:,:,ind2))/2,wm);
     
+    clear u v w
+    
     % average so that everything lands up on interior-rho points
     up = (up(1:end-1,2:end-1,:,:) + up(2:end,2:end-1,:,:))/2;    
     vp = (vp(2:end-1,1:end-1,:,:) + vp(2:end-1,2:end,:,:))/2;
     wp = (wp(2:end-1,2:end-1,1:end-1,:) + wp(2:end-1,2:end-1,2:end,:))/2;
     
-    % same for mean fields
+    % averaging for mean fields
     if mean_index == 1
         um = um(:,2:end-1,:,:);
         vm = (vm(:,1:end-1,:,:) + vm(:,2:end,:,:))/2;        
         wm = (wm(:,2:end-1,1:end-1,:) + wm(:,2:end-1,2:end,:))/2;
     elseif mean_index == 2
         um = (um(1:end-1,:,:,:) + um(2:end,:,:,:))/2;
-        vm = vm(2:end-1,:,:,:);        
+        vm =  vm(2:end-1,:,:,:);        
         wm = (wm(2:end-1,:,1:end-1,:) + wm(2:end-1,:,2:end,:))/2;
     end
     
@@ -173,9 +179,9 @@ for i=0:iend-1
     
     % now calculate energy terms
     eke = 0.5*R0.*(up.^2 + vp.^2 + wp.^2)./area; % Boussinesq
-    mke = 0.5*bsxfun(@times,R0*ones([s(1)-1 s(2)-2 s(3) tend-tstart+1]),(um.^2 + vm.^2 + wm.^2))./area; % again Boussinesq
+    mke = 0.5*bsxfun(@times,R0*ones(size(up)),(um.^2 + vm.^2 + wm.^2))./area; % again Boussinesq
     oke = rho.*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm))./area;% -> should average (integrate) to zero theoretically
-    pe  = -9.81*bsxfun(@times,rho,zrho(2:end-1,2:end-1,:))./area;
+    pe  = 9.81*bsxfun(@times,rho,zrho(2:end-1,2:end-1,:))./area;
     
 %     tstart = ceil(read_start(end)/ntavg);
 %     tend   = floor(tstart + s(4)/ntavg -1);
@@ -183,9 +189,10 @@ for i=0:iend-1
     t_en(tstart:tend,1) = (time(read_start(end)+ind1-1) + time(read_start(end)+ind2-1))/2;
     EKE(tstart:tend) = domain_integrate(eke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
     MKE(tstart:tend) = domain_integrate(mke,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
-    PE(tstart:tend)  = domain_integrate2(-R0*9.81*(zeta.^2)/2,grid.x_rho(1,2:end-1),grid.y_rho(2:end-1,1))./area ...        
-                           + domain_integrate2(R0*9.81*h.^2/2,grid.x_rho(1,2:end-1),grid.y_rho(2:end-1,1))./area ...
-                               + domain_integrate(pe,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1)); 
+    PE(tstart:tend)  = domain_integrate(pe,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1));
+    %PE(tstart:tend)  = domain_integrate2(-R0*9.81*(zeta.^2)/2,grid.x_rho(1,2:end-1),grid.y_rho(2:end-1,1))./area ...        
+    %                      + domain_integrate2(R0*9.81*h.^2/2,grid.x_rho(1,2:end-1),grid.y_rho(2:end-1,1))./area ...
+    %                           + domain_integrate(pe,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1)); 
     
     read_start(end) = tstart;
     if write_out
@@ -213,7 +220,7 @@ if write_out
     ncwrite(outname,tname,t_en);
 end
     
-%% Calculate growth rate
+%% Calculate growth rate - definitely works!
 k=1;
 jump = 5; % fit 5 consecutive points
 
@@ -276,6 +283,9 @@ function [datam] = time_mean2(data,n,mean_index)
     for ii = 1:size(data,4)-n+1
         datam(:,:,:,ii) = mean(mean(data(:,:,:,ii:ii+n-1),4),mean_index);
     end
+    
+function [datam] = time_mean3(data,n,mean_index)
+    datam = mean(mean(data,4),mean_index);
 
 function [out] = domain_integrate2(in,xax,yax)
     out = squeeze(trapz(xax,trapz(yax,in,2),1));
