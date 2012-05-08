@@ -5,9 +5,6 @@
 % Calculates growth rate in s^(-1)
 % write_out controls whether netcdf file with energy files is written. By defualt, mat files are created with integrated energy diagnostics.
 
-% CHANGELOG
-% First actual version                                          23 Feb 2012
-
 % Todo list
 % 2) Is there a bug in PE calculation?
 
