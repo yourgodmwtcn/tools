@@ -1,12 +1,7 @@
-% function [EKE,MKE,PE] = roms_energy(fname,tindices,ntavg,mean_index,write_out)
-% Use mean_index to say which dirn. you want to take the mean for defining
-% mean, eddy contributions.
-% Normalizes energy by horizontal area
-% Calculates growth rate in s^(-1)
+% Use mean_index to say which dirn. you want to take the mean for defining mean, eddy contributions.
+% Normalizes energy by horizontal area. Calculates growth rate in s^(-1)
 % write_out controls whether netcdf file with energy files is written. By defualt, mat files are created with integrated energy diagnostics.
-
-% Todo list
-% 2) Is there a bug in PE calculation?
+%                   [EKE,MKE,PE] = roms_energy(fname,tindices,volume,ntavg,mean_index,write_out)
 
 function [EKE,MKE,PE] = roms_energy(fname,tindices,volume,ntavg,mean_index,write_out)
 
@@ -195,24 +190,13 @@ for i=0:iend-1
     vm = (vm(2:end-1,1:end-1,:,:) + vm(2:end-1,2:end,:,:))/2;
     wm = (wm(2:end-1,2:end-1,1:end-1,:) + wm(2:end-1,2:end-1,2:end,:))/2;
     
-%     % averaging for mean fields
-%     if mean_index == 1
-%         um = um(:,2:end-1,:,:);
-%         vm = (vm(:,1:end-1,:,:) + vm(:,2:end,:,:))/2;        
-%         wm = (wm(:,2:end-1,1:end-1,:) + wm(:,2:end-1,2:end,:))/2;
-%     elseif mean_index == 2
-%         um = (um(1:end-1,:,:,:) + um(2:end,:,:,:))/2;
-%         vm =  vm(2:end-1,:,:,:);        
-%         wm = (wm(2:end-1,:,1:end-1,:) + wm(2:end-1,:,2:end,:))/2;
-%     end  
-    
     tstart = tend+1;
     tend = tstart + s(4)-ntavg;
     
     % now calculate energy terms
     eke = 0.5*R0.*(up.^2 + vp.^2 + wp.^2)./area; % Boussinesq
-    mke = 0.5*bsxfun(@times,R0*ones(size(up)),(um.^2 + vm.^2 + wm.^2))./area; % again Boussinesq
-    oke = rho.*(bsxfun(@times,up,um)+ bsxfun(@times,vp,vm))./area;% -> should average (integrate) to zero theoretically
+    mke = 0.5*R0.*(um.^2 + vm.^2 + wm.^2)./area; % again Boussinesq
+    %oke = rho.*(up.*um + vp.*vm)./area;% -> should average (integrate) to zero theoretically
     pe  = 9.81*bsxfun(@times,rho,permute(zr,[2 3 1 4]))./area;
     
     t_en(tstart:tend,1) = (time(read_start(end)+ind1-1) + time(read_start(end)+ind2-1))/2;
@@ -329,8 +313,7 @@ function [out] = correct_size(data,mean_index,s)
     else
         out = data;
     end
-        
-    
+       
 function [] = pbar(cpb,i,j,imax,jmax)
     if ~isempty(cpb)
         txt = sprintf(' Progress: i=%d, j=%d',i,j);
