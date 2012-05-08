@@ -99,13 +99,18 @@ if write_out
 end
 
 %% Calculate!
+tend = 0;
+corr_flag = 0;
+ax = 'xyz';
+fprintf('\n Slab = %d | Averaging in %s over %d timestep(s)\n\n', slab, ax(mean_index),ntavg);
+
 try
     cpb = progressbar();
 catch ME
     cpb = [];
 end
 
-tend = 0;
+% initialize correction terms
 for i=0:iend-1
     % FROM mod_movie.m - propagate changes back
     % start and count arrays for ncread : corrected to account for stride
@@ -133,7 +138,7 @@ for i=0:iend-1
     zeta = ncread(fname,'zeta',[read_start(1:2) read_start(end)],[read_count(1:2) read_count(end)],[stride(1:2) stride(end)]); pbar(cpb,i+1,5,iend,5);
 	if isempty(cpb), fprintf('\n Done reading data... \n'); end
     
-    % mean fields - average over 4 timesteps
+    % mean fields - average over ntavg timesteps
     um = time_mean2(u,ntavg,mean_index);
     vm = time_mean2(v,ntavg,mean_index);
     wm = time_mean2(w,ntavg,mean_index);
@@ -162,6 +167,23 @@ for i=0:iend-1
     vp = bsxfun(@minus,(v(:,:,:,ind1) + v(:,:,:,ind2))/2,vm);
     wp = bsxfun(@minus,(w(:,:,:,ind1) + w(:,:,:,ind2))/2,wm);
     
+    % corrections for initial perturbation field ~= 0
+    if i == 0 & tindices(1) == 1
+        if abs(max(max(max(up(:,:,:,1))))) >= 0.01, corr_u = up(:,:,:,1); corr_flag = 1; end
+        if abs(max(max(max(vp(:,:,:,1))))) >= 0.01, corr_v = vp(:,:,:,1); corr_flag = 1; end        
+        if abs(max(max(max(wp(:,:,:,1))))) >= 0.01, corr_w = wp(:,:,:,1); corr_flag = 1; end
+    end      
+    
+    if exist('corr_u','var'), up = bsxfun(@minus,up,corr_u); um = bsxfun(@plus,um,corr_u); end
+    if exist('corr_v','var'), vp = bsxfun(@minus,vp,corr_v); vm = bsxfun(@plus,vm,corr_v); end
+    if exist('corr_w','var'), wp = bsxfun(@minus,wp,corr_w); wm = bsxfun(@plus,wm,corr_w);end
+    
+    % correct size of mean fields if not corrected for perturbation
+    
+    um = correct_size(um,mean_index,size(up));
+    vm = correct_size(vm,mean_index,size(vp));
+    wm = correct_size(wm,mean_index,size(wp));
+    
     clear u v w
     
     % average so that everything lands up on interior-rho points
@@ -169,16 +191,20 @@ for i=0:iend-1
     vp = (vp(2:end-1,1:end-1,:,:) + vp(2:end-1,2:end,:,:))/2;
     wp = (wp(2:end-1,2:end-1,1:end-1,:) + wp(2:end-1,2:end-1,2:end,:))/2;
     
-    % averaging for mean fields
-    if mean_index == 1
-        um = um(:,2:end-1,:,:);
-        vm = (vm(:,1:end-1,:,:) + vm(:,2:end,:,:))/2;        
-        wm = (wm(:,2:end-1,1:end-1,:) + wm(:,2:end-1,2:end,:))/2;
-    elseif mean_index == 2
-        um = (um(1:end-1,:,:,:) + um(2:end,:,:,:))/2;
-        vm =  vm(2:end-1,:,:,:);        
-        wm = (wm(2:end-1,:,1:end-1,:) + wm(2:end-1,:,2:end,:))/2;
-    end
+    um = (um(1:end-1,2:end-1,:,:) + um(2:end,2:end-1,:,:))/2;    
+    vm = (vm(2:end-1,1:end-1,:,:) + vm(2:end-1,2:end,:,:))/2;
+    wm = (wm(2:end-1,2:end-1,1:end-1,:) + wm(2:end-1,2:end-1,2:end,:))/2;
+    
+%     % averaging for mean fields
+%     if mean_index == 1
+%         um = um(:,2:end-1,:,:);
+%         vm = (vm(:,1:end-1,:,:) + vm(:,2:end,:,:))/2;        
+%         wm = (wm(:,2:end-1,1:end-1,:) + wm(:,2:end-1,2:end,:))/2;
+%     elseif mean_index == 2
+%         um = (um(1:end-1,:,:,:) + um(2:end,:,:,:))/2;
+%         vm =  vm(2:end-1,:,:,:);        
+%         wm = (wm(2:end-1,:,1:end-1,:) + wm(2:end-1,:,2:end,:))/2;
+%     end  
     
     tstart = tend+1;
     tend = tstart + s(4)-ntavg;
@@ -222,6 +248,8 @@ if write_out
     ncwrite(outname,zname,zr);
     ncwrite(outname,tname,t_en);
 end
+
+if corr_flag, fprintf('\n Correction(s) applied to perturbation fields \n\n'); end
     
 %% Calculate growth rate - definitely works!
 k=1;
@@ -292,6 +320,16 @@ function [datam] = time_mean3(data,n,mean_index)
 
 function [out] = domain_integrate2(in,xax,yax)
     out = squeeze(trapz(xax,trapz(yax,in,2),1));
+    
+function [out] = correct_size(data,mean_index,s)
+    if size(data,mean_index) == 1
+        sd = ones([1 length(size(data))]);
+        sd(mean_index) = s(mean_index);
+        out = repmat(data,sd);
+    else
+        out = data;
+    end
+        
     
 function [] = pbar(cpb,i,j,imax,jmax)
     if ~isempty(cpb)
