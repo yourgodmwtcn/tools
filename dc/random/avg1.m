@@ -11,9 +11,13 @@ function [A] = avg1(X,index)
 %     if m, A = A'; end
 %%
      dim = length(size(X));
-     cnv = ones(1,dim);
-     cnv(index) = 2;
-     cnv = ones(cnv);
+     if size(X,index) == 1
+         A = X; 
+     else
+         cnv = ones(1,dim);
+         cnv(index) = 2;
+         cnv = ones(cnv);
 
-     A = convn(X,cnv./2,'valid');
+         A = convn(X,cnv./2,'valid');
+     end
     

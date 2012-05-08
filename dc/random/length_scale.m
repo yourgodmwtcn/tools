@@ -15,7 +15,8 @@ function [ll] = length_scale(data,index,dx)
     for i=1:jump1:s(2)
         for j=1:jump2:s(3)
             ind = sub2ind([10 10],ceil(i/jump1),ceil(j/jump2));
-            [covx(ind,:),lagx] = xcov(data(:,i,j)-mean(data(:,i,j)));
+            % not doing this as coefficient so that the average works out like an average weighted by energy
+            [covx(ind,:),lagx] = xcov(data(:,i,j)-mean(data(:,i,j)),'biased');
         end
     end
     

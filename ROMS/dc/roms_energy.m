@@ -51,7 +51,7 @@ yr = yr(2:end-1);
 %% read data
 
 % caps indicates domain integrated values
-EKE = nan(floor(nt/ntavg),1);
+EKE = nan(ceil(nt/ntavg)-1,1);
 MKE = EKE;
 PE  = EKE;
 

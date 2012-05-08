@@ -1,5 +1,6 @@
 % figure out slab size for reading from netcdf files.
 % For energy script, it accounts for extra points being read in.
+%           [slab] = roms_slab(fname, energy_flag, ntavg)
 
 function [slab] = roms_slab(fname, energy_flag, ntavg)
     

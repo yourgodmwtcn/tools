@@ -1,12 +1,12 @@
 % Calculate PV fluxes through a section along index 'ind' (for PV) of axis 'axis'
-%        [pvflux] = roms_pv_flux(hisname,pvname,axis,ind,plot)
+%        [pvflux] = roms_pv_flux(hisname,pvname,axis,ind,plot_flag)
 
-function [pvflux] = roms_pv_flux(hisname,pvname,tindices,axis,ind,plot)
+function [pvflux] = roms_pv_flux(hisname,pvname,tindices,axis,ind,plot_flag)
     
     % if pv file doesn't exist, create it.
     if strcmp(pvname,hisname), roms_pv(hisname,tindices), end
     
-    if ~exist('plot','var'), plot = 0; end
+    if ~exist('plot_flag','var'), plot_flag = 0; end
     
     %% figure out fluxing velocity and averaging 
     ax = 'xyz';
@@ -15,7 +15,7 @@ function [pvflux] = roms_pv_flux(hisname,pvname,tindices,axis,ind,plot)
     per = {[1 2 3 4]; [2 1 3 4]; [2 3 1 4]};
     
     if ischar(axis), axis = find(ax == axis); end
-    heading = ['Total PV fluxed through ' ax(axis) ' = '];
+    heading = ['Total PV fluxed per unit area through ' ax(axis) ' = '];
     ax = axis; % index
     vx = vx(ax);
     avgind = avgind{ax};
@@ -27,13 +27,17 @@ function [pvflux] = roms_pv_flux(hisname,pvname,tindices,axis,ind,plot)
     if strcmp(ind,'mid'), ind = num2str((sliceax(1)+sliceax(end))/2); end
     if ischar(ind), ind = find_approx(sliceax,str2double(ind),1); end  
     
-    heading = [heading num2str(sliceax(ind))];
+    if sliceax(ind) > 1000
+        heading = [heading num2str(sliceax(ind)/1000) ' km'];
+    else
+        heading = [heading num2str(sliceax(ind)) ' m'];
+    end
     
     %% parse input
     vinfo = ncinfo(hisname,'u');
     s     = vinfo.Size;
     dim   = length(s); 
-    slab  = 30;
+    slab  = roms_slab(hisname,0);
     if ~exist('tindices','var'), tindices = []; end
     [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
     
@@ -50,8 +54,11 @@ function [pvflux] = roms_pv_flux(hisname,pvname,tindices,axis,ind,plot)
         read_count(ax) = 1;
         pv  = ncread(pvname,'pv',read_start,read_count);   
         % read velocity at points on either side of interior RHO point and then average
-        read_start(ax) = ind-1; 
-        read_count(ax) = 2;
+        % not needed for w since PV is calculated at w points
+        if ax ~= 3
+            read_start(ax) = ind-1; 
+            read_count(ax) = 2;
+        end
         vel = avg1(ncread(hisname,vx,read_start,read_count),ax);
        
         L1 = max(gridpv{avgind(1)}) - min(gridpv{avgind(1)});
@@ -61,6 +68,10 @@ function [pvflux] = roms_pv_flux(hisname,pvname,tindices,axis,ind,plot)
         switch vx
             case 'u'
                 vel = avg1(vel(:,2:end-1,:,:),3);
+            case 'v'
+                vel = avg1(vel(2:end-1,:,:,:),3);
+            case 'w'
+                vel = vel(2:end-1,2:end-1,:,:);
         end
     
         % calculate flux
@@ -70,11 +81,11 @@ function [pvflux] = roms_pv_flux(hisname,pvname,tindices,axis,ind,plot)
                                 
         % write to file if needed
     end
-    
-    if plot    
+    time = tpv(tindices(1):tindices(1)+tindices(2)-1);
+    if plot_flag
         figure;
-        plot(tpv./86400,cumtrapz(tpv,pvflux));
+        plot(time./86400,cumtrapz(time,pvflux));
         xlabel('Time (days)');
-        ylabel('Integrated PV flux');
+        ylabel('Integrated PV flux / unit area');
         title(heading);
     end

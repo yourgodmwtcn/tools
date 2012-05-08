@@ -1,4 +1,4 @@
-% calculates Ertel PV
+% calculates Ertel PV at interior RHO points (horizontal plane) and midway between rho points in the vertical
 %       [pv] = roms_pv(fname,tindices)
 
 function [pv,xpv,ypv,zpv] = roms_pv(fname,tindices,outname)
@@ -8,7 +8,7 @@ function [pv,xpv,ypv,zpv] = roms_pv(fname,tindices,outname)
 vinfo = ncinfo(fname,'u');
 s     = vinfo.Size;
 dim   = length(s); 
-slab  = 40;
+slab  = roms_slab(fname,0);
 
 warning off
 grid = roms_get_grid(fname,fname,0,1);

@@ -1,4 +1,3 @@
-
 function [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt,vol)
 
     read_start = ones(1,dim);
@@ -13,7 +12,7 @@ function [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,d
     if i == 0
         read_start(end) = tindices(1);
     else
-        read_start(end) = slab*i + 1;
+        read_start(end) = tindices(1)+slab*i;
     end
 
     if (iend-1) == 0, read_count(end) = floor((tindices(2)-tindices(1))/dt)+1; end 
