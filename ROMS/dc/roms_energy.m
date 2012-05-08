@@ -217,9 +217,9 @@ if write_out
     catch ME
     end
 
-    ncwrite(outname,xname,grid.x_rho(1,2:end-1)');
-    ncwrite(outname,yname,grid.y_rho(2:end-1,1));
-    ncwrite(outname,zname,grid.z_r(:,1,1));
+    ncwrite(outname,xname,xr);
+    ncwrite(outname,yname,yr);
+    ncwrite(outname,zname,zr);
     ncwrite(outname,tname,t_en);
 end
     
