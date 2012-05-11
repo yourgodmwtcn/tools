@@ -46,7 +46,8 @@ grid1.zr = grid.z_r(:,1,1);
 %% setup netcdf file
 if ~exist('outname','var') || isempty(outname), outname = 'ocean_pv.nc'; end
 if exist(outname,'file')
-    in = input('File exists. Do you want to overwrite (1/0)? ');
+    %in = input('File exists. Do you want to overwrite (1/0)? ');
+    in = 1;
     if in == 1, delete(outname); end
 end
 try

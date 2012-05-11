@@ -3,6 +3,8 @@
 % write_out controls whether netcdf file with energy files is written. By defualt, mat files are created with integrated energy diagnostics.
 %                   [EKE,MKE,PE] = roms_energy(fname,tindices,volume,ntavg,mean_index,write_out)
 
+% commented out w lines but they're there if you need them
+
 function [EKE,MKE,PE] = roms_energy(fname,tindices,volume,ntavg,mean_index,write_out)
 
 if ~exist('fname','var'), fname = 'ocean_his.nc'; end
@@ -125,8 +127,8 @@ for i=0:iend-1
      [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt,volv);
      v   = ncread(fname,'v',read_start,read_count,stride); pbar(cpb,i+1,2,iend,5);
      
-     [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt,volw);
-     w   = ncread(fname,'w',read_start,read_count,stride); pbar(cpb,i+1,3,iend,5);
+    % [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt,volw);
+    % w   = ncread(fname,'w',read_start,read_count,stride); pbar(cpb,i+1,3,iend,5);
      
      [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt,volr);
      rho = ncread(fname,'rho',read_start,read_count,stride); pbar(cpb,i+1,4,iend,5);
@@ -136,7 +138,7 @@ for i=0:iend-1
     % mean fields - average over ntavg timesteps
     um = time_mean2(u,ntavg,mean_index);
     vm = time_mean2(v,ntavg,mean_index);
-    wm = time_mean2(w,ntavg,mean_index);
+   % wm = time_mean2(w,ntavg,mean_index);
     rm = time_mean2(rho,ntavg,mean_index);
     
     s = size(u);
@@ -160,42 +162,42 @@ for i=0:iend-1
     
     up = bsxfun(@minus,(u(:,:,:,ind1) + u(:,:,:,ind2))/2,um);
     vp = bsxfun(@minus,(v(:,:,:,ind1) + v(:,:,:,ind2))/2,vm);
-    wp = bsxfun(@minus,(w(:,:,:,ind1) + w(:,:,:,ind2))/2,wm);
+   % wp = bsxfun(@minus,(w(:,:,:,ind1) + w(:,:,:,ind2))/2,wm);
     
     % corrections for initial perturbation field ~= 0
     if i == 0 & tindices(1) == 1
         if abs(max(max(max(up(:,:,:,1))))) >= 0.01, corr_u = up(:,:,:,1); corr_flag = 1; end
         if abs(max(max(max(vp(:,:,:,1))))) >= 0.01, corr_v = vp(:,:,:,1); corr_flag = 1; end        
-        if abs(max(max(max(wp(:,:,:,1))))) >= 0.01, corr_w = wp(:,:,:,1); corr_flag = 1; end
+      %  if abs(max(max(max(wp(:,:,:,1))))) >= 0.01, corr_w = wp(:,:,:,1); corr_flag = 1; end
     end      
     
     if exist('corr_u','var'), up = bsxfun(@minus,up,corr_u); um = bsxfun(@plus,um,corr_u); end
     if exist('corr_v','var'), vp = bsxfun(@minus,vp,corr_v); vm = bsxfun(@plus,vm,corr_v); end
-    if exist('corr_w','var'), wp = bsxfun(@minus,wp,corr_w); wm = bsxfun(@plus,wm,corr_w);end
+   % if exist('corr_w','var'), wp = bsxfun(@minus,wp,corr_w); wm = bsxfun(@plus,wm,corr_w);end
     
     % correct size of mean fields if not corrected for perturbation
     
     um = correct_size(um,mean_index,size(up));
     vm = correct_size(vm,mean_index,size(vp));
-    wm = correct_size(wm,mean_index,size(wp));
+   % wm = correct_size(wm,mean_index,size(wp));
     
-    clear u v w
+    clear u v% w
     
     % average so that everything lands up on interior-rho points
     up = (up(1:end-1,2:end-1,:,:) + up(2:end,2:end-1,:,:))/2;    
     vp = (vp(2:end-1,1:end-1,:,:) + vp(2:end-1,2:end,:,:))/2;
-    wp = (wp(2:end-1,2:end-1,1:end-1,:) + wp(2:end-1,2:end-1,2:end,:))/2;
+   % wp = (wp(2:end-1,2:end-1,1:end-1,:) + wp(2:end-1,2:end-1,2:end,:))/2;
     
     um = (um(1:end-1,2:end-1,:,:) + um(2:end,2:end-1,:,:))/2;    
     vm = (vm(2:end-1,1:end-1,:,:) + vm(2:end-1,2:end,:,:))/2;
-    wm = (wm(2:end-1,2:end-1,1:end-1,:) + wm(2:end-1,2:end-1,2:end,:))/2;
+   % wm = (wm(2:end-1,2:end-1,1:end-1,:) + wm(2:end-1,2:end-1,2:end,:))/2;
     
     tstart = tend+1;
     tend = tstart + s(4)-ntavg;
     
     % now calculate energy terms
-    eke = 0.5*R0.*(up.^2 + vp.^2 + wp.^2)./area; % Boussinesq
-    mke = 0.5*R0.*(um.^2 + vm.^2 + wm.^2)./area; % again Boussinesq
+    eke = 0.5*R0.*(up.^2 + vp.^2)./area; % Boussinesq + wp.^2
+    mke = 0.5*R0.*(um.^2 + vm.^2)./area; % again Boussinesq + wm.^2
     %oke = rho.*(up.*um + vp.*vm)./area;% -> should average (integrate) to zero theoretically
     pe  = 9.81*bsxfun(@times,rho,permute(zr,[2 3 1 4]))./area;
     
@@ -245,11 +247,14 @@ for i=1:1:length(EKE)-jump
     k=k+1;
 end
 
+time_A = time_A(2:end);
+A = A(2:end,:);
+
 figure
 subplot(211)
-plot(time_A/86400,A(:,1),'b*-')
+plot(time_A/86400,A(:,1)*86400,'b*-')
 liney(0)
-ylabel('Growth Rate (s^{-1})')
+ylabel('Growth Rate (d^{-1})')
 xlabel('Time (days)');
 
 % Verify

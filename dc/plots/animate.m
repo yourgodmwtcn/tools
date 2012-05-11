@@ -206,7 +206,8 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
                 end
             case 4
                 set(gcf,'Renderer','painters');
-                [C,h] = contour(xax,yax,plotdata(:,:,i)', 20,'k');
+                clf;
+                [C,h] = contour(xax,yax,plotdata(:,:,i)','k');
                 format short
                 clabel(C,h,'FontSize',9);
             otherwise

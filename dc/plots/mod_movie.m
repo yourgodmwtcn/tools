@@ -67,6 +67,7 @@ if gcm
     
     % Set up grid
     [xax,yax,zax,xunits,yunits] = gcm_var_grid(fname,varname);
+    vol = [1 Inf; 1 Inf; 1 Inf;];
     time = double(ncread(fname,'T'))./3600/24;
 
 else
