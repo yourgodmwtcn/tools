@@ -1,18 +1,22 @@
+% Returns energy per unit mass (accounts for different cell volumes and divides by R0). Calculates growth rate in s^(-1)
 % Use mean_index to say which dirn. you want to take the mean for defining mean, eddy contributions.
-% Normalizes energy by horizontal area. Calculates growth rate in s^(-1)
 % write_out controls whether netcdf file with energy files is written. By defualt, mat files are created with integrated energy diagnostics.
 %                   [EKE,MKE,PE] = roms_energy(fname,tindices,volume,ntavg,mean_index,write_out)
 
 % commented out w lines but they're there if you need them
 
-function [EKE,MKE,PE] = roms_energy(fname,tindices,volume,ntavg,mean_index,write_out)
+function [EKE,MKE,PE] = roms_energy(fname,tindices,volume,ntavg,mean_index,commands)
 
 if ~exist('fname','var'), fname = 'ocean_his.nc'; end
 if ~exist('tindices','var'), tindices = [1 Inf]; end
 if ~exist('mean_index','var'), mean_index = 2; end
 if ~exist('ntavg','var'), ntavg = 4; end % average over ntavg timesteps
-if ~exist('write_out','var'), write_out = 0; end
 if ~exist('volume','var'), volume = {}; end
+
+command_list = {'write_out','growthrate_u'};
+[flag,~] = parse_commands(command_list,commands);
+write_out = flag(1);
+growthrate_u = flag(2);
 
 ax = 'xyzt';
 
@@ -22,15 +26,12 @@ dim   = length(vinfo.Size);
 s = vinfo.Size;
 slab  = roms_slab(fname,1,ntavg);
 
-warning off
-grid = roms_get_grid(fname,fname,0,1);
-warning on
-
-area = max(grid.x_rho(:)-grid.x_rho(1))*max(grid.y_rho(:)-grid.y_rho(1));
-
 % parse input
 [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 [xr,yr,zr,volr] = roms_extract(fname,'rho',volume);
+  [xu,~,~,~   ] = roms_extract(fname,'u'  ,volume);
+  [~,yv,~,~   ] = roms_extract(fname,'v'  ,volume);
+  [~,~,zw,~   ] = roms_extract(fname,'w'  ,volume);
 
 % mess around with volr to replicate boundaries as in https://www.myroms.org/wiki/index.php/Grid_Generation
 volu = volr; volv = volr; volw = volr;
@@ -42,12 +43,18 @@ volw = volr;
 xr = xr(2:end-1);
 yr = yr(2:end-1);
 
+% calculate cell volumes use u points to mark lateral edges of the cell
+totalvol = (xr(end)-xr(1))*(yr(end)-yr(1))*max(abs(zr));
+cellvol = abs(bsxfun(@times,diff(xu)*diff(yv),permute(diff(zw),[3 2 1])));
+if totalvol./sum(cellvol(:)) > 1.5, error('cell volume calculation is wrong!'); end
+
 %% read data
 
 % caps indicates domain integrated values
 EKE = nan(ceil(nt/ntavg)-1,1);
 MKE = EKE;
 PE  = EKE;
+if growthrate_u, EKEu = EKE; end
 
 R0  = ncread(fname,'R0');
 h   = ncread(fname,'h');
@@ -196,10 +203,10 @@ for i=0:iend-1
     tend = tstart + s(4)-ntavg;
     
     % now calculate energy terms
-    eke = 0.5*R0.*(up.^2 + vp.^2)./area; % Boussinesq + wp.^2
-    mke = 0.5*R0.*(um.^2 + vm.^2)./area; % again Boussinesq + wm.^2
+    eke = bsxfun(@rdivide,0.5*(up.^2 + vp.^2),cellvol); % Boussinesq + wp.^2
+    mke = bsxfun(@rdivide,0.5*(um.^2 + vm.^2),cellvol); % again Boussinesq + wm.^2
     %oke = rho.*(up.*um + vp.*vm)./area;% -> should average (integrate) to zero theoretically
-    pe  = 9.81*bsxfun(@times,rho,permute(zr,[2 3 1 4]))./area;
+    pe  = bsxfun(@rdivide,9.81*bsxfun(@times,rho,permute(zr,[2 3 1 4]))./R0,cellvol);      
     
     t_en(tstart:tend,1) = (time(read_start(end)+ind1-1) + time(read_start(end)+ind2-1))/2;
     EKE(tstart:tend) = domain_integrate(eke,xr,yr,zr);
@@ -208,6 +215,12 @@ for i=0:iend-1
     %PE(tstart:tend)  = domain_integrate2(-R0*9.81*(zeta.^2)/2,grid.x_rho(1,2:end-1),grid.y_rho(2:end-1,1))./area ...  % OTHER PE CODE - OLD      
     %                      + domain_integrate2(R0*9.81*h.^2/2,grid.x_rho(1,2:end-1),grid.y_rho(2:end-1,1))./area ...
     %                           + domain_integrate(pe,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1)); 
+    
+    % if calculating growth rate only for u perturbations
+    if growthrate_u
+        ekeu = bsxfun(@rdivide,0.5*(up.^2),cellvol);
+        EKEu(tstart:tend) = domain_integrate(ekeu,xr,yr,zr);
+    end
     
     read_start(end) = tstart;
     if write_out
@@ -235,14 +248,17 @@ if write_out
     ncwrite(outname,tname,t_en);
 end
 
-if corr_flag, fprintf('\n Correction(s) applied to perturbation fields \n\n'); end
+if exist('corr_u','var'), fprintf('\n Correction(s) applied to u perturbation fields \n\n'); end
+if exist('corr_v','var'), fprintf('\n Correction(s) applied to v perturbation fields \n\n'); end
     
 %% Calculate growth rate - definitely works!
 k=1;
 jump = 5; % fit 5 consecutive points
 
-for i=1:1:length(EKE)-jump
-    A(k,:) = polyfit(t_en(i:i+jump),log(EKE(i:i+jump)),1);
+if growthrate_u, fitEKE = EKEu; else fitEKE = EKE; end
+
+for i=1:1:length(fitEKE)-jump
+    A(k,:) = polyfit(t_en(i:i+jump),log(fitEKE(i:i+jump)),1);
     time_A(k,:) = (t_en(i+jump)+t_en(i))/2;
     k=k+1;
 end
@@ -260,7 +276,7 @@ xlabel('Time (days)');
 % Verify
 eke2 = exp(A(:,1).*time_A + A(:,2));
 subplot(212)
-plot(t_en/86400,(EKE),'b*');
+plot(t_en/86400,(fitEKE),'b*');
 hold on
 plot(time_A/86400,eke2,'r');
 ylabel('Energy');
@@ -289,7 +305,7 @@ legend('PE');
 
 % write to file
 fname = ['energy-avg-' ax(mean_index) '.mat']; 
-save(fname,'t_en','PE','EKE','MKE','A','time_A','ntavg','volume');
+save(fname,'t_en','PE','EKE','MKE','A','time_A','ntavg','volume','commands');
 
 %% local functions
 

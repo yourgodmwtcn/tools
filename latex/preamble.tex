@@ -1,8 +1,9 @@
 \documentclass[11pt,a4paper,oneside]{article}
 
-\usepackage{mathtools}
 \usepackage{graphicx}
+\usepackage{color}
 \usepackage{epstopdf}
+\usepackage{psfrag}
 \usepackage{booktabs}    %  fancy tables
 \usepackage[T1]{fontenc} % better font encoding
 \usepackage{mathpazo}    % fancy math fonts
@@ -15,6 +16,9 @@
 \usepackage{rotating}
 \usepackage{pdflscape}
 \usepackage{hyperref}
+\usepackage{breakurl}
+\usepackage[protrusion=true,expansion]{microtype}
+\usepackage{mathtools}
 
 \renewcommand{\baselinestretch}{1.5} % Line spacing 1.5
 \geometry{centering,text={18cm,22cm}}
@@ -41,6 +45,16 @@
 \newcommand{\dd}[3][]{{\dr^{#1} #2 \over \dr #3^{#1}}}
 \newcommand{\pp}[3][]{{\partial^{#1} #2 \over \partial #3^{#1}}}
 \newcommand{\DD}[1]{{\D#1 \over \D t}}
+
+% These are some of my math shortcuts
+\newcommand{\mb}[1]{\boldsymbol{#1}} % math bold font
+\newcommand{\ol}[1]{\overline{#1}}   
+\newcommand{\x}{\times}
+\newcommand{\mO}{\mathcal{O}}
+\newcommand{\ubr}{\underbracket}
+
+% non-dimensional numbers
+\newcommand{\Ro}{\mathit{Ro}}
 
 % Example: \dd \psi x + \pp[2]y x  -> dpsi/dx + d2y/dx2
 
