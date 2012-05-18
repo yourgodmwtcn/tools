@@ -1,7 +1,11 @@
 % Returns energy per unit mass (accounts for different cell volumes and divides by R0). Calculates growth rate in s^(-1)
-% Use mean_index to say which dirn. you want to take the mean for defining mean, eddy contributions.
-% write_out controls whether netcdf file with energy files is written. By defualt, mat files are created with integrated energy diagnostics.
-%                   [EKE,MKE,PE] = roms_energy(fname,tindices,volume,ntavg,mean_index,write_out)
+% Use mean_index to say which dirn. you want to take the mean for defining mean, eddy contributions. By default, mat files 
+%are created with integrated energy diagnostics.
+%                   [EKE,MKE,PE] = roms_energy(fname,tindices,volume,ntavg,mean_index,commands)
+%
+% Accepts the following commands
+%               - ncdf_out : controls whether netcdf file with energy files is written. 
+%               - growthrate_v : calculated growth rate for 0/5u^2 instead of 0.5(u^2 + v^2)
 
 % commented out w lines but they're there if you need them
 
@@ -13,7 +17,7 @@ if ~exist('mean_index','var'), mean_index = 2; end
 if ~exist('ntavg','var'), ntavg = 4; end % average over ntavg timesteps
 if ~exist('volume','var'), volume = {}; end
 
-command_list = {'write_out','growthrate_u'};
+command_list = {'ncdf_out','growthrate_u'};
 [flag,~] = parse_commands(command_list,commands);
 write_out = flag(1);
 growthrate_u = flag(2);
