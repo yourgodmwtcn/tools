@@ -244,12 +244,16 @@ function [mm_instance] = animate(xax,yax,data,labels,commands,index,pausetime)
         if flags(7)
             if isempty(labels.mm_instance)
                 labels.mm_instance = mm_setup;
-                labels.mm_instance.pixelSize = [800 299];
+                labels.mm_instance.pixelSize = [1024 768];
                 labels.mm_instance.outputFile = 'mm_output.mp4';
-                labels.mm_instance.ffmpegArgs = '-s 640x480 -r 25 -qscale 1';
-                labels.mm_instance.frameRate = 25;
+                labels.mm_instance.ffmpegArgs = '-q:v 5';
+                labels.mm_instance.InputFrameRate = 3;
+                labels.mm_instance.frameRate = 2;
             end
+            set(gcf,'Renderer','opengl');
             mm_addFrame(labels.mm_instance,gcf);
             mm_instance = labels.mm_instance;
+        else
+            mm_instance = [];
         end
     end

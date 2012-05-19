@@ -22,7 +22,7 @@ end
 if nargin < 3, n = 1; end
 
 % set up the resolution
-dpi = 72;
+dpi = 96;
 dpispec = sprintf('-r%02d',dpi);
 inchsize = mm.pixelSize / dpi;
 
@@ -48,8 +48,8 @@ for i=1:n
     % for PPM
     %print(dpispec,'-zbuffer','-dppmraw', [mm.frameDir '/' filename '.ppm']);
     % for PNG
-    %print(dpispec,'-zbuffer','-dpng', [mm.frameDir '/' filename '.png']);
-    export_fig(dpispec,[mm.frameDir '/' filename '.png']);
+    print(dpispec,'-zbuffer','-dpng', [mm.frameDir '/' filename '.png']);
+    %export_fig(dpispec,[mm.frameDir '/' filename '.png']);
     fprintf('Just added frame %6d\n',N+i);
 end
 
