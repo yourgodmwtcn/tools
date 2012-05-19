@@ -16,7 +16,7 @@ function mm_render(mm)
 
 % We don't specify the movie size because ffmpeg will automatically detect it
 % based on the images size of the frames.
-cmd = sprintf('ffmpeg -g %d -b %d -f image2 -i %s %s %s',...
+cmd = sprintf('E:\\Software\\Misc\\ffmpeg\\bin\\ffmpeg.exe -g %d -b %d -f image2 -i %s %s %s',...
     mm.frameRate,mm.bitRate,[mm.frameDir '/mm_frame_%06d.png'],...
     mm.ffmpegArgs,mm.outputFile);
 %     mm.frameRate,mm.bitRate,[mm.frameDir '/mm_frame_%06d.ppm'],...
@@ -24,12 +24,12 @@ cmd = sprintf('ffmpeg -g %d -b %d -f image2 -i %s %s %s',...
 disp(cmd);
 
 disp('Looking for ffmpeg...');
-foundit = system('which ffmpeg');
-if (foundit ~= 0)
-    warning('The "ffmpeg" command was not found in your path.');
-    disp('For information on installing ffmpeg, visit http://www.ffmpeg.org/.');
-    error('Unable to render the movie without ffmpeg. Giving up.')
-end
+%foundit = system('which ffmpeg');
+% if (foundit ~= 0)
+%     warning('The "ffmpeg" command was not found in your path.');
+%     disp('For information on installing ffmpeg, visit http://www.ffmpeg.org/.');
+%     error('Unable to render the movie without ffmpeg. Giving up.')
+% end
 
 system(cmd);
 

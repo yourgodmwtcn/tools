@@ -44,7 +44,7 @@
 %       - arrowkeys *pause* and navigate always
 %       - Esc to quit
 
-function [] = animate(xax,yax,data,labels,commands,index,pausetime)
+function [mm_instance] = animate(xax,yax,data,labels,commands,index,pausetime)
 
     %% figure out input
     narg = nargin;
@@ -53,6 +53,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         warning('Previous ESC detected. Opening new figure.');
         figure;
     end
+    set(gcf,'Position',[100 200 900 500]);
     
     switch narg
         case 1,
@@ -133,7 +134,7 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
     spaceplay = 1; % if 1, space pauses. if 0, space plays
     
     %% parse options
-    cmds = {'nocaxis','pcolor','imagesc','contour','pause','fancy_cmap'};
+    cmds = {'nocaxis','pcolor','imagesc','contour','pause','fancy_cmap','movieman'};
     flags = zeros(1,length(cmds));
     if ~isempty(commands),
         [flags, commands] = parse_commands(cmds,commands);
@@ -239,4 +240,16 @@ function [] = animate(xax,yax,data,labels,commands,index,pausetime)
         xlabel(labels.xax);
         ylabel(labels.yax);
         eval(commands); % execute custom commands
+        
+        if flags(7)
+            if isempty(labels.mm_instance)
+                labels.mm_instance = mm_setup;
+                labels.mm_instance.pixelSize = [800 299];
+                labels.mm_instance.outputFile = 'mm_output.mp4';
+                labels.mm_instance.ffmpegArgs = '-s 640x480 -r 25 -qscale 1';
+                labels.mm_instance.frameRate = 25;
+            end
+            mm_addFrame(labels.mm_instance,gcf);
+            mm_instance = labels.mm_instance;
+        end
     end
