@@ -76,6 +76,7 @@ ncwrite(outname,'ocean_time',tpv);
 
 %% calculate pv
 pv = nan([s(1)-1 s(2)-2 s(3)-1 tindices(2)-tindices(1)+1]);
+misc = roms_load_misc(fname);
 
 for i=0:iend-1
     [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
@@ -84,7 +85,12 @@ for i=0:iend-1
     
     u      = ncread(fname,'u',read_start,read_count,stride);
     v      = ncread(fname,'v',read_start,read_count,stride);
-    rho = ncread(fname,'rho',read_start,read_count,stride); % theta
+    try
+        rho = ncread(fname,'rho',read_start,read_count,stride); % theta
+    catch ME
+        rho = ncread(fname,'temp',read_start,read_count,stride);
+        %fprintf('\n Assuming T0 = 14c\n');
+    end
     
     [pv(:,:,:,tstart:tend),xpv,ypv,zpv] = pv_cgrid(grid1,u,v,rho,f,rho0);
 

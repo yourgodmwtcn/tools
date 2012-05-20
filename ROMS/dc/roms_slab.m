@@ -6,7 +6,7 @@ function [slab] = roms_slab(fname, energy_flag, ntavg)
     
     if ~exist('energy_flag','var'), energy_flag = 0; end
     
-    varname = 'rho';
+    varname = 'temp';
     vinfo = ncinfo(fname,varname);
     s = vinfo.Size;
     

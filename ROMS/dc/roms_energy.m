@@ -16,6 +16,7 @@ if ~exist('tindices','var'), tindices = [1 Inf]; end
 if ~exist('mean_index','var'), mean_index = 2; end
 if ~exist('ntavg','var'), ntavg = 4; end % average over ntavg timesteps
 if ~exist('volume','var'), volume = {}; end
+if ~exist('commands','var'), commands = ''; end
 
 command_list = {'ncdf_out','growthrate_u'};
 [flag,~] = parse_commands(command_list,commands);
@@ -33,21 +34,25 @@ slab  = roms_slab(fname,1,ntavg);
 % parse input
 [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 [xr,yr,zr,volr] = roms_extract(fname,'rho',volume);
-  [xu,~,~,~   ] = roms_extract(fname,'u'  ,volume);
-  [~,yv,~,~   ] = roms_extract(fname,'v'  ,volume);
-  [~,~,zw,~   ] = roms_extract(fname,'w'  ,volume);
-
+  
 % mess around with volr to replicate boundaries as in https://www.myroms.org/wiki/index.php/Grid_Generation
 volu = volr; volv = volr; volw = volr;
 if ~isinf(volu(1,2)), volu(1,2) = volr(1,2)-1; end
 if ~isinf(volv(2,2)), volv(2,2) = volr(2,2)-1; end
 volw = volr;
 
+ [xu,~,~,vu  ] = roms_extract(fname,'u'  ,volume);
+[~,yv,~,vv   ] = roms_extract(fname,'v'  ,volume);
+[~,~,zw,vw   ] = roms_extract(fname,'w'  ,volume);
+
+if vu(1,2) ~= volu(1,2), xu = xu(1:end-1); end
+if vv(2,2) ~= volv(2,2), yv = yv(1:end-1); end
+
 % trim to interior rho points
 xr = xr(2:end-1);
 yr = yr(2:end-1);
 
-% calculate cell volumes use u points to mark lateral edges of the cell
+% calculate cell volumes use u/v/w points to mark edges of the cell
 totalvol = (xr(end)-xr(1))*(yr(end)-yr(1))*max(abs(zr));
 cellvol = abs(bsxfun(@times,diff(xu)*diff(yv),permute(diff(zw),[3 2 1])));
 if totalvol./sum(cellvol(:)) > 1.5, error('cell volume calculation is wrong!'); end
