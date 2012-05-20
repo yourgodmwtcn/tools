@@ -88,7 +88,7 @@ for i=0:iend-1
     try
         rho = ncread(fname,'rho',read_start,read_count,stride); % theta
     catch ME
-        rho = ncread(fname,'temp',read_start,read_count,stride);
+        rho = -misc.Tcoef*ncread(fname,'temp',read_start,read_count,stride);
         %fprintf('\n Assuming T0 = 14c\n');
     end
     

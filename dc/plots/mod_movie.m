@@ -177,7 +177,11 @@ for i=0:iend-1
     if ischar(index), index = find_approx(sliceax,str2double(index),1); end
     
     % fix title string
-    labels.title = [vartitle axis ' = ' sprintf('%5.2f', sliceax(index)) ' m | '];
+    if sliceax(index) > 1000
+        labels.title = [vartitle axis ' = ' sprintf('%5.2f', sliceax(index)/1000) ' km | '];
+    else
+        labels.title = [vartitle axis ' = ' sprintf('%5.2f', sliceax(index)) ' m | '];
+    end
     labels.mm_instance = [];
 
     % read data
