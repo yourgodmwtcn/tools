@@ -44,7 +44,7 @@
 %       - arrowkeys *pause* and navigate always
 %       - Esc to quit
 
-function [mm_instance] = animate(xax,yax,data,labels,commands,index,pausetime)
+function [mm_instance,h_plot] = animate(xax,yax,data,labels,commands,index,pausetime)
 
     %% figure out input
     narg = nargin;
@@ -144,14 +144,16 @@ function [mm_instance] = animate(xax,yax,data,labels,commands,index,pausetime)
     if flags(5) && stop ~= 1, spaceplay = 0; fprintf('\n Hit a key to advance frame. \n\n'); end
     
     if flags(6) % Build colormap
-        radius = 50;
-        num = 40;
-        theta = linspace(0, pi/2, num).';
-        a = radius * cos(theta);
-        b = radius * sin(theta);
-        L = linspace(0, 100, num).';
-        Lab = [L, a, b];
-        fancy_map = applycform(Lab, makecform('lab2srgb'));
+%         radius = 50;
+%         num = 40;
+%         theta = linspace(0, pi/2, num).';
+%         a = radius * cos(theta);
+%         b = radius * sin(theta);
+%         L = linspace(0, 100, num).';
+%         Lab = [L, a, b];
+%         fancy_map = applycform(Lab, makecform('lab2srgb'));
+        
+        fancy_map = flipud(cbrewer('div', 'RdYlGn', 32));
     end
 
     set(gcf,'Renderer','zbuffer'); % performance!
@@ -196,23 +198,23 @@ function [mm_instance] = animate(xax,yax,data,labels,commands,index,pausetime)
         hold off; % just in case
         switch plotflag
             case 2
-                pcolor(xax,yax,plotdata(:,:,i)');
+                h_plot = pcolor(xax,yax,plotdata(:,:,i)');
             case 3
                 try
-                    imagescnan(yax,xax,plotdata(:,:,i)');
+                    h_plot = imagescnan(yax,xax,plotdata(:,:,i)');
                     set(gca,'yDir','normal');
                 catch ME
-                    imagesc(xax,yax,plotdata(:,:,i)');
+                    h_plot = imagesc(xax,yax,plotdata(:,:,i)');
                     set(gca,'yDir','normal')
                 end
             case 4
                 set(gcf,'Renderer','painters');
                 clf;
-                [C,h] = contour(xax,yax,plotdata(:,:,i)','k');
+                [C,h_plot] = contour(xax,yax,plotdata(:,:,i)','k');
                 format short
-                clabel(C,h,'FontSize',9);
+                clabel(C,h_plot,'FontSize',9);
             otherwise
-                contourf(xax,yax,plotdata(:,:,i)'); shading flat
+                [~,h_plot] = contourf(xax,yax,plotdata(:,:,i)'); shading flat
         end
         
         % colorbar
@@ -221,7 +223,7 @@ function [mm_instance] = animate(xax,yax,data,labels,commands,index,pausetime)
                 if labels.stride > 0
                     caxis(clim);
                 else
-                    if datamax ~= datamin, caxis([datamin datamax]); end
+                    if datamax ~= datamin,caxis([datamin datamax]); end
                 end
             end
         end        
@@ -239,6 +241,17 @@ function [mm_instance] = animate(xax,yax,data,labels,commands,index,pausetime)
         end
         xlabel(labels.xax);
         ylabel(labels.yax);
+        % center colorbar
+        [cmin cmax] = caxis;
+        if cmax*cmin < 0 % make colorbar symmetric about zero
+            if cmax > abs(cmin)
+                cmin = -abs(cmax);
+            else
+                cmax = abs(cmin);
+            end
+        end
+        caxis([cmin cmax]);
+        
         eval(commands); % execute custom commands
         
         if flags(7)

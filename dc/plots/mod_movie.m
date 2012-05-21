@@ -40,7 +40,7 @@
 % Added labels structure
 % Original roms_movie version
 
-function [mm_instance] = mod_movie(fname, varname, tindices, volume, axis, index, commands)
+function [h_plot] = mod_movie(fname, varname, tindices, volume, axis, index, commands)
 
 % fname = find_file(fname);
 % if isempty(fname) 
@@ -219,7 +219,7 @@ for i=0:iend-1
         labels.yax = [labels.yax ' x 10^3'];
     end
          
-    [labels.mm_instance] = animate(plotx,ploty,dv,labels,commands,3,0.1);
+    [labels.mm_instance,h_plot] = animate(plotx,ploty,dv,labels,commands,3,0.1);
     
     if ~isempty(labels.mm_instance), mm_render(labels.mm_instance); end
 end

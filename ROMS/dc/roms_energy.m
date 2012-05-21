@@ -5,7 +5,7 @@
 %
 % Accepts the following commands
 %               - ncdf_out : controls whether netcdf file with energy files is written. 
-%               - growthrate_v : calculated growth rate for 0/5u^2 instead of 0.5(u^2 + v^2)
+%               - growthrate_u : calculated growth rate for 0/5u^2 instead of 0.5(u^2 + v^2)
 
 % commented out w lines but they're there if you need them
 
