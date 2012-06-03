@@ -8,7 +8,7 @@ function [pv,xpv,ypv,zpv] = roms_pv(fname,tindices,outname)
 vinfo = ncinfo(fname,'u');
 s     = vinfo.Size;
 dim   = length(s); 
-slab  = roms_slab(fname,0);
+slab  = roms_slab(fname,0)-3;
 
 warning off
 grid = roms_get_grid(fname,fname,0,1);
@@ -75,7 +75,7 @@ ncwrite(outname,zname,zpv);
 ncwrite(outname,'ocean_time',tpv);
 
 %% calculate pv
-pv = nan([s(1)-1 s(2)-2 s(3)-1 tindices(2)-tindices(1)+1]);
+%pv = nan([s(1)-1 s(2)-2 s(3)-1 tindices(2)-tindices(1)+1]);
 misc = roms_load_misc(fname);
 
 for i=0:iend-1
@@ -92,12 +92,14 @@ for i=0:iend-1
         %fprintf('\n Assuming T0 = 14c\n');
     end
     
-    [pv(:,:,:,tstart:tend),xpv,ypv,zpv] = pv_cgrid(grid1,u,v,rho,f,rho0);
+    [pv,xpv,ypv,zpv] = pv_cgrid(grid1,u,v,rho,f,rho0);
 
-    ncwrite(outname,'pv',pv(:,:,:,tstart:tend),read_start); 
+    ncwrite(outname,'pv',pv,read_start); 
+    
+    intPV(tstart:tend) = domain_integrate(pv,xpv,ypv,zpv);
     
 end
-intPV = domain_integrate(pv,xpv,ypv,zpv);
+
 save pv.mat pv xpv ypv zpv tpv intPV
 fprintf('\n Wrote file : %s \n\n',outname);
 

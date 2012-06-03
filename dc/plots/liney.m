@@ -1,7 +1,7 @@
 % Plots horizontal line at a given y (can be a vector)
-%       [] = liney(y,label,color)
+%       [handles] = liney(y,label,color)
 
-function [] = liney(y,label,color)
+function [handles] = liney(y,label,color)
     
     hFig = evalin('caller','gcf');
     hAxis = evalin('caller','gca');
@@ -19,7 +19,7 @@ function [] = liney(y,label,color)
     %loglog([x; x]',repmat(yax,length(x),1),'k-','LineWidth',1.5);
     
     for i=1:length(y)       
-        plot(xax,[y(i) y(i)],'--','LineWidth',1.5,'Color',color);
+        handles(i) = plot(xax,[y(i) y(i)],'--','LineWidth',1.5,'Color',color);
 %        set(hAxis,'YTick',sort([ytick y(i)]));
         %if mod(i,2)
             text(double(xax(end)-(length(label)))/2,double(y(i)),label,'Rotation',0,'VerticalAlignment','Bottom','FontSize',10,'Color',color);%,'FontWeight','Bold');

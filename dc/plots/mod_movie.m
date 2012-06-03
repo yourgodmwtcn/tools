@@ -135,7 +135,7 @@ for i=0:iend-1
             ploty = zax;
             axind = 1;
             labels.xax = ['Y (' yunits ')'];
-            labels.yax = 'Z (m)';
+            labels.yax = 'Z (meter)';
             
         case 'y'
             sliceax = yax;
@@ -143,7 +143,7 @@ for i=0:iend-1
             ploty = zax;
             axind = 2;
             labels.xax = ['X (' xunits ')'];
-            labels.yax = 'Z (m)';
+            labels.yax = 'Z (meter)';
 
         case 'z'
             sliceax = zax;

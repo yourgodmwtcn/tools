@@ -1,7 +1,7 @@
 % Plot vertical line at x
 %       [] = linex(x,label,color)
 
-function [] = linex(x,label,color)
+function [handles] = linex(x,label,color)
     
     hFig = evalin('caller','gcf');
     hAxis = evalin('caller','gca');
@@ -21,7 +21,7 @@ function [] = linex(x,label,color)
     %loglog([x; x]',repmat(yax,length(x),1),'k-','LineWidth',1.5);
     
     for i=1:length(x)       
-        plot([x(i) x(i)],yax,'--','LineWidth',1.5,'Color',color);
+        handles(i) = plot([x(i) x(i)],yax,'--','LineWidth',1.5,'Color',color);
 %        set(hAxis,'XTick',sort([xtick x(i)]));
         %if mod(i,2)
         if ~isempty(label)

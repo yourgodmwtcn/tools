@@ -6,8 +6,8 @@
 % Accepts the following commands
 %               - ncdf_out : controls whether netcdf file with energy files is written. 
 %               - growthrate_u : calculated growth rate for 0/5u^2 instead of 0.5(u^2 + v^2)
+% saves time of *first* peak in growth rate
 
-% commented out w lines but they're there if you need them
 
 function [EKE,MKE,PE] = roms_energy(fname,tindices,volume,ntavg,mean_index,commands)
 

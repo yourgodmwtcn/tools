@@ -1,6 +1,6 @@
 % Makes animation (default using contourf). Assumes last dimension is to be looped by default. 
 % Else specify index. Allows browsing.
-%       [] = animate(xax,yax,data,labels,commands,index,pausetime)
+%       [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,pausetime)
 %           xax,yax - x,y axes (both optional) - can be empty []
 %           data - data to be animated - script squeezes data
 %
@@ -27,6 +27,8 @@
 %                          > pcolor  - use pcolor instead of contourf
 %                          > imagesc - use imagesc(nan) instead of contourf. imagescnan is tried first
 %                          > contour - use contour instead of contourf
+%                          > movieman - make movie using Ryan's movieman code
+%                          > topresent - tweaks image to make it better for saving (bigger fonts, reduced axis tick marks etc.)
 %
 %           index - dimension to loop through (optional)
 %           pausetime - pause(pausetime) (optional)
@@ -44,7 +46,7 @@
 %       - arrowkeys *pause* and navigate always
 %       - Esc to quit
 
-function [mm_instance,h_plot] = animate(xax,yax,data,labels,commands,index,pausetime)
+function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,pausetime)
 
     %% figure out input
     narg = nargin;
@@ -53,8 +55,7 @@ function [mm_instance,h_plot] = animate(xax,yax,data,labels,commands,index,pause
         warning('Previous ESC detected. Opening new figure.');
         figure;
     end
-    set(gcf,'Position',[100 200 900 500]);
-    
+        
     switch narg
         case 1,
             data = squeeze(xax);
@@ -134,7 +135,7 @@ function [mm_instance,h_plot] = animate(xax,yax,data,labels,commands,index,pause
     spaceplay = 1; % if 1, space pauses. if 0, space plays
     
     %% parse options
-    cmds = {'nocaxis','pcolor','imagesc','contour','pause','fancy_cmap','movieman'};
+    cmds = {'nocaxis','pcolor','imagesc','contour','pause','fancy_cmap','movieman','topresent'};
     flags = zeros(1,length(cmds));
     if ~isempty(commands),
         [flags, commands] = parse_commands(cmds,commands);
@@ -155,6 +156,7 @@ function [mm_instance,h_plot] = animate(xax,yax,data,labels,commands,index,pause
         
         fancy_map = flipud(cbrewer('div', 'RdYlGn', 32));
     end
+    if flags(7) || flags(8), set(gcf,'Position',[0 0 1600 900]); flags(8)=1; end % maximize for recording + activate topresent
 
     set(gcf,'Renderer','zbuffer'); % performance!
     i=0;
@@ -198,23 +200,23 @@ function [mm_instance,h_plot] = animate(xax,yax,data,labels,commands,index,pause
         hold off; % just in case
         switch plotflag
             case 2
-                h_plot = pcolor(xax,yax,plotdata(:,:,i)');
+                handles.h_plot = pcolor(xax,yax,plotdata(:,:,i)');
             case 3
                 try
-                    h_plot = imagescnan(yax,xax,plotdata(:,:,i)');
+                    handles.h_plot = imagescnan(yax,xax,plotdata(:,:,i)');
                     set(gca,'yDir','normal');
                 catch ME
-                    h_plot = imagesc(xax,yax,plotdata(:,:,i)');
+                    handles.h_plot = imagesc(xax,yax,plotdata(:,:,i)');
                     set(gca,'yDir','normal')
                 end
             case 4
                 set(gcf,'Renderer','painters');
                 clf;
-                [C,h_plot] = contour(xax,yax,plotdata(:,:,i)','k');
+                [C,handles.h_plot] = contour(xax,yax,plotdata(:,:,i)',linspace(datamin,datamax,30),'Color','k');
                 format short
-                clabel(C,h_plot,'FontSize',9);
+                clabel(C,handles.h_plot,'FontSize',9);
             otherwise
-                [~,h_plot] = contourf(xax,yax,plotdata(:,:,i)'); shading flat
+                [~,handles.h_plot] = contourf(xax,yax,plotdata(:,:,i)',linspace(datamin,datamax,25)); shading flat
         end
         
         % colorbar
@@ -229,44 +231,56 @@ function [mm_instance,h_plot] = animate(xax,yax,data,labels,commands,index,pause
         end        
         shading flat;
         if flags(6), colormap(fancy_map); end
-        if plotflag ~= 4, colorbar;  end
+        if plotflag ~= 4, handles.h_cbar = colorbar;  end
         
         % labels
         if labels.revz, revz; end;
         if isempty(labels.time)
-            title([labels.title ' t instant = ' num2str(labels.t0+i+(labels.dt-1)*(i-1)+100*labels.stride)]);
+            addtitle = [' t instant = ' num2str(labels.t0+i+(labels.dt-1)*(i-1)+100*labels.stride)];
         else
-            title([labels.title ' t = ' sprintf('%.2f/%.2f ', labels.time(i),labels.tmax) ...
-                   labels.tunits ' (instant = ' num2str(labels.t0+i+(labels.dt-1)*(i-1)+100*labels.stride) ')']);
-        end
-        xlabel(labels.xax);
-        ylabel(labels.yax);
-        % center colorbar
-        [cmin cmax] = caxis;
-        if cmax*cmin < 0 % make colorbar symmetric about zero
-            if cmax > abs(cmin)
-                cmin = -abs(cmax);
-            else
-                cmax = abs(cmin);
+            addtitle = [' t = ' sprintf('%.2f/%.2f ', labels.time(i),labels.tmax) ...
+                   labels.tunits];  
+            if flags(8) == 0 % don't want t instant in final plots
+                addtitle = [addtitle ' (instant = ' num2str(labels.t0+i+(labels.dt-1)*(i-1)+100*labels.stride) ')'];
             end
         end
-        caxis([cmin cmax]);
+        
+        % make fonts bigger for presentation / movie plots
+        if flags(8), fontSize = 20; else fontSize = 12; end
+        
+        handles.h_title = title([labels.title addtitle],'FontSize',fontSize);
+        xlabel(labels.xax,'FontSize',fontSize);
+        ylabel(labels.yax,'FontSize',fontSize);
+        set(gca,'FontSize',fontSize);
+        % center colorbar
+        if flags(7) || flags(8)
+            [cmin cmax] = caxis;
+            if cmax*cmin < 0 % make colorbar symmetric about zero
+                if cmax > abs(cmin)
+                    cmin = -abs(cmax);
+                else
+                    cmax = abs(cmin);
+                end
+            end
+            caxis([cmin cmax]);
+        end
         
         eval(commands); % execute custom commands
         
-        if flags(7)
+        if flags(7)  
             if isempty(labels.mm_instance)
                 labels.mm_instance = mm_setup;
-                labels.mm_instance.pixelSize = [1024 768];
-                labels.mm_instance.outputFile = 'mm_output.mp4';
-                labels.mm_instance.ffmpegArgs = '-q:v 5';
-                labels.mm_instance.InputFrameRate = 3;
-                labels.mm_instance.frameRate = 2;
+                labels.mm_instance.pixelSize = [1600 900];
+                labels.mm_instance.outputFile = 'mm_output.avi';
+                labels.mm_instance.ffmpegArgs = '-q:v 1';
+                labels.mm_instance.InputFrameRate = 4;
+                labels.mm_instance.frameRate = 4;
             end
             set(gcf,'Renderer','opengl');
             mm_addFrame(labels.mm_instance,gcf);
-            mm_instance = labels.mm_instance;
+            mm_instance = labels.mm_instance;             
         else
             mm_instance = [];
         end
+        
     end
