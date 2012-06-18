@@ -1,3 +1,5 @@
+%       [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
+    
 function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
     
     warning off;

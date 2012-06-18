@@ -272,11 +272,11 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
                 labels.mm_instance = mm_setup;
                 labels.mm_instance.pixelSize = [1600 900];
                 labels.mm_instance.outputFile = 'mm_output.avi';
-                labels.mm_instance.ffmpegArgs = '-q:v 1';
-                labels.mm_instance.InputFrameRate = 4;
-                labels.mm_instance.frameRate = 4;
+                labels.mm_instance.ffmpegArgs = '-q:v 1 -g 1';
+                labels.mm_instance.InputFrameRate = 3;
+                labels.mm_instance.frameRate = 3;
             end
-            set(gcf,'Renderer','opengl');
+            set(gcf,'Renderer','zbuffer');
             mm_addFrame(labels.mm_instance,gcf);
             mm_instance = labels.mm_instance;             
         else

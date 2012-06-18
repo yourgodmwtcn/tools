@@ -1,13 +1,13 @@
 % Movie of field 'varname' from 'fname' sliced along 'index' of 'axis'.
 % The plot is of difference w.r.t field at tindices(1) of the variable
-%       roms_diffmovie(fname, varname, axis, index) 
+%       roms_diffmovie(fname, varname, tindices,axis, index) 
 %           fname - filename
 %           varname - variable name
 %           tindices - time indices to animate [start end]
 %           axis - axis of slice ('x','y' or 'z')
 %           index - index along 'axis' to slice
 
-function [] = roms_diffmovie(fname, varname, tindices, axis, index) 
+function [] = roms_diffmovie(fname, varname, tindices, axis, index,commands) 
 
 %[vars, atts, dims] = ncdfread(fname);vinfo = ncinfo(fname,varname);
 if isempty(tindices)
@@ -68,14 +68,14 @@ switch axis
         for i=1:s(end)
             dv(:,:,i) = squeeze(var(index,:,:,i)-var(index,:,:,1));
         end
-        animate(yax(1,: ),zax(:,1,1),dv);
+        animate(yax(1,: ),zax(:,1,1),dv,commands);
     
     case 'y'
         dv = zeros([s(1) s(3) s(4)]);
         for i=1:s(end)
             dv(:,:,i) = squeeze(var(:,index,:,i)-var(:,index,:,1));
         end
-        animate(xax(:,1),zax(:,1,1),dv);
+        animate(xax(:,1),zax(:,1,1),dv,commands);
 
     case 'z'
         if strcmp(varname, 'zeta')
@@ -83,13 +83,13 @@ switch axis
             for i=1:s(end)
                 dv(:,:,i) = squeeze(var(:,:,i)-var(:,:,1));
             end
-            animate(xax(:,1),yax(1,:),dv);
+            animate(xax(:,1),yax(1,:),dv,commands);
         else            
             dv = zeros([s(1) s(2) s(4)]);
             for i=1:s(end)
                 dv(:,:,i) = squeeze(var(:,:,index,i)-var(:,:,index,1));
             end
-            animate(xax(:,1),yax(1,:),dv);
+            animate(xax(:,1),yax(1,:),dv,commands);
         end
     otherwise
         fprintf('\n ERROR: Invalid axis label. \n\n');
