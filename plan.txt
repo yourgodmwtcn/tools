@@ -35,3 +35,8 @@ Improvements:
 	- fix corr_sig and confnorm
 	- LaPrint
 	- get matlab to compile
+
+	
+	- fix fonts in animation code (not avant garde for some reason)
+	- make analysis tools model-agnostic
+	- update initial conditions ROMS script to newest version

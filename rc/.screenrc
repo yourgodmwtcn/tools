@@ -37,11 +37,11 @@ bind ' ' windowlist -b # windowlist to space
 #startup stuff
 startup_message off
 
-screen -t bash0 0
-screen -t bash1 1
-chdir /home/poison/deepak/ROMS/trunk/
-screen -t ROMS_src 2
-screen -t ROMS_run 3
-screen -t top  9 top
-select 0
+screen -t matlab 1
+chdir /home/poison/deepak/ROMS/runs/si/
+screen -t ROMS-config 2
+screen -t ROMS-run-1 3
+screen -t ROMS-run-2 4
+screen -t top  0  top
+select 3
 
