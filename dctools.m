@@ -64,7 +64,7 @@
 %                           - dcfft calls this by default.
 %
 % -------------------------------------------------------------------------
-%                           PLOTS
+%                           PLOT / COLOR STUFF
 % -------------------------------------------------------------------------
 % animate                   - Shows movie of input data
 % animate_quiver            - Shows movie of vectors
@@ -76,22 +76,34 @@
 %                             to scale the labelled 1./x value by.%
 % fix_subplot2x2            - Tries to reduce extra whitespace in 2x2 subplots. Params
 %                             might need to be set manually
-% 
-% -------------------------------------------------------------------------
-%                           MISC
-% ------------------------------------------------------------------------- 
+%
+%
+% cbrewer                   - color brewer
+% haxby                     - bathymetric colormap
+% lbmap                     - Light & Bartlein Eos article
+% cptcmap                   - GMT colormaps for matlab
+% diverging_map             - creates divergent colormap based on http://www.sandia.gov/~kmorel/documents/ColorMaps/
+% more colormaps            - http://soliton.vm.bytemark.co.uk/pub/cpt-city/index.html
+% distinguishable_colors    - cycles best possible colors
+% laprint                   - latex print stuff + psfrag stuff
+% cm_and_cb_utilities       - colormap and colorbar  = cbfreeze, cblabel etc.
+% freezeColors              - freeze colormap etc.
+%
+%
 % quiverc                   - color coded quiver plot
 % quiverscale               - plots a reference arrow for quiver plots
 % fixepsbbox                - fixes .eps bounding box to reduce extra whitespace
 % suplabel                  - super label for subplots
 % plotyyy                   - 3 y axes
-% distinguishable_colors    - cycles best possible colors
 % legendflex                - flexible legends
 % scrollsubplot             - subplots with scrollbars.
 % magnifyOnFigure           - is what is says
 % pptfigure                 - 
-% export_fig                - 
+% export_fig                - good figure saving
 %
+% -------------------------------------------------------------------------
+%                           MISC
+% ------------------------------------------------------------------------- 
 % cprintf                   - colored text output
 %
 % find_approx               - find approximate equality
@@ -102,12 +114,11 @@
 % vgrid                     - Ken's ROMS vertical grid code.
 % spice                     - calculate spiciness
 % intersections             - find intersections of two curves
-% timeit                    - time functions
+% timeit                    - function run time
 %
 % fdep                      - lists dependencies for input .m file
-% exportToZip               - 
-% v2struct                  - 
-%
+% exportToZip               - Creates a ZIP file containing all dependencies of a function
+% v2struct                  - variable to structure and vice versa
 % 
 % -------------------------------------------------------------------------
 %                       TOOLBOXES
@@ -118,6 +129,5 @@
 % movieman                  - Ryan's movie stuff
 % ROMS                      - roms_wilkin, arango, ROMS_tools
 % tsplot                    - 
-% cm_and_cb_utilities       - colormap and colorbar stuff
 
 help dctools

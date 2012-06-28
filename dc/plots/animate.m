@@ -207,7 +207,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
                     set(gca,'yDir','normal');
                 catch ME
                     handles.h_plot = imagesc(xax,yax,plotdata(:,:,i)');
-                    set(gca,'yDir','normal')
+                    set(gca,'yDir','normal');
                 end
             case 4
                 set(gcf,'Renderer','painters');

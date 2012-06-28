@@ -4,6 +4,7 @@
 \usepackage{color}
 \usepackage{epstopdf}
 \usepackage{psfrag}
+\usepackage{cmap}
 \usepackage{booktabs}    %  fancy tables
 \usepackage[T1]{fontenc} % better font encoding
 \usepackage{mathpazo}    % fancy math fonts
@@ -16,7 +17,8 @@
 \usepackage{rotating}
 \usepackage{pdflscape}
 \usepackage{hyperref}
-\usepackage{breakurl}
+%\usepackage{breakurl} % Only for dvips not pdflatex
+%\usepackage{siunitx} % Messes up tables
 \usepackage[protrusion=true,expansion]{microtype}
 \usepackage{mathtools}
 
@@ -40,9 +42,9 @@
 
 % The following makes ODEs and PDEs easier to write.
 % For an example, see the second problem below. - Vallis Solution template
-\newcommand{\dd}[3][]{{\dr^{#1} #2 \over \dr #3^{#1}}}
-\newcommand{\pp}[3][]{{\partial^{#1} #2 \over \partial #3^{#1}}}
-\newcommand{\DD}[1]{{\D#1 \over \D t}}
+\newcommand{\dd}[3][]{{\frac{\dr^{#1} #2}{\dr #3^{#1}}}}
+\newcommand{\pp}[3][]{{\frac{\partial^{#1} #2}{\partial #3^{#1}}}}
+\newcommand{\DD}[1]{{\frac{\D#1}{\D t}}}
 
 % These are some of my math shortcuts
 \newcommand{\mb}[1]{\boldsymbol{#1}} % math bold font

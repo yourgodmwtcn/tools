@@ -38,5 +38,9 @@ Improvements:
 
 	
 	- fix fonts in animation code (not avant garde for some reason)
-	- make analysis tools model-agnostic
 	- update initial conditions ROMS script to newest version
+	- make analysis tools model-agnostic
+	
+	- ROMS grid / initial conditions creation like parker's?
+	- add correction to z-grid for free surface motion in all ROMS tools
+
