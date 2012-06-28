@@ -1,0 +1,73 @@
+commands to make rompy work on fedora:
+-----
+GOES
+-----
+sudo yum install goes goes-devel
+
+-----
+HDF5
+-----
+curl -O http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.4.tar.bz2
+
+tar xjf hdf5-1.8.4.tar.bz2 
+
+cd hdf5-1.8.4
+
+./configure --prefix=/usr/local --enable-hl --enable-shared
+
+make check
+
+sudo make install
+
+-----
+netCDF4
+-----
+curl -O http://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-4.0.1.tar.gz
+
+tar xzf netcdf-4.0.1.tar.gz
+
+cd netcdf-4.0.1
+
+./configure --enable-netcdf-4 --with-hdf5=/usr/local --with-zlib=/usr --enable-shared --enable-dap
+
+make check
+
+sudo make install
+
+-----
+matplotlib
+-----
+curl -O http://iweb.dl.sourceforge.net/project/matplotlib/matplotlib/matplotlib-0.99.1/matplotlib-0.99.1.2.tar.gz
+
+tar xzf matplotlib-0.99.1.2.tar.gz 
+
+cd matplotlib-0.99.1.1
+
+python setup.py build
+
+sudo python setup.py install
+
+
+-----
+basemap
+-----
+curl -O http://iweb.dl.sourceforge.net/project/matplotlib/matplotlib-toolkits/basemap-0.99.4/basemap-0.99.4.tar.gz
+
+tar xzf basemap-0.99.4.tar.gz 
+
+cd basemap-0.99.4
+
+python setup.py build
+
+-----
+python-netcdf4
+-----
+ curl -O http://netcdf4-python.googlecode.com/files/netCDF4-0.8.2.tar.gz
+
+tar xzf netCDF4-0.8.2.tar.gz 
+
+cd netCDF4-0.8.2
+
+python setup.py build
+
+sudo python setup.py install
