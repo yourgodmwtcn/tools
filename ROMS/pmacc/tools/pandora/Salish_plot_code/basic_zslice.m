@@ -26,7 +26,7 @@ stop = s(end,:,:);
 sfull = cat(1,sbot,s,stop);
 s0 = squeeze(stop);
 
-cvec = [30 34];
+cvec = [30 32];
 subplot(131)
 pcolorcen(G.lon_rho,G.lat_rho,s0);
 shading flat
@@ -41,7 +41,7 @@ hold on
 contour(G.lon_rho,G.lat_rho,hh,[0 0],'-k');
 contour(G.lon_rho,G.lat_rho,hh,[200 200],'-k');
 
-zlev_vec = [-30 -250];
+zlev_vec = [-50 -100];
 for ii = 1:length(zlev_vec)
     zlev = zlev_vec(ii);
     load([slicedir,'zslice_',basename,'_',num2str(-zlev), ...

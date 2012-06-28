@@ -77,7 +77,7 @@ else
         varname(1) = lower(varname(1));
     end
     % set up grid    
-    [xax,yax,zax,vol] = roms_extract(fname,varname,volume);
+    [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume);
     [~,~,~,time,xunits,yunits] = roms_var_grid(fname,varname);
     time = time./3600/24;
 end

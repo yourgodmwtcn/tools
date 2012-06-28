@@ -46,7 +46,7 @@ make_movie = 0;
 if iscell(fn); make_movie = 1; end
 
 % choose which plotting code to use
-[fn_p,pth_p] = uigetfile('Salish_plot_code/*.m','Select Plotting code...');
+[fn_p,pth_p] = uigetfile('Salish_plot_code\*.m','Select Plotting code...');
 addpath(pth_p);
 plot_file = strrep(fn_p,'.m',''); % used in an "eval" call below
 

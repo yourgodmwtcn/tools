@@ -200,7 +200,11 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
         hold off; % just in case
         switch plotflag
             case 2
-                handles.h_plot = pcolor(xax,yax,plotdata(:,:,i)');
+                try
+                    handles.h_plot = pcolorcen(xax,yax,plotdata(:,:,i)');
+                catch ME
+                    handles.h_plot = pcolor(xax,yax,plotdata(:,:,i)');
+                end
             case 3
                 try
                     handles.h_plot = imagescnan(yax,xax,plotdata(:,:,i)');

@@ -9,9 +9,9 @@ function [] = basic(Tdir,infile,basename,tt)
 % plot salinity
 s0 = nc_varget(infile,'salt',[0 S.N-1 0 0],[1 1 -1 -1]);
 subplot(121)
-pcolor(G.lon_rho,G.lat_rho,s0);
+pcolorcen(G.lon_rho,G.lat_rho,s0);
 shading flat
-cvec = [28 32]; caxis(cvec);
+cvec = [30 31]; caxis(cvec);
 colorbar('Eastoutside');
 % fix scaling
 Z_dar;
@@ -22,12 +22,12 @@ ylabel('Latitude (deg)')
 % add file info
 Z_info(basename,tt,T,'lr');
 % add coastline
-Z_addcoast('combined',Tdir.coast);
+Z_addcoast('detailed',Tdir.coast);
 
 % plot temperature
 t0 = nc_varget(infile,'temp',[0 S.N-1 0 0],[1 1 -1 -1]);
 subplot(122)
-pcolor(G.lon_rho,G.lat_rho,t0);
+pcolorcen(G.lon_rho,G.lat_rho,t0);
 shading flat
 cvec = [8 12]; caxis(cvec);
 colorbar('Eastoutside');
@@ -37,6 +37,6 @@ Z_dar;
 title('(b) Surface Temperature','fontweight','bold')
 xlabel('Longitude (deg)')
 % add coastline
-Z_addcoast('combined',Tdir.coast);
+Z_addcoast('detailed',Tdir.coast);
 % and velocity vectors
 Z_velvec(infile,G,S,'lr')

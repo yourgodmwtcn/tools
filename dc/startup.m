@@ -17,6 +17,7 @@ set(0,'DefaultTextFontSize',12)
 
 % axes
 set(0,'DefaultAxesFontName','AvantGarde')
+set(0,'DefaultAxesFontWeight','normal')
 set(0,'DefaultAxesTickLength'  , [.01 .01]);
 set(0,'DefaultAxesLineWidth'  , 1);
 set(0,'DefaultAxesFontSize',10)
