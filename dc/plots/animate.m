@@ -237,6 +237,9 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
         if flags(6), colormap(fancy_map); end
         if plotflag ~= 4, handles.h_cbar = colorbar;  end
         
+        % fix display aspect ratio for lat,lon plots
+        if labels.dar, Z_dar; end
+        
         % labels
         if labels.revz, revz; end;
         if isempty(labels.time)

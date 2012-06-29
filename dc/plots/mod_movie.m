@@ -1,5 +1,5 @@
 % Movie of field 'varname' from 'fname' sliced along 'index' of 'axis'.
-%       mod_movie(fname, varname, tindices, volume,axis, index, commands)
+%       mod_movie(fname, varname, tindices, volume,axis, index, commands, isDir)
 %           fname - filename
 %           varname - variable name
 %           tindices - time indices to animate [start (stride) end] OR [start count] OR [start] - single snapshot
@@ -40,7 +40,7 @@
 % Added labels structure
 % Original roms_movie version
 
-function [h_plot] = mod_movie(fname, varname, tindices, volume, axis, index, commands)
+function [h_plot] = mod_movie(fname, varname, tindices, volume, axis, index, commands, isDir)
 
 % fname = find_file(fname);
 % if isempty(fname) 
@@ -48,6 +48,20 @@ function [h_plot] = mod_movie(fname, varname, tindices, volume, axis, index, com
 % else
 % 	fprintf('\n Using file: %s\n', fname)
 % end
+
+% check inputs
+if ~exist('tindices','var'), tindices = []; end
+if ~exist('commands','var'), commands = ''; end
+if ~exist('isDir','var'), isDir = 0; end
+
+% if folder, loop through all .nc files
+if isdir(fname)
+    files = ls([fname '\*.nc']);
+    isDir = 1;
+    for ii=1:length(files)
+        h_plot = mod_movie([fname '\' files(ii,:)],varname,tindices,volume,axis,index,commands,isDir);
+    end
+end
 
 %% model specific setup
 gcm = 1;
@@ -89,15 +103,14 @@ dim    = length(vinfo.Size);
 slab   = 100; % slab for ncread. read 'n' records in at a time - faster response + save some memory?
 midflag = 0;  % 1 if script needs to compute the mid level for plot
 
-if ~exist('tindices','var'), tindices = []; end
 [iend,tindices,dt,ntcola,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 
+% set only possible axis and index for Eta / zeta
 if strcmp(varname,'Eta') || strcmp(varname,'zeta')
     axis = 'z';
     index = 1;
 end
 
-if ~exist('commands','var'), commands = ''; end
 
 %% Plot according to options
 
@@ -112,7 +125,8 @@ catch ME
     vartitle = varname;
 end 
 
-figure;
+% overwrite current figure if loading multiple files from directory
+if ~isDir, figure; end
 
 if strcmp(index,'mid'), midflag = 1; end
 
@@ -159,7 +173,7 @@ for i=0:iend-1
             end
             
             if dim == 3 % catch zeta - free surface elevation
-                stride = [1 1 dt];
+                stride = [1 1 dt]; 
                 midflag = 0;
                 index  = 1;
                 sliceax(index) = 0;
@@ -175,6 +189,8 @@ for i=0:iend-1
     if strcmp(lower(index),'end'),  index = vinfo.Size(axind); end
     if midflag, index = num2str((sliceax(1)+sliceax(end))/2); end
     if ischar(index), index = find_approx(sliceax,str2double(index),1); end
+    
+    if findstr(labels.yax,'degree') & findstr(labels.xax,'degree'), labels.dar = 1; else labels.dar = 0; end
     
     % fix title string
     if sliceax(index) > 1000
