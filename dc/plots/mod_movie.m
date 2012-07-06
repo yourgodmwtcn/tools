@@ -63,6 +63,7 @@ if isdir(fname)
     end
 end
 
+labels.isDir = isDir;
 %% model specific setup
 gcm = 1;
 try 

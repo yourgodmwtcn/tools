@@ -14,6 +14,7 @@
 %               > tmax  - maximum value of time vector : needed when only
 %                         part of data is being plotted at a time. set by
 %                         default to max(labels.time) if not defined
+%               > dar - correct display aspect ratio when displaying lat/lon plots (using Parker's code)
 %               > stride - which stride are we on when called by mod_movie? (default: 0)
 %               > dt - time step interval from mod_movie (default: 1)
 %               > t0 - inital timestep from mod_movie
@@ -115,7 +116,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
     %% processing
   
     if stop == 1, 
-        warning('Only one time step.');
+        if ~labels.isDir, warning('Only one time step.'); end
         plotdata = double(squeeze(data)); % shiftdim screws up single snapshots
     else        
         plotdata = double(squeeze(shiftdim(data,index)));

@@ -13,7 +13,7 @@
 clear;
 % &&&&&&&&&&& USER EDIT THIS &&&&&&&&&&&&&&
 %indir = '/Users/PM/Documents/Salish/runs/';
-indir = '/Users/PM2/Documents/';
+indir = 'E:\Work\CattlePass\runs\';
 % &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 [Tdir] = pan_start; % locate things and set paths
