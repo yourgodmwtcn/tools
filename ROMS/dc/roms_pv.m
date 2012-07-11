@@ -25,9 +25,9 @@ tpv = tpv([tindices(1):tindices(2)]);
 f   = ncread(fname,'f',[1 1],[Inf Inf]);
 f   = mean(f(:));
 
-xpv = grid.x_rho(1,2:end-1)';
-ypv = grid.y_rho(2:end-1,1)';
-zpv = avg1(grid.z_r(:,1,1));
+% xpv = grid.x_rho(1,2:end-1)';
+% ypv = grid.y_rho(2:end-1,1)';
+% zpv = avg1(grid.z_r(:,1,1));
 
 xname = 'x_pv'; yname = 'y_pv'; zname = 'z_pv'; tname = 'ocean_time';
 
@@ -69,11 +69,6 @@ catch ME
     fprintf('\n Appending to existing file.\n');
 end
 
-ncwrite(outname,xname,xpv);
-ncwrite(outname,yname,ypv);
-ncwrite(outname,zname,zpv);
-ncwrite(outname,'ocean_time',tpv);
-
 %% calculate pv
 %pv = nan([s(1)-1 s(2)-2 s(3)-1 tindices(2)-tindices(1)+1]);
 misc = roms_load_misc(fname);
@@ -99,6 +94,11 @@ for i=0:iend-1
     intPV(tstart:tend) = domain_integrate(pv,xpv,ypv,zpv);
     
 end
+
+ncwrite(outname,xname,xpv);
+ncwrite(outname,yname,ypv);
+ncwrite(outname,zname,zpv);
+ncwrite(outname,'ocean_time',tpv);
 
 save pv.mat pv xpv ypv zpv tpv intPV
 fprintf('\n Wrote file : %s \n\n',outname);

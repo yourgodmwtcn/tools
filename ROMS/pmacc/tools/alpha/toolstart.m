@@ -18,6 +18,7 @@ function [Tdir] = toolstart
 % as the suggested directory structure is maintained
 this_dir = pwd; t_ind = strfind(this_dir,'\tools\pandora');
 Tdir.tools_parent = this_dir(1:t_ind);
+Tdir.tools_parent = 'E:\Work\tools\ROMS\pmacc\';
 % NOTE 6/1/2012 The code as written above should work from anywhere within
 % the directories tools, tools_data, tools_output, and anywhere alse whose
 % name starts with tools - as long as it is at the same level.
@@ -45,9 +46,9 @@ Tdir.ocn = [Tdir.data,'mossea_forcing_data/ocn/'];
 
 % paths to shared code assumed to be available by many programs
 addpath([Tdir.rtools,'Z_utils']);
-addpath([Tdir.tools,'shared/mexcdf/mexnc']);
-addpath([Tdir.tools,'shared/mexcdf/snctools']);
-addpath([Tdir.tools,'shared/seawater']);
+%addpath([Tdir.tools,'shared/mexcdf/mexnc']);
+%addpath([Tdir.tools,'shared/mexcdf/snctools']);
+%addpath([Tdir.tools,'shared/seawater']);
 addpath([Tdir.tools,'pandora/Z_functions']);
 addpath([Tdir.tools,'post_tools/obs']);
 addpath([Tdir.tools,'post_tools/roms']);

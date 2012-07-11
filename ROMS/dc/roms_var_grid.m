@@ -8,6 +8,8 @@ function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
         pos = 'p';
     elseif strcmp(varname,'eke') | strcmp(varname,'mke') | strcmp(varname,'pe')
         pos = 'e';
+    elseif strcmp(varname,'vor')
+        pos = 'q';
     else
         grid = roms_get_grid(fname,fname,0,1);
 
@@ -78,12 +80,20 @@ function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
             yunits = ncreadatt(fname,'y_pv','units');   
             
        case 'e'
-            xax = ncread(fname,'lon_en');
+            xax = ncread(fname,'x_en');
             yax = ncread(fname,'y_en');
             zax = ncread(fname,'z_en');
             tax = ncread(fname,'t_en');
             xunits = ncreadatt(fname,'x_en','units');
             yunits = ncreadatt(fname,'y_en','units');   
+            
+       case 'q'
+            xax = ncread(fname,'xvor');
+            yax = ncread(fname,'yvor');
+            zax = ncread(fname,'zvor');
+            tax = ncread(fname,'ocean_time');
+            xunits = ncreadatt(fname,'xvor','units');
+            yunits = ncreadatt(fname,'yvor','units');  
     end
     
     xunits = strrep(xunits,'_',' ');    

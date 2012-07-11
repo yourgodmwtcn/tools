@@ -43,4 +43,9 @@ Improvements:
 	
 	- ROMS grid / initial conditions creation like parker's?
 	- add correction to z-grid for free surface motion in all ROMS tools
-	- need to add bathymetry to mod_movie
+	- need to add bathymetry (land/sea mask) to mod_movie
+		- fix z-grid usage and add zeta correction
+		- change x_ to lon_
+		- use all grids as arrays not vectors
+	- generalize getting ariable grid from netcdf files
+	- make scripts accept folder input

@@ -119,6 +119,8 @@
 % fdep                      - lists dependencies for input .m file
 % exportToZip               - Creates a ZIP file containing all dependencies of a function
 % v2struct                  - variable to structure and vice versa
+%
+% deg2utm                   - lat/lon to UTM
 % 
 % -------------------------------------------------------------------------
 %                       TOOLBOXES

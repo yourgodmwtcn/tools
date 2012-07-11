@@ -162,6 +162,7 @@ for i=0:iend-1
 
         case 'z'
             sliceax = zax;
+            if ndims(sliceax) == 3, sliceax = squeeze(zax(1,1,:)); end
             plotx = xax;
             ploty = yax;
             axind = 3;

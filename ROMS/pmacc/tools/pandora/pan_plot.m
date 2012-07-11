@@ -23,8 +23,11 @@ disp(' ')
 indir = 'E:\Work\CattlePass\runs\';
 
 % choose which run to use, and set the basename
-[fn,pth]=uigetfile([indir,'*.nc'], ...
-    'Select NetCDF file or files...','multiselect','on');
+% [fn,pth]=uigetfile([indir,'*.nc'],'Select NetCDF file or files...','multiselect','on');
+    pth = 'E:\Work\CattlePass\runs\final\';
+    files = ls(pth); files = files(3:end,:);
+    files = 'ocean_his_2195.nc';
+    fn = cellstr(files)';
 % ASSUMES that "pth" is something like:
 % /Users/PM/Documents/Salish/runs/ptx_med_2005_1/OUT/
 % then the lines below find the string right before "OUT", which is the
@@ -52,8 +55,8 @@ plot_file = strrep(fn_p,'.m',''); % used in an "eval" call below
 
 % default initialization of plot properties
 Z_fig(10); figure;
-set(gcf,'position',[100 100 1000 600]);
-
+set(gcf,'position',[50 50 1400 800]);
+%figure(gcf); fprintf('\n Resize as needed and hit ENTER. \n');pause;
 % determine how many files to plot
 if make_movie; ntt = size(fn,2); else; ntt = 1; end;
 
@@ -102,13 +105,14 @@ for ii = 1:ntt % MOVIE loop start (or just make single plot)
     % size by a factor 5/3 over what is on the sceen (as determined by
     % pixel count).
     %
+    set(gcf,'PaperPositionMode','auto');
     if make_movie == 0
         % choose to save a copy of the plot
         plotit = input('Save a plot? [1 = save, RETURN = do not save]');
         if isempty(plotit); plotit = 0; end;
         if plotit
             set(gcf,'PaperPositionMode','auto');
-            print('-dtiff',[Tdir.pan_fig,plot_file,'_',basename, ...
+            export_fig([Tdir.pan_fig,plot_file,'_',basename, ...
                 time_flag,'_',num2str(tt),'.tif']);
         end
     else % make a folder of jpegs for a movie
@@ -116,12 +120,12 @@ for ii = 1:ntt % MOVIE loop start (or just make single plot)
             outdir = [Tdir.pan_mov,plot_file,'_',basename,time_flag];
             if exist(outdir)==7; rmdir(outdir,'s'); end;
             mkdir(outdir);
-        end
-        set(gcf,'PaperPositionMode','auto');
-        print('-djpeg90',[outdir,'/',num2str(tt),'.jpg']);
+        end        
+        export_fig('-q90','-nocrop',sprintf([strrep(outdir,'\','\\'),'\\%04d.png'],ii));
         if ii<length(fn); clf; end;
     end
     
 end % MOVIE loop end
+
 disp('DONE');
 

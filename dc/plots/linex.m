@@ -1,5 +1,5 @@
 % Plot vertical line at x
-%       [] = linex(x,label,color)
+%       [handles] = linex(x,label,color)
 
 function [handles] = linex(x,label,color)
     
