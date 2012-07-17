@@ -473,5 +473,7 @@ if (nargout==0)
  clear H
 end
 
+set(gca,'yDir','normal');
+
 
 % [EOF]   imagescnan.m

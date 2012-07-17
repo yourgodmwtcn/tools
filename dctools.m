@@ -80,6 +80,7 @@
 %
 % cbrewer                   - color brewer
 % haxby                     - bathymetric colormap
+% gebco                     - arango's approximation of gebco. not great.
 % lbmap                     - Light & Bartlein Eos article
 % cptcmap                   - GMT colormaps for matlab
 % diverging_map             - creates divergent colormap based on http://www.sandia.gov/~kmorel/documents/ColorMaps/
@@ -89,6 +90,13 @@
 % cm_and_cb_utilities       - colormap and colorbar  = cbfreeze, cblabel etc.
 % freezeColors              - freeze colormap etc.
 %
+% shadedpcolor              - does a shaded pcolor plot
+% sc                        - Display/output truecolor images with a range of colormaps
+% dcolor                    - Domain coloring for complex matrices
+% pcolorcen                 - centered pcolor plot (from Neil Banas)
+%
+% subaxis                   - improved subplot
+% samexaxis                 - make subplots have same x axis
 %
 % quiverc                   - color coded quiver plot
 % quiverscale               - plots a reference arrow for quiver plots
@@ -129,7 +137,7 @@
 %                             http://home.online.no/~pjacklam/matlab/software/util/index.html
 % timeplt                   - 
 % movieman                  - Ryan's movie stuff
-% ROMS                      - roms_wilkin, arango, ROMS_tools
+% ROMS                      - roms_wilkin, arango, ROMS_tools, pmacc
 % tsplot                    - 
 
 help dctools

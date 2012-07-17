@@ -49,3 +49,4 @@ Improvements:
 		- use all grids as arrays not vectors
 	- generalize getting ariable grid from netcdf files
 	- make scripts accept folder input
+	- round off axis labels to given deccimal place

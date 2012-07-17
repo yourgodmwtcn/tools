@@ -11,8 +11,9 @@ cmap = flipud(cbrewer('div','RdYlGn',24));
 % plot SSH
 s0 = nc_varget(infile,'zeta',[0 0 0],[Inf Inf Inf]);
 s0 = s0 - nanmean(s0(:));
-subplot(121)
-pcolor(G.lon_rho,G.lat_rho,s0); shading interp;
+
+h(1) = subplot(221)
+pcolorcen(G.lon_rho,G.lat_rho,s0); shading flat;
 cvec = [-0.35 0.35]; caxis(cvec);
 hcbar = colorbar('Eastoutside');
 hold on; contour(G.lon_rho,G.lat_rho,G.h,[50 100 150],'k');
@@ -48,7 +49,7 @@ toUTM =  findstr(ncreadatt(infile,'lon_u','units'),'degree');
 
 [vor,xvor,yvor,zvor] = vorticity_cgrid(grid1,u,v,toUTM);
     
-subplot(122)
+h(2) = subplot(222)
 pcolor(xvor,yvor,vor'); shading interp
 cvec = [-5 5]*1E-3; caxis(cvec);
 hcbar = colorbar('Eastoutside'); 
@@ -60,5 +61,24 @@ xlabel('Longitude (deg)')
 % add coastline
 Z_addcoast('detailed',Tdir.coast);
 % and velocity vectors
-Z_velvec(infile,G,S,'lr')
+Z_velvec(infile,G,S,'mr')
 colormap(cmap);
+
+% now do tides
+h(3) = subplot(2,2,[3 4])
+
+set(h(1),'Units','pixels')
+linkprop(h,'Units');
+
+for i=1:1
+    set(h(i),'Position',get(h(i),'Position')+[0 -225 0 180]);
+end
+pos1 = get(h(3),'Position');
+set(h(3),'Position',pos1 + [0 0 0 -175])
+
+set(h(1),'Units','normalized')
+linkprop(h,'Units');
+
+plot_tides(T.time_datenum); 
+beautify(fontSize);
+

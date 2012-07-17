@@ -112,7 +112,7 @@ function [] = stat(var1)
     % None of the rest is valid for logical arrays either
     if ~(length(s) > 2 || islogical(var1))    
     
-        if n > 10^6, warning('\n\n Terminating because array is too large. \n\n'); return; end
+        if n > 10^6, warning('Terminating because array is too large.'); return; end
 
         % Ouput var, std   
         if comp > 0.005 && (comp < 500000)

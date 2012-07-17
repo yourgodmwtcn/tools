@@ -56,6 +56,11 @@ switch poschar
         quiver(xt+deltax,yt+deltay,ufact*uscale*darscale,ufact*0,0,'k');
         quiver(xt+deltax,yt+deltay,ufact*0*darscale,ufact*uscale,0,'k');
         text(xt+deltax,yt,[num2str(uscale),' m s^{-1}'],'color','k');
+    case {'mr'}
+        deltax = -Dlon/4; deltay = Dlat/20;
+        quiver(xt+deltax,yt+deltay,ufact*uscale*darscale,ufact*0,0,'k');
+        quiver(xt+deltax,yt+deltay,ufact*0*darscale,ufact*uscale,0,'k');
+        text(xt+deltax,yt,[num2str(uscale),' m s^{-1}'],'color','k');
     case 'none'
         % do nothing
 end

@@ -26,7 +26,9 @@ indir = 'E:\Work\CattlePass\runs\';
 % [fn,pth]=uigetfile([indir,'*.nc'],'Select NetCDF file or files...','multiselect','on');
     pth = 'E:\Work\CattlePass\runs\final\';
     files = ls(pth); files = files(3:end,:);
+    files_flood = files((83-15):(83+15),:);
     files = 'ocean_his_2195.nc';
+    files = files_flood;
     fn = cellstr(files)';
 % ASSUMES that "pth" is something like:
 % /Users/PM/Documents/Salish/runs/ptx_med_2005_1/OUT/
@@ -49,14 +51,14 @@ make_movie = 0;
 if iscell(fn); make_movie = 1; end
 
 % choose which plotting code to use
-[fn_p,pth_p] = uigetfile('Salish_plot_code\*.m','Select Plotting code...');
+[fn_p,pth_p] = uigetfile('E:\Work\tools\ROMS\pmacc\tools\pandora\Salish_plot_code\*.m','Select Plotting code...');
 addpath(pth_p);
 plot_file = strrep(fn_p,'.m',''); % used in an "eval" call below
 
 % default initialization of plot properties
-Z_fig(10); figure;
-set(gcf,'position',[50 50 1400 800]);
-%figure(gcf); fprintf('\n Resize as needed and hit ENTER. \n');pause;
+%Z_fig(10); 
+figure;
+set(gcf,'position',[0 0 1600 900]);
 % determine how many files to plot
 if make_movie; ntt = size(fn,2); else; ntt = 1; end;
 
@@ -121,7 +123,7 @@ for ii = 1:ntt % MOVIE loop start (or just make single plot)
             if exist(outdir)==7; rmdir(outdir,'s'); end;
             mkdir(outdir);
         end        
-        export_fig('-q90','-nocrop',sprintf([strrep(outdir,'\','\\'),'\\%04d.png'],ii));
+        export_fig('-q90','-nocrop','-zbuffer',sprintf([strrep(outdir,'\','\\'),'\\%04d.png'],ii));
         if ii<length(fn); clf; end;
     end
     

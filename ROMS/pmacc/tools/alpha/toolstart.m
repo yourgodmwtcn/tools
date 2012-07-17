@@ -28,9 +28,9 @@ Tdir.tools_parent = 'E:\Work\tools\ROMS\pmacc\';
 % tools directory structure
 %
 % upper level places:
-Tdir.tools = [Tdir.tools_parent,'tools/'];
-Tdir.data = [Tdir.tools_parent,'tools_data/'];
-Tdir.output = [Tdir.tools_parent,'tools_output/'];
+Tdir.tools = [Tdir.tools_parent,'tools\'];
+Tdir.data = [Tdir.tools_parent,'tools_data\'];
+Tdir.output = [Tdir.tools_parent,'tools_output\'];
 % make sure that the output directory exists
 if ~exist(Tdir.output,'dir'); mkdir(Tdir.output); end;
 

@@ -37,3 +37,5 @@ r=interp1(pp,c(:,1),1:m);
 g=interp1(pp,c(:,2),1:m);
 b=interp1(pp,c(:,3),1:m);
 map=[r' g' b']/255;
+
+map(map > 1) = 1;
