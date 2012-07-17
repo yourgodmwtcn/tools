@@ -14,3 +14,7 @@ misc/matVTK1.0/
 *.asv
 *.m~
 *.prf
+*.png
+*.log
+*.aux
+*.dat
