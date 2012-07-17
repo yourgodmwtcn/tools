@@ -27,7 +27,7 @@ indir = 'E:\Work\CattlePass\runs\';
     pth = 'E:\Work\CattlePass\runs\final\';
     files = ls(pth); files = files(3:end,:);
     files_flood = files((83-15):(83+15),:);
-    files = 'ocean_his_2195.nc';
+    %files = 'ocean_his_2195.nc';
     files = files_flood;
     fn = cellstr(files)';
 % ASSUMES that "pth" is something like:

@@ -3,7 +3,7 @@ function [Tdir] = pan_start
 % invoke this at the start of any primary code in pandora
 
 % set global paths and directories
-addpath('..\alpha\'); Tdir = toolstart;
+addpath('E:\Work\tools\ROMS\pmacc\tools\alpha\'); Tdir = toolstart;
 
 % add pandora-specific folders to Tdir, and make sure they exist
 
