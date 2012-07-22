@@ -25,8 +25,8 @@ indir = 'E:\Work\CattlePass\runs\';
 % choose which run to use, and set the basename
 % [fn,pth]=uigetfile([indir,'*.nc'],'Select NetCDF file or files...','multiselect','on');
     pth = 'E:\Work\CattlePass\runs\final\';
-    files = ls(pth); files = files(3:end,:);
-    files_flood = files((83-15):(83+15),:);
+    files = ls(pth); %files = files(83-15:end,:);
+    files_flood = files((83-15):(83+19),:);
     %files = 'ocean_his_2195.nc';
     files = files_flood;
     fn = cellstr(files)';

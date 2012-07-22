@@ -34,8 +34,8 @@ toUTM =  findstr(ncreadatt(infile,'lon_u','units'),'degree');
 H = zeta + G.h;
 Cd = ncread(infile,'rdrg2');
 % centered difference
-Hx = diff(H,2,1)./mean(G.DX(:))/2;
-Hy = diff(H,2,2)./mean(G.DY(:))/2;
+Hx = avg1(diff(H,1,1)./mean(G.DX(:)),1);
+Hy = avg1(diff(H,1,2)./mean(G.DY(:)),2);
 
 urho = avg1(ubar(:,2:end-1),1);
 vrho = avg1(vbar(2:end-1,:),2);
@@ -106,7 +106,7 @@ imagescnan(G.lon_rho(2:end-1,2:end-1),G.lat_rho(2:end-1,2:end-1),stretch'); shad
 hold on 
 [C,hc] = contour(G.lon_rho,G.lat_rho,G.h,[40 80],'k-');
 clabel(C,hc,'LabelSpacing',916,'FontWeight','normal','FontSize',10);
-cvec = [-5 5]*1e-7; caxis(cvec);
+cvec = [-5 5]*1e-6; caxis(cvec);
 hcbar = colorbar('Southoutside'); 
 % fix scaling
 Z_dar;

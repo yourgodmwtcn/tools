@@ -21,6 +21,6 @@ switch whichfile
     case 'rivers'
         load([coastdir,'pnw_rivers.mat']);
 end
-coast_handle = plot(lon,lat,'-k');
+coast_handle = plot(lon,lat,'-k','LineWidth',1.5);
 hold off
 

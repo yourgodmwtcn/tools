@@ -6,18 +6,21 @@ function [] = dc_bernoulli(Tdir,infile,basename,tt)
 % get file info
 [G,S,T] = Z_get_basic_info(infile);
 
-cmap = flipud(cbrewer('div','RdYlGn',24));
-cmap2 = flipud(autumn);flipud(lbmap(24,'RedBlue'));
+cmap = flipud(lbmap(32,'RedBlue'));
+cmap2 = cmap;
+fontSize = [12 10 16];
 
 %% plot gz
+clf
+cvec = [0 8]; 
 zt = nc_varget(infile,'zeta',[0 0 0],[Inf Inf Inf]);
 zt = zt - nanmean(zt(:));
 zt = 9.81*(zt - nanmin(zt(:)));
 
-subplot(131)
-pcolorcen(G.lon_rho,G.lat_rho,zt); %shading interp;
-cvec = [0 8]; caxis(cvec);
-hcbar = colorbar('SouthOutside');
+h(1) = subplot(231);
+imagescnan(G.lon_rho,G.lat_rho,zt); shading flat
+caxis(cvec);
+hcbar = colorbar('EastOutside');
 hold on; contour(G.lon_rho,G.lat_rho,G.h,[50 100],'k');
 % fix scaling
 Z_dar;
@@ -30,19 +33,22 @@ Z_info(basename,tt,T,'lr');
 Z_addcoast('detailed',Tdir.coast);
 colormap(cmap2);
 %xlabel('Longitude (deg)')
-freezeColors; cbfreeze;
 ax(1) = gca;
+beautify(fontSize); box on
+set(gcf,'renderer','zbuffer');
+%freezeColors; cbfreeze;
 
-%% plot 1/2 (u^2+v^2) + g zeta
+% plot 1/2 (u^2+v^2) + g zeta
 u = double((ncread(infile,'u',[1 1 S.N 1],[Inf Inf 1 Inf])));
 v = double((ncread(infile,'v',[1 1 S.N 1],[Inf Inf 1 Inf])));
 uavg = avgx(u.*u);
 vavg = avgy(v.*v);
 u2v2 = squeeze(0.5*(uavg(:,2:end-1) + vavg(2:end-1,:)));
-subplot(132)
-pcolorcen(G.lon_rho(2:end-1,2:end-1),G.lat_rho(2:end-1,2:end-1),(u2v2+zt(2:end-1,2:end-1)')'); %shading interp
+
+h(2) = subplot(232);
+imagescnan(G.lon_rho(2:end-1,2:end-1),G.lat_rho(2:end-1,2:end-1),(u2v2+zt(2:end-1,2:end-1)')'); shading flat
 caxis(cvec);
-hcbar = colorbar('SouthOutside'); 
+hcbar = colorbar('EastOutside'); 
 % fix scaling
 Z_dar;
 % add labels
@@ -53,10 +59,12 @@ Z_addcoast('detailed',Tdir.coast);
 %Z_velvec(infile,G,S,'lr')
 colormap(cmap2);
 %xlabel('Longitude (deg)')
-freezeColors; cbfreeze;
-ax(2) = gca;
+ax(2) = gca; 
+beautify(fontSize); box on
+set(gcf,'renderer','zbuffer');
+%freezeColors; cbfreeze;
 
-%% plot vorticity
+% plot vorticity
 warning off
 grid = roms_get_grid(infile,infile,0,1);
 warning on
@@ -76,10 +84,10 @@ toUTM =  findstr(ncreadatt(infile,'lon_u','units'),'degree');
 
 [vor,xvor,yvor,zvor] = vorticity_cgrid(grid1,u,v,toUTM);
     
-subplot(133)
-pcolor(xvor,yvor,vor'); shading interp
+h(3) = subplot(233);
+imagescnan(xvor,yvor,vor'); shading flat
 cvec = [-5 5]*1E-3; caxis(cvec);
-hcbar = colorbar('SouthOutside'); 
+hcbar = colorbar('EastOutside'); 
 % fix scaling
 Z_dar;
 % add labels
@@ -94,7 +102,26 @@ colormap(cmap);
 
 ax(3) = gca;
 
-linkaxes(ax);
+linkaxes(ax,'xy');
+
+beautify(fontSize); box on
+
+% add tides & resize
+h(4) = subplot(2,3,[4 5 6]);
+set(h(1),'Units','pixels')
+linkprop(h,'Units');
+
+for i=1:3
+    set(h(i),'Position',get(h(i),'Position')+[0 -225 0 180]);
+end
+pos1 = get(h(4),'Position');
+set(h(4),'Position',pos1 + [0 0 0 -175])
+set(h(1),'Units','normalized')
+linkprop(h,'Units');
+
+plot_tides(T.time_datenum); 
+beautify(fontSize);
+set(gcf,'renderer','zbuffer');
 
 function [um] = avgy(um)
     um = (um(:,1:end-1,:,:)+um(:,2:end,:,:))/2;

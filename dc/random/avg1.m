@@ -1,3 +1,5 @@
+% [A] = avg1(X,index)
+
 function [A] = avg1(X,index)
     
     if ~exist('index','var'), index = 1; end

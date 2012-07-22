@@ -40,8 +40,10 @@ Improvements:
 	- fix fonts in animation code (not avant garde for some reason)
 	- update initial conditions ROMS script to newest version
 	- make analysis tools model-agnostic
-	
+	- rename all of my roms_ tools to dc_roms
 	- ROMS grid / initial conditions creation like parker's?
+	- streamfunction code.
+	- generalize momentum / vorticity balance code
 	- add correction to z-grid for free surface motion in all ROMS tools
 	- need to add bathymetry (land/sea mask) to mod_movie
 		- fix z-grid usage and add zeta correction

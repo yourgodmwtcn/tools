@@ -33,9 +33,9 @@ toUTM =  findstr(ncreadatt(infile,'lon_u','units'),'degree');
 % total water depth
 H = zeta + G.h;
 Cd = ncread(infile,'rdrg2');
-% centered difference
-Hx = diff(H,2,1)./mean(G.DX(:))/2;
-Hy = diff(H,2,2)./mean(G.DY(:))/2;
+
+Hx = avg1(diff(H,1,1)./mean(G.DX(:)),1);
+Hy = avg1(diff(H,1,2)./mean(G.DY(:)),2);
 
 urho = avg1(ubar(:,2:end-1),1);
 vrho = avg1(vbar(2:end-1,:),2);

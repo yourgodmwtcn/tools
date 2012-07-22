@@ -1,4 +1,4 @@
-function [] = dc_mom_full(Tdir,infile,basename,tt)
+function [] = dc_transect_velvec(Tdir,infile,basename,tt)
     
 % Plots transect velocity vectors and full field - Deepak Cherian
 % plots Salish simulations, a generic plot of the full domain
