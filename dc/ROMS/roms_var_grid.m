@@ -36,8 +36,13 @@ function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
             zax = grid.z_u(:,1,1);
             tax = ncread(fname,'ocean_time');
             
-            xunits = ncreadatt(fname,'lon_u','units');
-            yunits = ncreadatt(fname,'lat_u','units'); 
+            try
+                xunits = ncreadatt(fname,'lon_u','units');
+                yunits = ncreadatt(fname,'lat_u','units'); 
+            catch ME
+                xunits = ncreadatt(fname,'x_u','units');
+                yunits = ncreadatt(fname,'y_u','units'); 
+            end
             
         case 'v'
             xax = grid.lon_v(1,:)';
@@ -45,8 +50,13 @@ function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
             zax = grid.z_v(:,1,1);
             tax = ncread(fname,'ocean_time');
             
-            xunits = ncreadatt(fname,'lon_v','units');
-            yunits = ncreadatt(fname,'lat_v','units'); 
+            try
+                xunits = ncreadatt(fname,'lon_v','units');
+                yunits = ncreadatt(fname,'lat_v','units'); 
+            catch ME
+                xunits = ncreadatt(fname,'x_v','units');
+                yunits = ncreadatt(fname,'y_v','units');
+            end                
             
         case 'w'
             xax = grid.lon_rho(1,:)';
@@ -54,8 +64,13 @@ function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
             zax = grid.z_w(:,1,1);
             tax = ncread(fname,'ocean_time');
             
-            xunits = ncreadatt(fname,'lon_rho','units');
-            yunits = ncreadatt(fname,'lat_rho','units'); 
+            try
+                xunits = ncreadatt(fname,'lon_rho','units');
+                yunits = ncreadatt(fname,'lat_rho','units'); 
+            catch ME
+                xunits = ncreadatt(fname,'x_rho','units');
+                yunits = ncreadatt(fname,'y_rho','units'); 
+            end
 
         case 'r'
             xax = grid.lon_rho(1,:)';
@@ -67,8 +82,14 @@ function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
             else
                 zax = grid.z_r(:,1,1);
             end
-            xunits = ncreadatt(fname,'lon_rho','units');
-            yunits = ncreadatt(fname,'lat_rho','units'); 
+            
+            try
+                xunits = ncreadatt(fname,'lon_rho','units');
+                yunits = ncreadatt(fname,'lat_rho','units'); 
+            catch ME
+                xunits = ncreadatt(fname,'x_rho','units');
+                yunits = ncreadatt(fname,'y_rho','units'); 
+            end
         
         case 'p'
             xax = ncread(fname,'x_pv');

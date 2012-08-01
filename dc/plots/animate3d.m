@@ -1,6 +1,6 @@
 % Makes animation (default using contourf). Assumes last dimension is to be looped by default. 
 % Else specify index. Allows browsing.
-%       [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,pausetime)
+%       [] = animate(xax,yax,data,labels,commands,index,pausetime)
 %           xax,yax - x,y axes (both optional) - can be empty []
 %           data - data to be animated - script squeezes data
 %
@@ -14,7 +14,6 @@
 %               > tmax  - maximum value of time vector : needed when only
 %                         part of data is being plotted at a time. set by
 %                         default to max(labels.time) if not defined
-%               > dar - correct display aspect ratio when displaying lat/lon plots (using Parker's code)
 %               > stride - which stride are we on when called by mod_movie? (default: 0)
 %               > dt - time step interval from mod_movie (default: 1)
 %               > t0 - inital timestep from mod_movie
@@ -24,10 +23,10 @@
 %                    - Built-in options are: 
 %                          > nocaxis - non-constant colorbar
 %                          > pause   - start paused
-%                          > lab_cmap - LAB space colormap
-%                          > pcolor / contour / contourf - imagescnan is default
-%                          > movieman - make movie using Ryan's movieman code
-%                          > topresent - tweaks image to make it better for saving (bigger fonts, reduced axis tick marks etc.)
+%                          > fancy_cmap - LAB space colormap
+%                          > pcolor  - use pcolor instead of contourf
+%                          > imagesc - use imagesc(nan) instead of contourf. imagescnan is tried first
+%                          > contour - use contour instead of contourf
 %
 %           index - dimension to loop through (optional)
 %           pausetime - pause(pausetime) (optional)
@@ -45,7 +44,7 @@
 %       - arrowkeys *pause* and navigate always
 %       - Esc to quit
 
-function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,pausetime)
+function [] = animate(xax,yax,data,labels,commands,index,pausetime)
 
     %% figure out input
     narg = nargin;
@@ -54,7 +53,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
         warning('Previous ESC detected. Opening new figure.');
         figure;
     end
-        
+    
     switch narg
         case 1,
             data = squeeze(xax);
@@ -106,7 +105,9 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
     if ~isfield(labels,'stride'), labels.stride = 0; end
     if ~isfield(labels,'t0'), labels.t0 = 0; end
     
-    if ~exist('commands','var'), commands = '';     end
+    if ~exist('commands','var')
+        commands = '';
+    end
     
     if isempty(xax), xax = 1:s(1); end;
     if isempty(yax), yax = 1:s(2); end;
@@ -114,7 +115,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
     %% processing
   
     if stop == 1, 
-        if ~labels.isDir, warning('Only one time step.'); end
+        warning('Only one time step.');
         plotdata = double(squeeze(data)); % shiftdim screws up single snapshots
     else        
         plotdata = double(squeeze(shiftdim(data,index)));
@@ -134,18 +135,21 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
     spaceplay = 1; % if 1, space pauses. if 0, space plays
     
     %% parse options
-    cmds = {'nocaxis','pcolor','contourf','contour','pause','fancy_cmap','movieman','topresent'};
-    flags = zeros(1,length(cmds));
-    if ~isempty(commands),
-        [flags, commands] = parse_commands(cmds,commands);
+    flag = [0 0 0 0 0 0];% defaults
+    
+    cmds = {'nocaxis','pcolor','imagesc','contour','pause','fancy_cmap'};
+    for i = 1:length(cmds)
+        loc = strfind(commands,cmds{i});
+        if ~isempty(loc)
+            flag(i) = 1;
+            commands = [commands(1:loc-1) commands(loc+length(cmds{i}):end)];
+        end
     end
     
-    plotflag = sum([2 3 4] .* flags(2:4));
-    if flags(5) && stop ~= 1, spaceplay = 0; fprintf('\n Hit a key to advance frame. \n\n'); end
+    plotflag = sum([2 3 4] .* flag(2:4));
+    if flag(5) && stop ~= 1, spaceplay = 0; fprintf('\n Hit a key to advance frame. \n\n'); end
     
-    fancy_map = flipud(cbrewer('div', 'RdYlGn', 32));
-    
-    if flags(6) % Build colormap
+    if flag(6) % Build colormap
         radius = 50;
         num = 40;
         theta = linspace(0, pi/2, num).';
@@ -155,7 +159,6 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
         Lab = [L, a, b];
         fancy_map = applycform(Lab, makecform('lab2srgb'));
     end
-    if flags(7) || flags(8), set(gcf,'Position',[0 0 1600 900]); flags(8)=1; end % maximize for recording + activate topresent
 
     set(gcf,'Renderer','zbuffer'); % performance!
     i=0;
@@ -197,97 +200,52 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
         
         %% Plot
         hold off; % just in case
-        switch plotflag
-            case 2
-                try
-                    handles.h_plot = pcolorcen(xax,yax,plotdata(:,:,i)');
-                catch ME
-                    handles.h_plot = pcolor(xax,yax,plotdata(:,:,i)');
-                end
-            case 3
-                [~,handles.h_plot] = contourf(xax,yax,plotdata(:,:,i)',linspace(datamin,datamax,25)); shading flat
-            case 4
-                set(gcf,'Renderer','painters');
-                clf;
-                [C,handles.h_plot] = contour(xax,yax,plotdata(:,:,i)',linspace(datamin,datamax,30),'Color','k');
-                format short
-                clabel(C,handles.h_plot,'FontSize',9);
-            otherwise
-                try
-                    handles.h_plot = imagescnan(xax,yax,plotdata(:,:,i)');
-                    set(gca,'yDir','normal');
-                catch ME
-                    handles.h_plot = imagesc(xax,yax,plotdata(:,:,i)');
-                    set(gca,'yDir','normal');
-                end
-        end
+%         switch plotflag
+%             case 2
+%                 pcolor(xax,yax,plotdata(:,:,i)');
+%             case 3
+%                 try
+%                     imagescnan(yax,xax,plotdata(:,:,i)');
+%                     set(gca,'yDir','normal');
+%                 catch ME
+%                     imagesc(xax,yax,plotdata(:,:,i)');
+%                     set(gca,'yDir','normal')
+%                 end
+%             case 4
+%                 set(gcf,'Renderer','painters');
+%                 [C,h] = contour(xax,yax,plotdata(:,:,i)', 20,'k');
+%                 format short
+%                 clabel(C,h,'FontSize',9);
+%             otherwise
+%                 contourf(xax,yax,plotdata(:,:,i)', 40);
+%         end
+%         
+%         % colorbar
+%         if plotflag ~=4 
+%             if ~flag(1)
+%                 if labels.stride > 0
+%                     caxis(clim);
+%                 else
+%                     if datamax ~= datamin, caxis([datamin datamax]); end
+%                 end
+%             end
+%         end        
+%         shading flat;
+%         if flag(6), colormap(fancy_map); end
+%         if plotflag ~= 4, colorbar;  end
+
         
-        % colorbar
-        if plotflag ~=4 
-            if ~flags(1)
-                if labels.stride > 0
-                    caxis(clim);
-                else
-                    if datamax ~= datamin,caxis([datamin datamax]); end
-                end
-            end
-        end        
-        shading flat;
-        colormap(fancy_map);
-        if plotflag ~= 4, handles.h_cbar = colorbar;  end
         
-        % fix display aspect ratio for lat,lon plots
-        if labels.dar, Z_dar; end
         
         % labels
         if labels.revz, revz; end;
         if isempty(labels.time)
-            addtitle = [' t instant = ' num2str(labels.t0+i+(labels.dt-1)*(i-1)+100*labels.stride)];
+            title([labels.title ' t instant = ' num2str(labels.t0+i+(labels.dt-1)*(i-1)+100*labels.stride)]);
         else
-            addtitle = [' t = ' sprintf('%.2f/%.2f ', labels.time(i),labels.tmax) ...
-                   labels.tunits];  
-            if flags(8) == 0 % don't want t instant in final plots
-                addtitle = [addtitle ' (instant = ' num2str(labels.t0+i+(labels.dt-1)*(i-1)+100*labels.stride) ')'];
-            end
+            title([labels.title ' t = ' sprintf('%.2f/%.2f ', labels.time(i),labels.tmax) ...
+                   labels.tunits ' (instant = ' num2str(labels.t0+i+(labels.dt-1)*(i-1)+100*labels.stride) ')']);
         end
-        
-        % center colorbar
-        if flags(7) || flags(8)
-            [cmin cmax] = caxis;
-            if cmax*cmin < 0 % make colorbar symmetric about zero
-                if cmax > abs(cmin)
-                    cmin = -abs(cmax);
-                else
-                    cmax = abs(cmin);
-                end
-            end
-            caxis([cmin cmax]);
-        end
-        
+        xlabel(labels.xax);
+        ylabel(labels.yax);
         eval(commands); % execute custom commands
-        beautify;
-        % make fonts bigger for presentation / movie plots
-        if flags(8), fontSize = 20; else fontSize = 12; end
-        
-        handles.h_title = title([labels.title addtitle],'FontSize',fontSize);
-        xlabel(labels.xax,'FontSize',fontSize);
-        ylabel(labels.yax,'FontSize',fontSize);
-        set(gca,'FontSize',fontSize);
-        
-        if flags(7)  
-            if isempty(labels.mm_instance)
-                labels.mm_instance = mm_setup;
-                labels.mm_instance.pixelSize = [1600 900];
-                labels.mm_instance.outputFile = 'mm_output.avi';
-                labels.mm_instance.ffmpegArgs = '-q:v 1 -g 1';
-                labels.mm_instance.InputFrameRate = 3;
-                labels.mm_instance.frameRate = 3;
-            end
-            set(gcf,'Renderer','zbuffer');
-            mm_addFrame(labels.mm_instance,gcf);
-            mm_instance = labels.mm_instance;             
-        else
-            mm_instance = [];
-        end
-        
     end

@@ -21,6 +21,11 @@ ROMS
 	     - spreading of cells
 		 - write energy transfer calculation code
 		 - compute theoretical BI length scales from output fields
+		 
+	- animate.m
+		- fix fonts
+		- add beautify
+		- round off axis labels to given decimal place
 		
 Improvements:
 	- find_file
@@ -35,9 +40,7 @@ Improvements:
 	- fix corr_sig and confnorm
 	- LaPrint
 	- get matlab to compile
-
 	
-	- fix fonts in animation code (not avant garde for some reason)
 	- update initial conditions ROMS script to newest version
 	- make analysis tools model-agnostic
 	- rename all of my roms_ tools to dc_roms
@@ -49,6 +52,5 @@ Improvements:
 		- fix z-grid usage and add zeta correction
 		- change x_ to lon_
 		- use all grids as arrays not vectors
-	- generalize getting ariable grid from netcdf files
+	- generalize getting variable grid from netcdf files
 	- make scripts accept folder input
-	- round off axis labels to given deccimal place

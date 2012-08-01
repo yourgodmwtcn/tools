@@ -33,7 +33,7 @@ slab  = roms_slab(fname,1,ntavg);
 
 % parse input
 [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
-[xr,yr,zr,volr] = roms_extract(fname,'rho',volume);
+[xr,yr,zr,volr] = dc_roms_extract(fname,'rho',volume);
   
 % mess around with volr to replicate boundaries as in https://www.myroms.org/wiki/index.php/Grid_Generation
 volu = volr; volv = volr; volw = volr;
@@ -41,9 +41,9 @@ if ~isinf(volu(1,2)), volu(1,2) = volr(1,2)-1; end
 if ~isinf(volv(2,2)), volv(2,2) = volr(2,2)-1; end
 volw = volr;
 
- [xu,~,~,vu  ] = roms_extract(fname,'u'  ,volume);
-[~,yv,~,vv   ] = roms_extract(fname,'v'  ,volume);
-[~,~,zw,vw   ] = roms_extract(fname,'w'  ,volume);
+ [xu,~,~,vu  ] = dc_roms_extract(fname,'u'  ,volume);
+[~,yv,~,vv   ] = dc_roms_extract(fname,'v'  ,volume);
+[~,~,zw,vw   ] = dc_roms_extract(fname,'w'  ,volume);
 
 if vu(1,2) ~= volu(1,2), xu = xu(1:end-1); end
 if vv(2,2) ~= volv(2,2), yv = yv(1:end-1); end

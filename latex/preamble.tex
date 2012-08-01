@@ -2,19 +2,22 @@
 \usepackage{color}
 \usepackage{epstopdf}
 \usepackage{psfrag}
-\usepackage{cmap}
+\usepackage{cmap} % make pdf's searchable
 \usepackage{booktabs}    %  fancy tables
 \usepackage[T1]{fontenc} % better font encoding
 \usepackage{mathpazo}    % fancy math fonts
+%\usepackage{fontspec}
 \usepackage[utf8]{inputenc} % unicode input encoding
 %\usepackage{fullpage}
 \usepackage[dvips]{geometry}
 \usepackage{pdfsync}
+%\usepackage{fancyhdr}
 \usepackage{subfig}
 \usepackage[sort]{natbib}
 \usepackage{rotating}
 \usepackage{pdflscape}
 \usepackage{hyperref}
+\usepackage[figure,table]{hypcap} % Correct a problem with hyperref
 %\usepackage{breakurl} % Only for dvips not pdflatex
 %\usepackage{siunitx} % Messes up tables
 \usepackage[protrusion=true,expansion]{microtype}
@@ -23,11 +26,29 @@
 \renewcommand{\baselinestretch}{1.5} % Line spacing 1.5
 \geometry{centering,text={18cm,22cm}}
 
+%\setmainfont{Palatino}
+
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    unicode=true,          % non-Latin characters in Acrobat’s bookmarks
+    pdftoolbar=true,        % show Acrobat’s toolbar?
+    pdfmenubar=true,        % show Acrobat’s menu?
+    pdffitwindow=false,     % window fit to page when opened
+    pdfstartview={FitH},    % fits the width of the page to the window
+    pdfnewwindow=true,      % links in new window
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=red,          % color of internal links
+    citecolor=blue,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=blue           % color of external links
+}
+
 \clubpenalty = 10000
 \widowpenalty = 10000
 \setlength{\parskip}{1.2ex}
 \setlength{\parindent}{0em}
 
+\urlstyle{rm} %so it doesn't use a typewriter font for url's.
 
 % Here are a few math abbreviations that may be useful. Note that math 
 % variables should generally be set in italic, vectors in bold italic, and
