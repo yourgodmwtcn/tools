@@ -2,8 +2,6 @@
 ------------------------------------
 
 General:
-	- Derived quantities
-		- Burger number
 	- movie with changes w.r.t previous time step
 
 ROMS			
@@ -24,7 +22,6 @@ ROMS
 		 
 	- animate.m
 		- fix fonts
-		- add beautify
 		- round off axis labels to given decimal place
 		
 Improvements:

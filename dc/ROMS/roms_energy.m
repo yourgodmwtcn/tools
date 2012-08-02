@@ -212,15 +212,18 @@ for i=0:iend-1
     tend = tstart + s(4)-ntavg;
     
     % now calculate energy terms
-    eke = bsxfun(@rdivide,0.5*(up.^2 + vp.^2),cellvol); % Boussinesq + wp.^2
-    mke = bsxfun(@rdivide,0.5*(um.^2 + vm.^2),cellvol); % again Boussinesq + wm.^2
-    %oke = rho.*(up.*um + vp.*vm)./area;% -> should average (integrate) to zero theoretically
-    pe  = bsxfun(@rdivide,9.81*bsxfun(@times,rho,permute(zr,[2 3 1 4]))./R0,cellvol);      
+    % 1/2 R0 u^2 = energy / unit vol in each cell. 
+    % Integrate over domain and then divide by total mass in domain = energy / unit mass
+    eke = 0.5*R0*(up.^2 + vp.^2); %bsxfun(@rdivide,,cellvol); % Boussinesq + wp.^2
+    mke = 0.5*R0*(um.^2 + vm.^2); %bsxfun(@rdivide,,cellvol); % again Boussinesq + wm.^2
+    pe  = 9.81*bsxfun(@times,rho,permute(zr,[2 3 1 4])); %bsxfun(@rdivide,,cellvol);  
+    
+    %oke = rho.*(up.*um + vp.*vm)./area;% -> should average (integrate) to zero theoretically | smaller order term
     
     t_en(tstart:tend,1) = (time(read_start(end)+ind1-1) + time(read_start(end)+ind2-1))/2;
-    EKE(tstart:tend) = domain_integrate(eke,xr,yr,zr);
-    MKE(tstart:tend) = domain_integrate(mke,xr,yr,zr);
-    PE(tstart:tend)  = domain_integrate( pe,xr,yr,zr);
+    EKE(tstart:tend) = domain_integrate(eke,xr,yr,zr)./R0./totalvol;
+    MKE(tstart:tend) = domain_integrate(mke,xr,yr,zr)./R0./totalvol;
+    PE(tstart:tend)  = domain_integrate( pe,xr,yr,zr)./R0./totalvol;
     %PE(tstart:tend)  = domain_integrate2(-R0*9.81*(zeta.^2)/2,grid.x_rho(1,2:end-1),grid.y_rho(2:end-1,1))./area ...  % OTHER PE CODE - OLD      
     %                      + domain_integrate2(R0*9.81*h.^2/2,grid.x_rho(1,2:end-1),grid.y_rho(2:end-1,1))./area ...
     %                           + domain_integrate(pe,grid.x_rho(1,2:end-1)',grid.y_rho(2:end-1,1),grid.z_r(:,1,1)); 
@@ -301,16 +304,17 @@ figure;
 hold on;
 plot(t_en/86400,EKE,'r');
 plot(t_en/86400,MKE,'k');
+plot(t_en/86400,PE-min(PE),'b');
 %plot(time,OKE,'m');
-ylabel('Energy');
+ylabel('Energy / unit mass (m^2/s^2)');
 xlabel('Time (days)');
-legend('EKE','MKE');
+legend('EKE','MKE','PE - PE_{min}','Location','Best');
 
-figure;
-plot(t_en/86400,PE);
-ylabel('Energy');
-xlabel('Time (days)');
-legend('PE');
+% figure;
+% plot(t_en/86400,PE);
+% ylabel('Energy');
+% xlabel('Time (days)');
+% legend('PE');
 
 % write to file
 fname = ['energy-avg-' ax(mean_index) '.mat']; 
