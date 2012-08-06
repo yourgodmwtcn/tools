@@ -134,6 +134,8 @@ for i=0:iend-1
     if i > 0
         read_start(end) = read_start(end) - ntavg + 1;
         read_count(end) = read_count(end) + ntavg - 1;
+    else
+        APE = roms_ape(fname);
     end
     
     if isempty(cpb), fprintf('\nReading Data...\n'); end
@@ -279,9 +281,10 @@ time_A = time_A(2:end);
 A = A(2:end,:);
 
 figure
+title('Growth Rate Curve')
 subplot(211)
 plot(time_A/86400,A(:,1)*86400,'b*-')
-liney(0)
+liney(0);
 ylabel('Growth Rate (d^{-1})')
 xlabel('Time (days)');
 
@@ -301,6 +304,8 @@ A = A(:,1);
 %% plot
 
 figure;
+subplot(211)
+title('Energy Curves')
 hold on;
 plot(t_en/86400,EKE,'r');
 plot(t_en/86400,MKE,'k');
@@ -309,6 +314,15 @@ plot(t_en/86400,PE-min(PE),'b');
 ylabel('Energy / unit mass (m^2/s^2)');
 xlabel('Time (days)');
 legend('EKE','MKE','PE - PE_{min}','Location','Best');
+
+subplot(212)
+hold on;
+plot(t_en/86400,EKE./APE,'r');
+plot(t_en/86400,MKE./APE,'k');
+plot(t_en/86400,(PE-min(PE))./APE,'b');
+%plot(time,OKE,'m');
+ylabel('Energy / APE');
+xlabel('Time (days)');
 
 % figure;
 % plot(t_en/86400,PE);
