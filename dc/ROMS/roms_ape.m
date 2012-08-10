@@ -1,4 +1,5 @@
 % Warning: this doesn't do variations in y very well.
+%       [APE] = roms_ape(fname)
 
 function [APE] = roms_ape(fname)
     warning off

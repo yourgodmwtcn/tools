@@ -9,7 +9,7 @@
 % saves time of *first* peak in growth rate
 
 
-function [EKE,MKE,PE] = roms_energy(fname,tindices,volume,ntavg,mean_index,commands)
+function [EKE,MKE,PE,APE] = roms_energy(fname,tindices,volume,ntavg,mean_index,commands)
 
 if ~exist('fname','var'), fname = 'ocean_his.nc'; end
 if ~exist('tindices','var'), tindices = [1 Inf]; end
@@ -287,6 +287,7 @@ plot(time_A/86400,A(:,1)*86400,'b*-')
 liney(0);
 ylabel('Growth Rate (d^{-1})')
 xlabel('Time (days)');
+beautify; box on
 
 % Verify
 eke2 = exp(A(:,1).*time_A + A(:,2));
@@ -298,6 +299,7 @@ ylabel('Energy');
 xlabel('Time (days)');
 title('Verification');
 legend('Original','Fit');
+beautify; box on
 
 A = A(:,1);
 
@@ -314,6 +316,7 @@ plot(t_en/86400,PE-min(PE),'b');
 ylabel('Energy / unit mass (m^2/s^2)');
 xlabel('Time (days)');
 legend('EKE','MKE','PE - PE_{min}','Location','Best');
+beautify;
 
 subplot(212)
 hold on;
@@ -323,7 +326,8 @@ plot(t_en/86400,(PE-min(PE))./APE,'b');
 %plot(time,OKE,'m');
 ylabel('Energy / APE');
 xlabel('Time (days)');
-
+title(['APE = ' num2str(APE) ' J/kg']);
+beautify; 
 % figure;
 % plot(t_en/86400,PE);
 % ylabel('Energy');
@@ -332,7 +336,7 @@ xlabel('Time (days)');
 
 % write to file
 fname = ['energy-avg-' ax(mean_index) '.mat']; 
-save(fname,'t_en','PE','EKE','MKE','A','time_A','ntavg','volume','commands');
+save(fname,'t_en','PE','EKE','MKE','A','time_A','ntavg','volume','commands','APE');
 
 %% local functions
 
