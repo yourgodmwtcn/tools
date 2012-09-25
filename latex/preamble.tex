@@ -1,7 +1,7 @@
-\usepackage{graphicx}
-\usepackage{color}
-\usepackage{epstopdf}
-\usepackage{psfrag}
+\usepackage{graphicx}   % add figures
+\usepackage{color} 	 % support for color names
+\usepackage{epstopdf}   % convert eps figures to pdf
+\usepackage{psfrag}    
 \usepackage{cmap}        % make pdf's searchable
 \usepackage{booktabs}    % fancy tables
 \usepackage[T1]{fontenc} % better font encoding
@@ -12,19 +12,30 @@
 \usepackage[dvips]{geometry}
 \usepackage{pdfsync}
 %\usepackage{fancyhdr}
-\usepackage{subfig}
-\usepackage[sort]{natbib}
-\usepackage{rotating}
-\usepackage{pdflscape}
-\usepackage{hyperref}
+\usepackage{subfig}	% add subfigure support
+\usepackage[sort]{natbib} % for bibliography
+\usepackage{rotating} % allow page rotation
+\usepackage{pdflscape} % allow landscape pages in pdf
+\usepackage{hyperref}  % hyperlinks in pdf
 \usepackage[figure,table]{hypcap} % Correct a problem with hyperref
 %\usepackage{breakurl} % Only for dvips not pdflatex
 %\usepackage{siunitx} % Messes up tables
-\usepackage[protrusion=true,expansion]{microtype}
-\usepackage{mathtools}
+\usepackage{letltxmacro}  % for new sqrt
+\usepackage[protrusion=true,expansion]{microtype}  % super fancy typography support
+\usepackage{mathtools} % fixed version of amsmath
 
 \renewcommand{\baselinestretch}{1.5} % Line spacing 1.5
-\geometry{centering,text={18cm,22cm}}
+\geometry{centering,text={18cm,22cm}} % page dimensions
+
+% better sqrt (from wikibook)
+\LetLtxMacro{\oldsqrt}{\sqrt} % makes all sqrts closed
+\renewcommand{\sqrt}[1][]{%
+  \def\DHLindex{#1}\mathpalette\DHLhksqrt}
+\def\DHLhksqrt#1#2{%
+  \setbox0=\hbox{$#1\oldsqrt[\DHLindex]{#2\,}$}\dimen0=\ht0
+  \advance\dimen0-0.2\ht0
+  \setbox2=\hbox{\vrule height\ht0 depth -\dimen0}%
+  {\box0\lower0.71pt\box2}}
 
 %\setmainfont{Palatino}
 
@@ -75,7 +86,14 @@
 \newcommand{\vb}{\mb {v}\xspace}
 \newcommand{\ub}{\mb {u}\xspace}
 
-\newcommand{\textbox}[1]{\centerline{\framebox{#1}}}
+% Text shortcuts
+\newcommand{\textbox}[1]{
+	\begin{center}
+		\framebox{
+			\parbox{0.8\linewidth}{#1}
+	 	}
+	\end{center}
+}
 
 % non-dimensional numbers
 \newcommand{\Ro}{\mathit{Ro}}
@@ -87,7 +105,6 @@
 \newcommand{\Rey}{\mathit{Re}}
 \newcommand{\Fr}{\mathit{Fr}}
 \newcommand{\Bu}{\mathit{Bu}}
-
 
 % Example: \dd \psi x + \pp[2]y x  -> dpsi/dx + d2y/dx2
 
