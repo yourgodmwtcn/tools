@@ -29,4 +29,5 @@ function [C] = sor(A,C,b,omega,tol,max_iter)
         k = k+1;
     end
     
+    k
     if k >= max_iter, warning('Maximum iterations reached. Giving up.'); end
