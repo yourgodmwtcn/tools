@@ -1,0 +1,1 @@
+xelatex -ini -jobname="preamble" "&xelatex" mylatexformat.ltx """preamble.tex"""

@@ -1,32 +1,67 @@
+%\input{E:/Work/tools/latex/glyphtounicode.tex}        % make pdf's searchable CHANGE TO mmap
+%% precompile using
+%% xelatex -ini -jobname=”preamble” “&xelatex” mylatexformat.ltx “””preamble.tex”””
+
+\RequirePackage[l2tabu, orthodox]{nag}
+\documentclass[11pt,oneside]{memoir}
+\usepackage{iftex}
+
+\ifPDFTeX
+	\usepackage{inputenx}
+	\usepackage[T1]{fontenc}  % better font encoding
+	\usepackage{mathpazo}    % fancy math fonts
+\fi
+
+\usepackage{fixltx2e}
+
 \usepackage{graphicx}   % add figures
-\usepackage{color} 	 % support for color names
-\usepackage{epstopdf}   % convert eps figures to pdf
-\usepackage{psfrag}    
-\usepackage{cmap}        % make pdf's searchable
+\usepackage{xcolor} 	 % support for color names
 \usepackage{booktabs}    % fancy tables
-\usepackage[T1]{fontenc} % better font encoding
-\usepackage{mathpazo}    % fancy math fonts
-%\usepackage{fontspec}
-\usepackage[utf8]{inputenc} % unicode input encoding
-%\usepackage{fullpage}
-\usepackage[dvips]{geometry}
-\usepackage{pdfsync}
-%\usepackage{fancyhdr}
 \usepackage{subfig}	% add subfigure support
-\usepackage[sort]{natbib} % for bibliography
+
+\usepackage{letltxmacro}  % for new sqrt
+
+\usepackage[protrusion=true,expansion]{microtype}  % super fancy typography support
+\usepackage{parskip}
+
+\usepackage{paralist}
 \usepackage{rotating} % allow page rotation
 \usepackage{pdflscape} % allow landscape pages in pdf
 \usepackage{hyperref}  % hyperlinks in pdf
 \usepackage[figure,table]{hypcap} % Correct a problem with hyperref
-%\usepackage{breakurl} % Only for dvips not pdflatex
-%\usepackage{siunitx} % Messes up tables
-\usepackage{letltxmacro}  % for new sqrt
-\usepackage[protrusion=true,expansion]{microtype}  % super fancy typography support
-\usepackage{mathtools} % fixed version of amsmath
 
-\renewcommand{\baselinestretch}{1.5} % Line spacing 1.5
+\usepackage[dvips]{geometry}
 \geometry{centering,text={18cm,22cm}} % page dimensions
+%\usepackage{fancyhdr}
+\usepackage{xfrac}
+\usepackage{mathtools} % fixed version of amsmath
+\usepackage[sort&compress]{natbib} % for bibliography
+\usepackage{cleveref}
 
+\ifXeTeX
+	\usepackage{fontspec}
+	\usepackage{unicode-math}
+	
+	\setromanfont[Ligatures=TeX]{TeX Gyre Pagella}
+	\setmathfont[math-style=ISO,bold-style=ISO,vargreek-shape=TeX]{TG Pagella Math}
+\fi
+
+\usepackage[tight-spacing=true]{siunitx} % Messes up tables
+
+%% unused stuff
+%\usepackage{epstopdf}   % convert eps figures to pdf NOT NEEDED ANYMORE?
+%\usepackage{breakurl} % Only for dvips not pdflatex
+%\usepackage{psfragx}    % for use with LaPrint.m
+%\usepackage{fullpage}
+%\usepackage{doi}
+%\usepackage{uri}
+
+% Line spacing 1.5
+\linespread{1.5} 
+
+\frenchspacing
+\newcommand{\ifundefined}[1]{\expandafter\ifx\csname#1\endcsname\relax} 
+	
 % better sqrt (from wikibook)
 \LetLtxMacro{\oldsqrt}{\sqrt} % makes all sqrts closed
 \renewcommand{\sqrt}[1][]{%
@@ -36,11 +71,15 @@
   \advance\dimen0-0.2\ht0
   \setbox2=\hbox{\vrule height\ht0 depth -\dimen0}%
   {\box0\lower0.71pt\box2}}
+  
+% make sure \pi looks like pi NOT NEEDED ANYMORE?
+% see: http://tex.stackexchange.com/questions/33140/mathpazo-siunitx-turns-into-ss?rq=1
+%\protected\def\numpi{\text{\ensuremath{\pi}}}
+%\sisetup{input-symbols = \numpi}
 
 %\setmainfont{Palatino}
 
 \hypersetup{
-    bookmarks=true,         % show bookmarks bar?
     unicode=true,          % non-Latin characters in Acrobat’s bookmarks
     pdftoolbar=true,        % show Acrobat’s toolbar?
     pdfmenubar=true,        % show Acrobat’s menu?
@@ -54,8 +93,8 @@
     urlcolor=blue           % color of external links
 }
 
-\clubpenalty = 10000
-\widowpenalty = 10000
+%\clubpenalty = 10000
+%\widowpenalty = 10000
 \setlength{\parskip}{1.2ex}
 \setlength{\parindent}{0em}
 
@@ -106,20 +145,13 @@
 \newcommand{\Fr}{\mathit{Fr}}
 \newcommand{\Bu}{\mathit{Bu}}
 
-% Example: \dd \psi x + \pp[2]y x  -> dpsi/dx + d2y/dx2
+\def\preambleloaded{Precompiled preamble loaded.}
 
-% Table code
-%\begin{table}[h]
-%	\centering
-%	\begin{tabular}{ccc}
-%		\hline
-%		 		& 	&  \\ \hline
-%				&	& 	\\ 
-% 		\hline
-%	\end{tabular}
-%	\caption{}
-%	\label{tab:}
-%\end{table}
+\endofdump
+
+
+
+% Example: \dd \psi x + \pp[2]y x  -> dpsi/dx + d2y/dx2
 
 % Bibliography Code
 %\bibliographystyle{elsarticle-harv}
