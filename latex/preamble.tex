@@ -4,26 +4,28 @@
 
 \RequirePackage[l2tabu, orthodox]{nag}
 \documentclass[11pt,oneside]{memoir}
-\usepackage{iftex}
 
+\usepackage{iftex}
 \ifPDFTeX
 	\usepackage{inputenx}
 	\usepackage[T1]{fontenc}  % better font encoding
-	\usepackage{mathpazo}    % fancy math fonts
+	\usepackage[sc]{mathpazo}    % fancy math fonts
 \fi
 
 \usepackage{fixltx2e}
 
 \usepackage{graphicx}   % add figures
 \usepackage{xcolor} 	 % support for color names
+\usepackage{array}
 \usepackage{booktabs}    % fancy tables
+\usepackage{multirow}
 \usepackage{subfig}	% add subfigure support
+\usepackage{float}	     % stronger placement of floats
 
 \usepackage{letltxmacro}  % for new sqrt
-
-\usepackage[protrusion=true,expansion]{microtype}  % super fancy typography support
 \usepackage{parskip}
-
+\usepackage{titlesec}
+\usepackage{titletoc}
 \usepackage{paralist}
 \usepackage{rotating} % allow page rotation
 \usepackage{pdflscape} % allow landscape pages in pdf
@@ -35,6 +37,7 @@
 %\usepackage{fancyhdr}
 \usepackage{xfrac}
 \usepackage{mathtools} % fixed version of amsmath
+\usepackage[warning]{onlyamsmath}
 \usepackage[sort&compress]{natbib} % for bibliography
 \usepackage{cleveref}
 
@@ -47,6 +50,7 @@
 \fi
 
 \usepackage[tight-spacing=true]{siunitx} % Messes up tables
+\usepackage[protrusion=true,expansion]{microtype}  % super fancy typography support
 
 %% unused stuff
 %\usepackage{epstopdf}   % convert eps figures to pdf NOT NEEDED ANYMORE?

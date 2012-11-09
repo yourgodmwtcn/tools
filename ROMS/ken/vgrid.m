@@ -1,7 +1,3 @@
-function [s,z] =vgrid(vxform,vstretch,param,hc,h,n,plots)
-    
-    if ~exist('plots','var'), plots = 0; end
-
 %   Experiment with the the ROMS 3 vertical stretching functions
 %   Call as
 %       vgrid(vxform,vstretch,[ths,thb,tcline],hc,h,n)
@@ -27,6 +23,10 @@ function [s,z] =vgrid(vxform,vstretch,param,hc,h,n,plots)
 %       hc -> approximate boundary layer depth where lesser spacing is needed
 
 %       K. Brink 1/11/11  8/29/2011
+
+function [s,z] =vgrid(vxform,vstretch,param,hc,h,n,plots)
+    
+    if ~exist('plots','var'), plots = 0; end
 
 ds = 1/n;
 s = ds*(0.5 + (0:(n-1))) -1.;

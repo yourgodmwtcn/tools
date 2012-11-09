@@ -1,5 +1,5 @@
 function [Data,han] = roms_bview(file,varname,time,bndy,grd,xcoord)
-% $Id: roms_bview.m 364 2008-06-17 13:42:47Z wilkin $
+% $Id: roms_bview.m 411 2012-08-02 17:29:21Z wilkin $
 % [data,han] = roms_bview(file,var,time,bndy,grd,xcoord)
 %
 % file   = roms his/avg/rst etc nc file
@@ -78,7 +78,7 @@ z = squeeze(z);
 lon = lon(:);
 lat = lat(:);
 m = m(:);
-m(find(m==0)) = NaN;
+m(m==0) = NaN;
 
 % compute approximate distance on sphere between lon/lat coordinate pairs
 rearth = 6370.800; % km
@@ -100,7 +100,12 @@ try
   [dnum,dstr] = roms_get_date(file,time,dateformat);
   tstr = [' - Date ' dstr];
 catch
-  warning([ 'Problem parsing date from file ' file ' for time index ' time]) 
+  try
+    [dnum,dstr] = roms_get_date(file,time,dateformat,'bry_time');
+    tstr = [' - Date ' dstr];
+  catch
+  warning([ 'Problem parsing date from file ' file ' for time index ' time])
+  end
 end
 
 if nargout > 0

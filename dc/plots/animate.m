@@ -47,6 +47,7 @@
 
 function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,pausetime)
 
+    warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
     %% figure out input
     narg = nargin;
     
@@ -289,5 +290,8 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
         else
             mm_instance = [];
         end
+        
+        jframe = get(gcf,'JavaFrame');
+        jframe.setMaximized(true);
         
     end
