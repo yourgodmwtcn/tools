@@ -224,7 +224,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
         end
         
         % square axis if appropriate
-        if (max(xax)-min(xax)) - (max(yax)-min(yax)) < 1
+        if abs((max(xax)-min(xax)) - (max(yax)-min(yax))) < 1
             axis square;
         end
         
