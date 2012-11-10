@@ -1,7 +1,10 @@
 fprintf('\n startup.m entered \n');
 
-% update tookboxcache
+% update toolboxcache
 rehash toolboxcache
+
+% unicode support
+feature('DefaultCharacterSet', 'UTF8')
 
 
 %% Make good figures
