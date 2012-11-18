@@ -74,6 +74,7 @@ function [] = roms_info(fname,plot)
     for i=1:length(loc)-1
         lbcf = sprintf('%s \n\t\t\t   %s',lbcf, lbc(loc(i)+1:loc(i+1)-1));
     end
+    lbcf = sprintf('%s \n\t\t\t   %s',lbcf, lbc(loc(end)+1:end));
     %%
     % pretty print stuff
     fprintf(['\n\t\t\t %40s \n', ...
