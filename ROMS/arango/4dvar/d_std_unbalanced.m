@@ -15,7 +15,7 @@
 %  application from daily history files from 1/1/2000 to 12/25/2004.
 %
 
-% svn $Id: d_std_unbalanced.m 586 2012-01-03 20:19:25Z arango $
+% svn $Id: d_std_unbalanced.m 625 2012-07-03 20:07:22Z arango $
 %===========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
@@ -117,15 +117,16 @@ HisFile1 = fullfile(HISdir, HISfile(1).name);
 
 %  Set NetCDF file creation parameters.
 
-[vnames,nvars] = nc_vname(HisFile1);
-
+V = nc_vnames(HisFile1);
+nvars = length(V.Variables);
+ 
 S.curvilinear = false;
 S.masking     = false;
 S.Vtransform  = 1;
 S.Vstretching = 1;
 
 for n=1:nvars,
-  name=deblank(vnames(n,:));
+  name=char(V.Variables(n).Name);
   switch name
     case 'spherical'
       S.spherical = nc_read(HisFile1, 'spherical');

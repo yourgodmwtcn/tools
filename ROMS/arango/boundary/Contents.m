@@ -22,6 +22,24 @@
 %                       a template showing how to use the 'obc_roms2roms'
 %                       script.
 %
+%   interp_boundary - Interpolates lateral boundary conditions for a
+%                       ROMS generic 2D or 3D state variable from a
+%                       Donor to Receiver. If 3D interpolation, the
+%                       Donor Grid data is interpolated first to the
+%                       Receiver Grid horizontal locations using
+%                       'TriScatteredInterp' at each of the Donor
+%                       Grid vertical levels. Then, 'interp1' is used
+%                       to interpolate to Receiver Grid vertical
+%                       locations.
+%
+%   plot_boundary   - Plots requested ROMS variable from input lateral
+%                       boundary NetCDF file. This function is very
+%                       useful for browsing 3D lateral boundary
+%                       conditions for ROMS in a vertical slab. The
+%                       location of the minumum is marked with a filled
+%                       magenta circle whereas the maximum is marked
+%                       with a filled magenta square. 
+%
 %   obc_mercator    - Interpolates requested variable open boundary
 %                       conditions from Mercator to ROMS grid boundary
 %                       edges.
@@ -34,7 +52,7 @@
 %                       carried out.
 %
 
-% svn $Id: Contents.m 595 2012-01-17 19:44:46Z arango $
+% svn $Id: Contents.m 630 2012-08-28 17:58:33Z arango $
 %=========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %

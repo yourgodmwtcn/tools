@@ -4,9 +4,9 @@ function startup
 %            paths, define Handle Graphics defaults, or predefine
 %            variables in your workspace.
 
-% svn $Id: startup.m 578 2011-11-20 19:03:09Z arango $
+% svn $Id: startup.m 629 2012-08-07 14:29:14Z arango $
 %===========================================================================%
-%  Copyright (c) 2002-2009 The ROMS/TOMS Group                              %
+%  Copyright (c) 2002-2012 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
 %    See License_ROMS.txt                           Hernan G. Arango        %
 %===========================================================================%
@@ -25,11 +25,15 @@ path(path, fullfile(my_root, 'matlab', '4dvar', ''))
 path(path, fullfile(my_root, 'matlab', 'bathymetry', ''))
 path(path, fullfile(my_root, 'matlab', 'boundary', ''))
 path(path, fullfile(my_root, 'matlab', 'coastlines', ''))
+path(path, fullfile(my_root, 'matlab', 'forcing', ''))
 path(path, fullfile(my_root, 'matlab', 'grid', ''))
 path(path, fullfile(my_root, 'matlab', 'initial', ''))
 path(path, fullfile(my_root, 'matlab', 'landmask', ''))
 path(path, fullfile(my_root, 'matlab', 'mex', ''))
+path(path, fullfile(my_root, 'matlab', 'netcdf', ''))
 path(path, fullfile(my_root, 'matlab', 'seagrid', ''))
 path(path, fullfile(my_root, 'matlab', 'seagrid', 'presto', ''))
 path(path, fullfile(my_root, 'matlab', 'seawater', ''))
+path(path, fullfile(my_root, 'matlab', 't_tide', ''))
+path(path, fullfile(my_root, 'matlab', 'tidal_ellipse', ''))
 path(path, fullfile(my_root, 'matlab', 'utility', ''))

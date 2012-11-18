@@ -4,7 +4,7 @@
 %                 script "d_std_unbalanced".
 %
 
-% svn $Id: balance_driver.m 586 2012-01-03 20:19:25Z arango $
+% svn $Id: balance_driver.m 625 2012-07-03 20:07:22Z arango $
 %===========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
@@ -100,7 +100,8 @@
 
 % Set NetCDF file creation parameters.
 
- [vnames,nvars] = nc_vname(A.Hname);
+ V = nc_vnames(A.Hname);
+ nvars = length(V.Variables);
 
  S.curvilinear = false;
  S.masking     = false;
@@ -108,7 +109,7 @@
  S.Vstretching = 1;
 
  for n=1:nvars,
-   name=deblank(vnames(n,:));
+   name = char(V.Variables(n).Name);
    switch name
      case 'spherical'
        S.spherical = nc_read(A.Hname, 'spherical');

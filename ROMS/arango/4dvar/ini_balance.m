@@ -55,7 +55,7 @@ function [K]=ini_balance(Gname,Hname,TimeRec);
 %              K.Zw           Depths at vertical W-points   (m, negative)
 %
 
-% svn $Id: ini_balance.m 586 2012-01-03 20:19:25Z arango $
+% svn $Id: ini_balance.m 625 2012-07-03 20:07:22Z arango $
 %===========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
@@ -162,10 +162,11 @@ K.pnom_v=(K.pn(1:Lp,1:M)+K.pn(1:Lp,2:Mp))./                          ...
 	      
 %  Read in or set land/sea masking.
 
-[vname,nvars]=nc_vname(Gname);
+V=nc_vnames(Gname);
+nvars=length(V.Variables);
 
 for n=1:nvars
-  name=deblank(vname(n,:));
+  name=char(V.Variables(n).Name);
   switch name
     case 'mask_psi'
       K.pmask=nc_read(Gname,'mask_psi');

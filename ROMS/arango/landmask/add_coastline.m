@@ -16,7 +16,7 @@ function add_coastline(ncfile, Clon, Clat)
 %
 %
 
-% svn $Id: add_coastline.m 614 2012-05-02 21:52:32Z arango $
+% svn $Id: add_coastline.m 625 2012-07-03 20:07:22Z arango $
 %=========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
@@ -87,13 +87,15 @@ if (define.Clon || define.Clat),
 %  Define coastline longitude.
 
   if (define.Clon),
-    varid=netcdf.defVar(ncid,Vname.Clon,'nc_double',did.Clon);
+    varid=netcdf.defVar(ncid,Vname.Clon,                                ...
+                        netcdf.getConstant('nc_double'),did.Clon);
     netcdf.putAtt(ncid,varid,'long_name','coastline longitude');
     netcdf.putAtt(ncid,varid,'units','degree_east');
   end
 
   if (define.Clat),
-    varid=netcdf.defVar(ncid,Vname.Clat,'nc_double',did.Clat);
+    varid=netcdf.defVar(ncid,Vname.Clat,                                ...
+                        netcdf.getConstant('nc_double'),did.Clat);
     netcdf.putAtt(ncid,varid,'long_name','coastline latitude');
     netcdf.putAtt(ncid,varid,'units','degree_north');
   end

@@ -21,6 +21,14 @@
 % ROMS Data Processing:
 %
 %   nanland       - Mask Land points to NaN to facilitate plotting.
+%   plot_field    - Plots requested ROMS variable from input history
+%                     NetCDF file. This function is very usefull when
+%                     debugging a ROMS application. The ploting is not
+%                     that fancy but it provides enough information for
+%                     browsing ROMS variables very quickly. The location
+%                     of the minimum is marked with a filled magenta
+%                     circle whereas the maximum is marked with a filled
+%                     magenta square.
 %   roms_vectors  - Processes vector data for either the full grid
 %                     or boundary edges. The strategy is to get any
 %                     horizontal vector field at RHO-points for the
@@ -48,6 +56,11 @@
 %   eos           - ROMS equation of state for seawater.
 %   gcircle       - Great circle distance between two (lon,lat) points.
 %   geodesic_dist - Geodesic distance between two (lon,lat) points.
+%   roms_eos.m    - Computes 'in situ' density using ROMS nonlinear
+%                     equation of state for seawater. It assumes no
+%                     pressure variation along geopotential surfaces,
+%                     that is, depth (meters; negative) and pressure
+%                     (dbar; assumed negative here) are interchangeable.
 %
 % Time Management:
 %
@@ -67,7 +80,7 @@
 %   tile         - Compute ROMS horizontal tile partitions indices.
 %
 
-% svn $Id: Contents.m 614 2012-05-02 21:52:32Z arango $
+% svn $Id: Contents.m 630 2012-08-28 17:58:33Z arango $
 %=========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %

@@ -38,7 +38,7 @@ function [status]=obs_write(ncfile,S);
 %    status  Error flag
 %
 
-% svn $Id: obs_write.m 614 2012-05-02 21:52:32Z arango $
+% svn $Id: obs_write.m 625 2012-07-03 20:07:22Z arango $
 %===========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
@@ -99,8 +99,8 @@ disp(['*** Writing observations into:   ', ncfile]);
 %  Write all available variables in the structure.
 %----------------------------------------------------------------------------
 
-V=nc_vname(ncfile);
-nvars=length(V.variables);
+V=nc_vnames(ncfile);
+nvars=length(V.Variables);
 
 notwritten=[];
 

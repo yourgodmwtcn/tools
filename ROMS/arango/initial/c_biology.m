@@ -20,7 +20,7 @@ function [status]=c_biology(S);
 %    status      Error flag.
 %
 
-% svn $Id: c_biology.m 614 2012-05-02 21:52:32Z arango $
+% svn $Id: c_biology.m 625 2012-07-03 20:07:22Z arango $
 %===========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
@@ -36,17 +36,9 @@ else,
           'in structure array S']);
 end,
 
-%  Set NetCDF parameters.
-
-[ncdouble]=mexnc('parameter','nc_double');
-[ncfloat ]=mexnc('parameter','nc_float');
-[ncglobal]=mexnc('parameter','nc_global');
-[ncchar  ]=mexnc('parameter','nc_char');
-[ncint   ]=mexnc('parameter','nc_int');
-
 %  Set variables type.
 
-vartype=ncdouble;
+vartype=nc_constant('nc_double');
 
 %  Inquire NetCDF file dimensions and their IDs.
 

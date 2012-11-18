@@ -41,7 +41,7 @@ function [Xgrid, Ygrid]=obs_ijpos(GRDname, obs_lon, obs_lat, ...
 %          Xgrid and Ygrid.
 %
   
-% svn $Id: obs_ijpos.m 586 2012-01-03 20:19:25Z arango $
+% svn $Id: obs_ijpos.m 625 2012-07-03 20:07:22Z arango $
 %===========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
@@ -84,8 +84,9 @@ end,
 % Read in model grid variables.
 %----------------------------------------------------------------------------
 
-[vname,nvars]=nc_vname(GRDname);
-
+V = nc_vnames(GRDname);
+nvars = length(V.Variables);
+ 
 got.spherical = false;
 got.angle     = false;
 got.mask_rho  = false;
@@ -94,7 +95,7 @@ got.lat_rho   = false;
 got.coast     = false;
 
 for n=1:nvars
-  name=deblank(vname(n,:));
+  name = char(V.Variables(n).Name);
   switch name
     case 'spherical'
       got.spherical = true;

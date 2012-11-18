@@ -243,7 +243,7 @@ function [S,G] = contact(Gnames, Cname, varargin)
 %          receiver_value(Irg,Jrg) = donor_value(Idg,Jdg)
 %
 
-% svn $Id: contact.m 614 2012-05-02 21:52:32Z arango $
+% svn $Id: contact.m 626 2012-07-16 20:42:12Z arango $
 %=========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
@@ -275,11 +275,23 @@ Ncontact = (Ngrids-1)*2;           % number of contact regions
 % Get nested grids information and set perimeters and boundary edges.
 %--------------------------------------------------------------------------
 
-% Get nested grid structures.
+% Get nested grid structures.  If the grid structure have the parent
+% fields, remove them to have an array of similar structures.
+
+parent = {'parent_grid',                                                ...
+          'parent_Imin', 'parent_Imax',                                 ...
+          'parent_Jmin', 'parent_Jmax'};
 
 for n=1:Ngrids,
-  G(n) = get_roms_grid(char(Gnames(n)));
+  g = get_roms_grid(char(Gnames(n)));
+  if (isfield(g, 'parent_grid')),
+    G(n) = rmfield(g, parent);
+  else
+    G(n) = g;
+  end
 end
+
+clear g
 
 % Set nested grids perimeters and boundary edges.
 
@@ -482,7 +494,7 @@ R.spherical = spherical;
 % RHO-points coordinates.
   
 if (spherical),
-  if (~empty(G(dg).x_rho) && ~empty(G(dg).y_rho)),
+  if (~isempty(G(dg).x_rho) && ~isempty(G(dg).y_rho)),
 
     FCr = TriScatteredInterp(XrC(:), YrC(:),                            ...
                              G(dg).x_rho(:), method);
@@ -496,7 +508,7 @@ if (spherical),
                                R.lon_rho = FSr(R.x_rho, R.y_rho);
     FSr.V = G(dg).lat_rho(:);  R.lat_rho = FSr(R.x_rho, R.y_rho);
    
-  elseif (~empty(G(dg).lon_rho) && ~empty(G(dg).lat_rho)),
+  elseif (~isempty(G(dg).lon_rho) && ~isempty(G(dg).lat_rho)),
 
     FSr = TriScatteredInterp(XrC(:), YrC(:),                            ...
                              G(dg).lon_rho(:), method);
@@ -534,7 +546,7 @@ end
 % PSI-points coordinates.
 
 if (spherical),
-  if (~empty(G(dg).x_psi) && ~empty(G(dg).y_psi)),
+  if (~isempty(G(dg).x_psi) && ~isempty(G(dg).y_psi)),
 
     FCp = TriScatteredInterp(XpC(:), YpC(:),                            ...
                              G(dg).x_psi(:), method);
@@ -548,7 +560,7 @@ if (spherical),
                                R.lon_psi = FSp(R.x_psi, R.y_psi);
     FSp.V = G(dg).lat_psi(:);  R.lat_psi = FSp(R.x_psi, R.y_psi);
   
-  elseif (~empty(G(dg).lon_psi) && ~empty(G(dg).lat_psi)),
+  elseif (~isempty(G(dg).lon_psi) && ~isempty(G(dg).lat_psi)),
 
     FSp = TriScatteredInterp(XpC(:), YpC(:),                            ...
                              G(dg).lon_psi(:), method);
@@ -585,7 +597,7 @@ end
 % U-points coordinates.
 
 if (spherical),
-  if (~empty(G(dg).x_u) && ~empty(G(dg).y_u)),
+  if (~isempty(G(dg).x_u) && ~isempty(G(dg).y_u)),
 
     FCu = TriScatteredInterp(XuC(:), YuC(:),                            ...
                              G(dg).x_u(:), method);
@@ -599,7 +611,7 @@ if (spherical),
                                R.lon_u = FSu(R.x_u, R.y_u);
     FSu.V = G(dg).lat_u(:);    R.lat_u = FSu(R.x_u, R.y_u);
   
-  elseif (~empty(G(dg).lon_u) && ~empty(G(dg).lat_u)),
+  elseif (~isempty(G(dg).lon_u) && ~isempty(G(dg).lat_u)),
 
     FSu = TriScatteredInterp(XuC(:), YuC(:),                            ...
                              G(dg).lon_u(:), method);
@@ -637,7 +649,7 @@ end
 % V-points coordinates.
 
 if (spherical),
-  if (~empty(G(dg).x_v) && ~empty(G(dg).y_v)),
+  if (~isempty(G(dg).x_v) && ~isempty(G(dg).y_v)),
 
     FCv = TriScatteredInterp(XvC(:), YvC(:),                            ...
                              G(dg).x_v(:), method);
@@ -651,7 +663,7 @@ if (spherical),
                                R.lon_v = FSv(R.x_v, R.y_v);
     FSv.V = G(dg).lat_v(:);    R.lat_v = FSv(R.x_v, R.y_v);
   
-  elseif (~empty(G(dg).lon_v) && ~empty(G(dg).lat_v)),
+  elseif (~isempty(G(dg).lon_v) && ~isempty(G(dg).lat_v)),
 
     FSv = TriScatteredInterp(XvC(:), YvC(:),                            ...
                              G(dg).lon_v(:), method);
@@ -689,13 +701,13 @@ end
 % Interpolate other grid variables.
 
 if (spherical),
-  if (~empty(G(dg).x_rho) && ~empty(G(dg).y_rho)),
+  if (~isempty(G(dg).x_rho) && ~isempty(G(dg).y_rho)),
 
     FCr.V = G(dg).angle(:);    R.angle = FCr(XrF, YrF); 
     FCr.V = G(dg).f(:);        R.f     = FCr(XrF, YrF); 
     FCr.V = G(dg).h(:);        R.h     = FCr(XrF, YrF); 
 
-  elseif (~empty(G(dg).lon_rho) && ~empty(G(dg).lat_rho)),
+  elseif (~isempty(G(dg).lon_rho) && ~isempty(G(dg).lat_rho)),
 
     FSr.V = G(dg).angle(:);    R.angle = FCr(XrF, YrF); 
     FSr.V = G(dg).f(:);        R.f     = FCr(XrF, YrF); 
@@ -1823,7 +1835,7 @@ S = Sinp;
 Ncontact  = S.Ncontact;
 spherical = S.spherical;
 
-Ldebug = true;
+Ldebug = false;
 
 %--------------------------------------------------------------------------
 % Set horizontal interpolation weights.

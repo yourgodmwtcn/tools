@@ -56,7 +56,7 @@ function [S]=plot_super(GRDfile, OBSfile, state_var, survey)
 %                   S.lat          observation latitude
 %
 
-% svn $Id: plot_super.m 586 2012-01-03 20:19:25Z arango $
+% svn $Id: plot_super.m 625 2012-07-03 20:07:22Z arango $
 %===========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
@@ -74,12 +74,13 @@ end,
   
 %  Read in application grid.
 
-[vnames,nvars] = nc_vname(GRDfile);
+V = nc_vnames(GRDfile);
+nvars = length(V.Variables);
 
 got_coast = false;
 
 for n=1:nvars,
-  name=deblank(vnames(n,:));
+  name = char(V.Variables(n).Name);
   switch name
     case 'lon_rho'
       rlon = nc_read(GRDfile, 'lon_rho');

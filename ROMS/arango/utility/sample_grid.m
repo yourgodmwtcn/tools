@@ -30,7 +30,7 @@ function [Istr,Iend,Jstr,Jend] = sample_grid(XD,YD,XR,YR,varargin)
 %    Jend          Donor grid ending   J-index for sampling
 %
 
-% svn $Id: sample_grid.m 614 2012-05-02 21:52:32Z arango $
+% svn $Id: sample_grid.m 627 2012-08-01 21:59:45Z arango $
 %=========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
@@ -128,7 +128,7 @@ end
 %--------------------------------------------------------------------------
 %  If requested, plot donor and receiver grids.
 %--------------------------------------------------------------------------
-XS
+
 if (plt),
 
   X = XD(Istr:1:Iend,Jstr:1:Jend);
@@ -145,6 +145,6 @@ if (plt),
   title(['Sampled Donor and Receiver Grids']);
   hold off
 
-end,
+end
 
 return

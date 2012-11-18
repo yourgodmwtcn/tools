@@ -16,7 +16,7 @@
 %  done here to show the structure of such computation.
 %
 
-% svn $Id: d_std_bry.m 586 2012-01-03 20:19:25Z arango $
+% svn $Id: d_std_bry.m 625 2012-07-03 20:07:22Z arango $
 %===========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
@@ -84,15 +84,16 @@ inorth = 4;
 
 %  Set NetCDF file creation parameters.
 
-[vnames,nvars] = nc_vname(INIfile);
-
+V = nc_vnames(INIfile);
+nvars = length(V.Variables);
+ 
 S.curvilinear = false;
 S.masking     = false;
 S.Vtransform  = 1;
 S.Vstretching = 1;
 
 for n=1:nvars,
-  name=deblank(vnames(n,:));
+  name = char(V.Variables(n).Name);
   switch name
     case 'spherical'
       S.spherical = nc_read(INIfile, 'spherical');

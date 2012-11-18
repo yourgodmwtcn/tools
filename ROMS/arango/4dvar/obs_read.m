@@ -53,7 +53,7 @@ function [S]=obs_read(ncfile);
 %              S.global_sources        'obs_sources' global attribute
 %
 
-% svn $Id: obs_read.m 586 2012-01-03 20:19:25Z arango $
+% svn $Id: obs_read.m 625 2012-07-03 20:07:22Z arango $
 %===========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
@@ -68,7 +68,8 @@ S=[];
 %  Read in all available variables.
 %----------------------------------------------------------------------------
 
-[Vnames,nvars]=nc_vname(ncfile);
+V=nc_vnames(ncfile);
+nvars=length(V.Variables);
 
 S.ncfile=ncfile;
 S.Nsurvey=0;
@@ -81,7 +82,7 @@ got.provenance=0;
 %  dimension to allow vector concatenation when merging several datasets.
 
 for n=1:nvars,
-  name=deblank(Vnames(n,:));
+  name=char(V.Variables(n).Name);
   switch name
     case 'spherical'
       S.spherical=nc_read(ncfile,'spherical');

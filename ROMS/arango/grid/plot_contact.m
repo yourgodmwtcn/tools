@@ -18,7 +18,7 @@ function plot_contact(G, S)
 %                 [S, G] = contact (Gnames, Cname, ...)
 %
 
-% svn $Id: plot_contact.m 614 2012-05-02 21:52:32Z arango $
+% svn $Id: plot_contact.m 625 2012-07-03 20:07:22Z arango $
 %=========================================================================%
 %  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
@@ -127,7 +127,7 @@ for cr=1:S.Ncontact,
     Xmin  = min(XminD, XminR);       Xmax  = max(XmaxD, XmaxR);
     Ymin  = min(YminD, YminR);       Ymax  = max(YmaxD, YmaxR);
       
-    ph1 = pcolor(G(dg).lon_psi, G(dg).lat_psi, G(dg).mask_psi);
+    ph1 = pcolor(G(dg).lon_rho, G(dg).lat_rho, G(dg).mask_rho);
     shading faceted; colormap(gray);
     axis([Xmin Xmax Ymin Ymax]);
     hold on
@@ -189,7 +189,7 @@ for cr=1:S.Ncontact,
     set(ph7,'MarkerEdgeColor','none','MarkerFaceColor','m',             ...
             'MarkerSize',8);
 
-    title(['Contact Points:  ',                                         ...
+    title(['CCContact Points:  ',                                         ...
            'Contact Region = ',num2str(cr),',  ',                       ...
            'Donor Grid = ',num2str(dg),',  (red),  ',                   ...
            'Receiver Grid = ',num2str(rg),'  (blue),  '                 ...
