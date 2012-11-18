@@ -22,6 +22,8 @@
 \usepackage{subfig}	% add subfigure support
 \usepackage{float}	     % stronger placement of floats
 
+\usepackage[envlayout=color]{fixme}
+\usepackage{etoolbox}
 \usepackage{letltxmacro}  % for new sqrt
 \usepackage{parskip}
 \usepackage{titlesec}
@@ -32,8 +34,7 @@
 \usepackage{hyperref}  % hyperlinks in pdf
 \usepackage[figure,table]{hypcap} % Correct a problem with hyperref
 
-\usepackage[dvips]{geometry}
-\geometry{centering,text={18cm,22cm}} % page dimensions
+\usepackage[centering,text={16cm,22cm},dvips]{geometry}
 %\usepackage{fancyhdr}
 \usepackage{xfrac}
 \usepackage{mathtools} % fixed version of amsmath
@@ -152,8 +153,6 @@
 \def\preambleloaded{Precompiled preamble loaded.}
 
 \endofdump
-
-
 
 % Example: \dd \psi x + \pp[2]y x  -> dpsi/dx + d2y/dx2
 
