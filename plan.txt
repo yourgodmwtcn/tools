@@ -3,7 +3,6 @@
 
 	- first fix domain_integrate
 
-
 General:
 	- movie with changes w.r.t previous time step
 
@@ -47,7 +46,7 @@ Improvements:
 	- ROMS grid / initial conditions creation like parker's?
 	- streamfunction code.
 	- generalize momentum / vorticity balance code
-	- add correction to z-grid for free surface motion in all ROMS tools
+	- add correction to z-grid for free surface motion in all ROMS tool
 	- need to add bathymetry (land/sea mask) to mod_movie
 		- fix z-grid usage and add zeta correction
 		- change x_ to lon_

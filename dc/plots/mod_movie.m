@@ -104,7 +104,7 @@ dim    = length(vinfo.Size);
 slab   = 100; % slab for ncread. read 'n' records in at a time - faster response + save some memory?
 midflag = 0;  % 1 if script needs to compute the mid level for plot
 
-[iend,tindices,dt,ntcola,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
+[iend,tindices,dt,~,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 
 % set only possible axis and index for Eta / zeta
 if strcmp(varname,'Eta') || strcmp(varname,'zeta')
@@ -174,7 +174,7 @@ for i=0:iend-1
                 index = num2str(-1 * str2double(index));
             end
             
-            if dim == 3 % catch zeta - free surface elevation
+            if dim == 3 % catch ubar/vbar/zeta - free surface elevation
                 stride = [1 1 dt]; 
                 midflag = 0;
                 index  = 1;
@@ -188,11 +188,11 @@ for i=0:iend-1
     %% generic animate call
     
     % given location instead of index
-    if strcmp(lower(index),'end'),  index = vinfo.Size(axind); end
+    if strcmpi(index,'end'),  index = vinfo.Size(axind); end
     if midflag, index = num2str((sliceax(1)+sliceax(end))/2); end
     if ischar(index), index = find_approx(sliceax,str2double(index),1); end
     
-    if findstr(labels.yax,'degree') & findstr(labels.xax,'degree'), labels.dar = 1; else labels.dar = 0; end
+    if strfind(labels.yax,'degree') && strfind(labels.xax,'degree'), labels.dar = 1; else labels.dar = 0; end
     
     % fix title string
     if sliceax(index) > 1000

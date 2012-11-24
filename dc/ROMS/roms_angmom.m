@@ -1,5 +1,5 @@
 % returns angular momentum calculated about (x0,y0,z0) at RHO points
-%   [angmom,TAM] = roms_angmom(fname,tindices,vol,x0,y0,z0)
+%   [angmom,TAM] = roms_angmom(fname,x0,y0,z0,tindices,vol)
 % TAM is domain integrated value
 
 
