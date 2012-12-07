@@ -192,7 +192,11 @@ for i=0:iend-1
     if midflag, index = num2str((sliceax(1)+sliceax(end))/2); end
     if ischar(index), index = find_approx(sliceax,str2double(index),1); end
     
-    if strfind(labels.yax,'degree') && strfind(labels.xax,'degree'), labels.dar = 1; else labels.dar = 0; end
+    if ~isempty(strfind(labels.yax,'degree')) || ~isempty(strfind(labels.xax,'degree'))
+        labels.dar = 1; 
+    else
+        labels.dar = 0; 
+    end
     
     % fix title string
     if sliceax(index) > 1000
