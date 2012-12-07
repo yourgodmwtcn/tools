@@ -31,9 +31,9 @@ function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
 
     switch pos
         case 'u'
-            xax = grid.lon_u(1,:)';
-            yax = grid.lat_u(:,1)';
-            zax = grid.z_u(:,1,1);
+            xax = grid.lon_u';
+            yax = grid.lat_u';
+            zax = permute(grid.z_u,[3 2 1]);
             tax = ncread(fname,'ocean_time');
             
             try
@@ -45,9 +45,9 @@ function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
             end
             
         case 'v'
-            xax = grid.lon_v(1,:)';
-            yax = grid.lat_v(:,1)';
-            zax = grid.z_v(:,1,1);
+            xax = grid.lon_v';
+            yax = grid.lat_v';
+            zax = permute(grid.z_v,[3 2 1]);
             tax = ncread(fname,'ocean_time');
             
             try
@@ -59,9 +59,9 @@ function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
             end                
             
         case 'w'
-            xax = grid.lon_rho(1,:)';
-            yax = grid.lat_rho(:,1)';
-            zax = grid.z_w(:,1,1);
+            xax = grid.lon_rho';
+            yax = grid.lat_rho';
+            zax = permute(grid.z_w,[3 2 1]);
             tax = ncread(fname,'ocean_time');
             
             try
@@ -73,14 +73,14 @@ function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
             end
 
         case 'r'
-            xax = grid.lon_rho(1,:)';
-            yax = grid.lat_rho(:,1)';
+            xax = grid.lon_rho';
+            yax = grid.lat_rho';
             tax = ncread(fname,'ocean_time');
             
             if strcmp(varname, 'zeta');
                 zax = [];
             else
-                zax = grid.z_r(:,1,1);
+                zax = permute(grid.z_r,[3 2 1]);
             end
             
             try
@@ -118,6 +118,6 @@ function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
     end
     
     xunits = strrep(xunits,'_',' ');    
-    yunits = strrep(yunits,'_',' ');  
+    yunits = strrep(yunits,'_',' '); 
     
     warning on;

@@ -26,7 +26,7 @@ function [xax,yax,zax,vol] = roms_extract(fname,varname,volume)
                 
                 if isinf(volume{i,3}), volume{i,3} = length(xax); end
                 
-                xax = xax(volume{i,2}:volume{i,3});
+                xax = xax(volume{i,2}:volume{i,3},:);
                 
                 vol(1,1) = volume{i,2};
                 vol(1,2) = volume{i,3};
@@ -37,7 +37,7 @@ function [xax,yax,zax,vol] = roms_extract(fname,varname,volume)
                 
                 if isinf(volume{i,3}), volume{i,3} = length(yax); end
                 
-                yax = yax(volume{i,2}:volume{i,3});
+                yax = yax(:,volume{i,2}:volume{i,3});
                 
                 vol(2,1) = volume{i,2};
                 vol(2,2) = volume{i,3};
@@ -54,7 +54,7 @@ function [xax,yax,zax,vol] = roms_extract(fname,varname,volume)
                     volume{i,2} = temp;
                 end
                 
-                zax = zax(volume{i,2}:volume{i,3});
+                zax = zax(:,:,volume{i,2}:volume{i,3});
                 
                 vol(3,1) = volume{i,2};
                 vol(3,2) = volume{i,3};

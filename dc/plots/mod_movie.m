@@ -13,6 +13,8 @@
 %                 - 'mid' will find midpoint of 'axis' for you
 %           commands - extra commands to be executed after each plot
 %                      (passed to animate.m - optional)
+% ONLY SUPPORTS UNIFORM HORIZONTAL GRIDS - NEED TO ADD INTERPOLATION FOR
+% NON_UNIFORM GRIDS
 
 % CHANGELOG:
 % Changed to use updated roms_var_grid output                   26 Feb 2012
@@ -112,7 +114,6 @@ if strcmp(varname,'Eta') || strcmp(varname,'zeta')
     index = 1;
 end
 
-
 %% Plot according to options
 
 labels.tmax = time(tindices(1) + dt*floor((tindices(2)-tindices(1))/dt));
@@ -145,7 +146,7 @@ for i=0:iend-1
             
     switch axis
         case 'x'
-            sliceax = xax; 
+            sliceax = xax(:,1); 
             plotx = yax;
             ploty = zax;
             axind = 1;
@@ -153,7 +154,7 @@ for i=0:iend-1
             labels.yax = 'Z (meter)';
             
         case 'y'
-            sliceax = yax;
+            sliceax = yax(1,:)';
             plotx = xax;
             ploty = zax;
             axind = 2;
@@ -161,8 +162,7 @@ for i=0:iend-1
             labels.yax = 'Z (meter)';
 
         case 'z'
-            sliceax = zax;
-            if ndims(sliceax) == 3, sliceax = squeeze(zax(1,1,:)); end
+            sliceax = squeeze(zax(ceil(vinfo.Size(1)/2),ceil(vinfo.Size(2)/2),:));
             plotx = xax;
             ploty = yax;
             axind = 3;
@@ -184,7 +184,7 @@ for i=0:iend-1
         otherwise
             error('Invalid axis label.');
     end
-    
+
     %% generic animate call
     
     % given location instead of index
@@ -200,7 +200,7 @@ for i=0:iend-1
     
     % fix title string
     if sliceax(index) > 1000
-        labels.title = [vartitle axis ' = ' sprintf('%5.2f', sliceax(index)/1000) ' km | '];
+         labels.title = [vartitle axis ' = ' sprintf('%5.2f', sliceax(index)/1000) ' km | '];
     else
         labels.title = [vartitle axis ' = ' sprintf('%5.2f', sliceax(index)) ' m | '];
     end
@@ -211,11 +211,12 @@ for i=0:iend-1
         read_start(axind) = index;
         read_count(axind) = 1;
     end
+    
     dv = double(squeeze(ncread(fname,varname,read_start,read_count,stride)));  
     
     % take care of walls for mitgcm - NEEDS TO BE CHECKED
     if gcm
-        s = size(dv);            
+        s = size(dv);
         s(3) = size(dv,3); % correct for single timestep snapshots - in that case s is a 2 element row
         if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:) = NaN; end;
         if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
@@ -240,7 +241,21 @@ for i=0:iend-1
         ploty = ploty/1000;
         labels.yax = [labels.yax ' x 10^3'];
     end
-         
+    
+    switch axind
+        case 1
+            plotx = squeeze(plotx(index,:,:));
+            ploty = squeeze(ploty(index,:,:));
+            
+        case 2
+            plotx = squeeze(plotx(:,index,:));
+            ploty = squeeze(ploty(:,index,:));
+            
+        case 3
+            plotx = squeeze(plotx(:,:,index));
+            ploty = squeeze(ploty(:,:,index));            
+    end
+
     [labels.mm_instance,h_plot] = animate(plotx,ploty,dv,labels,commands,3,0.1);
     
     if ~isempty(labels.mm_instance), mm_render(labels.mm_instance); end

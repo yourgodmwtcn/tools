@@ -110,8 +110,16 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
     
     if ~exist('commands','var'), commands = '';     end
     
-    if isempty(xax), xax = 1:s(1); end;
-    if isempty(yax), yax = 1:s(2); end;
+    if isempty(xax), xax = [1:s(1)]'; end;
+    if isempty(yax), yax = [1:s(2)]'; end;
+    
+    % make 2D axis variables if they aren't already
+    if isrow(xax), xax = xax'; end
+    if isrow(yax), yax = yax'; end
+    
+    if isvector(xax), xax = repmat(xax ,[1 s(2)]); end
+    if isvector(yax), yax = repmat(yax',[s(1) 1]); end
+    
        
     %% processing
   
@@ -171,7 +179,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
         pflag = ~spaceplay;
         
         if pflag,
-            [x,y,button] = ginput(1);
+            [~,~,button] = ginput(1);
             figure(gcf);
             if button == 32, spaceplay = 1; end % resumes when paused
             if button == 27, break; end % exit when Esc is pressed.
@@ -182,10 +190,10 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
         ckey = get(gcf,'currentkey');% end
         
         % navigate : other keys move forward
-        if strcmp(ckey,'leftarrow') | strcmp(ckey,'downarrow') | button == 28 | button == 31 | button == 3
+        if strcmp(ckey,'leftarrow') || strcmp(ckey,'downarrow') || button == 28 || button == 31 || button == 3
             pflag = 1; spaceplay = 0;
             i = i-2;
-        else if strcmp(ckey,'rightarrow') | strcmp(ckey,'uparrow') | button == 29 | button == 30 | button == 1
+        else if strcmp(ckey,'rightarrow') || strcmp(ckey,'uparrow') || button == 29 || button == 30 || button == 1
                 pflag = 1; spaceplay = 0;
             end
         end
@@ -202,24 +210,24 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
         switch plotflag
             case 2
                 try
-                    handles.h_plot = pcolorcen(xax,yax,plotdata(:,:,i)');
+                    handles.h_plot = pcolorcen(xax,yax,plotdata(:,:,i));
                 catch ME
-                    handles.h_plot = pcolor(xax,yax,plotdata(:,:,i)');
+                    handles.h_plot = pcolor(xax,yax,plotdata(:,:,i));
                 end
             case 3
-                [~,handles.h_plot] = contourf(xax,yax,plotdata(:,:,i)',linspace(datamin,datamax,25)); shading flat
+                [~,handles.h_plot] = contourf(xax,yax,plotdata(:,:,i),linspace(datamin,datamax,25)); shading flat
             case 4
                 set(gcf,'Renderer','painters');
                 clf;
-                [C,handles.h_plot] = contour(xax,yax,plotdata(:,:,i)',linspace(datamin,datamax,30),'Color','k');
+                [C,handles.h_plot] = contour(xax,yax,plotdata(:,:,i),linspace(datamin,datamax,30),'Color','k');
                 format short
                 clabel(C,handles.h_plot,'FontSize',9);
             otherwise
                 try
-                    handles.h_plot = imagescnan(xax,yax,plotdata(:,:,i)');
+                    handles.h_plot = imagescnan(xax,yax,plotdata(:,:,i));
                     set(gca,'yDir','normal');
                 catch ME
-                    handles.h_plot = imagesc(xax,yax,plotdata(:,:,i)');
+                    handles.h_plot = imagesc(xax,yax,plotdata(:,:,i));
                     set(gca,'yDir','normal');
                 end
         end
@@ -260,7 +268,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
         
         % center colorbar
         if flags(7) || flags(8)
-            [cmin cmax] = caxis;
+            [cmin,cmax] = caxis;
             if cmax*cmin < 0 % make colorbar symmetric about zero
                 if cmax > abs(cmin)
                     cmin = -abs(cmax);
