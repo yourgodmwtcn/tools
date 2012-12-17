@@ -1,6 +1,6 @@
 % Makes animation (default using contourf). Assumes last dimension is to be looped by default. 
 % Else specify index. Allows browsing.
-%       [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,pausetime)
+%       [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
 %           xax,yax - x,y axes (both optional) - can be empty []
 %           data - data to be animated - script squeezes data
 %
@@ -30,7 +30,6 @@
 %                          > topresent - tweaks image to make it better for saving (bigger fonts, reduced axis tick marks etc.)
 %
 %           index - dimension to loop through (optional)
-%           pausetime - pause(pausetime) (optional)
 %
 % USAGE:
 %       animate(data)
@@ -45,7 +44,7 @@
 %       - arrowkeys *pause* and navigate always
 %       - Esc to quit
 
-function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,pausetime)
+function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
 
     warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
     %% figure out input
@@ -144,7 +143,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
     spaceplay = 1; % if 1, space pauses. if 0, space plays
     
     %% parse options
-    cmds = {'nocaxis','pcolor','contourf','contour','pause','fancy_cmap','movieman','topresent'};
+    cmds = {'nocaxis','pcolor','imagesc','contour','pause','fancy_cmap','movieman','topresent'};
     flags = zeros(1,length(cmds));
     if ~isempty(commands),
         [flags, commands] = parse_commands(cmds,commands);
@@ -215,14 +214,6 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
                     handles.h_plot = pcolor(xax,yax,plotdata(:,:,i));
                 end
             case 3
-                [~,handles.h_plot] = contourf(xax,yax,plotdata(:,:,i),linspace(datamin,datamax,25)); shading flat
-            case 4
-                set(gcf,'Renderer','painters');
-                clf;
-                [C,handles.h_plot] = contour(xax,yax,plotdata(:,:,i),linspace(datamin,datamax,30),'Color','k');
-                format short
-                clabel(C,handles.h_plot,'FontSize',9);
-            otherwise
                 try
                     handles.h_plot = imagescnan(xax,yax,plotdata(:,:,i));
                     set(gca,'yDir','normal');
@@ -230,10 +221,19 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index,paus
                     handles.h_plot = imagesc(xax,yax,plotdata(:,:,i));
                     set(gca,'yDir','normal');
                 end
+            case 4
+                set(gcf,'Renderer','painters');
+                clf;
+                [C,handles.h_plot] = contour(xax,yax,plotdata(:,:,i),linspace(datamin,datamax,30),'Color','k');
+                format short
+                clabel(C,handles.h_plot,'FontSize',9);
+            otherwise
+                [~,handles.h_plot] = contourf(xax,yax,plotdata(:,:,i),linspace(datamin,datamax,25)); shading flat
+            
         end
         
         % square axis if appropriate
-        if abs((max(xax)-min(xax)) - (max(yax)-min(yax))) < 1
+        if abs((max(xax(:))-min(xax(:))) - (max(yax(:))-min(yax(:)))) < 1
             axis square;
         end
         

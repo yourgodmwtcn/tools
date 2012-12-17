@@ -13,8 +13,6 @@
 %                 - 'mid' will find midpoint of 'axis' for you
 %           commands - extra commands to be executed after each plot
 %                      (passed to animate.m - optional)
-% ONLY SUPPORTS UNIFORM HORIZONTAL GRIDS - NEED TO ADD INTERPOLATION FOR
-% NON_UNIFORM GRIDS
 
 % CHANGELOG:
 % Changed to use updated roms_var_grid output                   26 Feb 2012
@@ -93,8 +91,8 @@ else
     else
         varname(1) = lower(varname(1));
     end
-    % set up grid    
-    [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume);
+    % set up grid for first time instant
+    [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume,1);
     [~,~,~,time,xunits,yunits] = roms_var_grid(fname,varname);
     time = time./3600/24;
 end
@@ -104,14 +102,55 @@ end
 vinfo  = ncinfo(fname,varname);
 dim    = length(vinfo.Size);
 slab   = 100; % slab for ncread. read 'n' records in at a time - faster response + save some memory?
-midflag = 0;  % 1 if script needs to compute the mid level for plot
 
 [iend,tindices,dt,~,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 
-% set only possible axis and index for Eta / zeta
-if strcmp(varname,'Eta') || strcmp(varname,'zeta')
+% set only possible axis and index for Eta / zeta / ubar / vbar
+if dim == 3
     axis = 'z';
     index = 1;
+    stride = [1 1 dt]; 
+    index  = 1;
+    sliceax(index) = 0;
+    plotx = xax;
+    ploty = yax;
+    axind = 3;
+    labels.xax = ['X (' xunits ')'];
+    labels.yax = ['Y (' yunits ')'];
+else
+    switch axis
+        case 'x'
+            sliceax = xax(:,1); 
+            plotx = yax;
+            ploty = zax;
+            axind = 1;
+            labels.xax = ['Y (' yunits ')'];
+            labels.yax = 'Z (meter)';
+
+        case 'y'
+            sliceax = yax(1,:)';
+            plotx = xax;
+            ploty = zax;
+            axind = 2;
+            labels.xax = ['X (' xunits ')'];
+            labels.yax = 'Z (meter)';
+
+        case 'z'
+            sliceax = squeeze(zax(ceil(vinfo.Size(1)/2),ceil(vinfo.Size(2)/2),:));
+            plotx = xax;
+            ploty = yax;
+            axind = 3;
+            labels.xax = ['X (' xunits ')'];
+            labels.yax = ['Y (' yunits ')'];
+
+%             if ischar(index) && str2double(index) > 0                
+%                 warning('Changed input depth %s m to -%s m', index, index);
+%                 index = num2str(-1 * str2double(index));
+%             end
+            
+        otherwise
+            error('Invalid axis label.');
+    end
 end
 
 %% Plot according to options
@@ -130,7 +169,32 @@ end
 % overwrite current figure if loading multiple files from directory
 if ~isDir, figure; end
 
-if strcmp(index,'mid'), midflag = 1; end
+% given location instead of index
+if axis ~= 'z'
+    if strcmpi(index,'end') || strcmpi(index,'inf'),  index = vinfo.Size(axind); end
+    if strcmpi(index,'mid'), index = num2str((sliceax(1)+sliceax(end))/2); end
+    if ischar(index), index = find_approx(sliceax,str2double(index),1); end
+else
+    index = abs(str2double(index));
+end
+
+if ~isempty(strfind(labels.yax,'degree')) || ~isempty(strfind(labels.xax,'degree'))
+    labels.dar = 1; 
+else
+    labels.dar = 0; 
+end
+
+% fix title string
+if axis ~= 'z'
+    if sliceax(index) > 1000
+        labels.title = [vartitle axis ' = ' sprintf('%5.2f', sliceax(index)/1000) ' km | '];
+    else
+        labels.title = [vartitle axis ' = ' sprintf('%5.2f', sliceax(index)) ' m | '];
+    end
+else
+    labels.title = [vartitle 'z = ' num2str(index) ' m | '];
+end
+labels.mm_instance = [];
 
 for i=0:iend-1
     % if reading data in multiple strides, an escape in the first stride should
@@ -143,68 +207,6 @@ for i=0:iend-1
     
     labels.time = time(read_start(end):dt:(read_start(end)+(read_count(end))*dt -1)); % read_start(end)-1
     labels.stride = i;
-            
-    switch axis
-        case 'x'
-            sliceax = xax(:,1); 
-            plotx = yax;
-            ploty = zax;
-            axind = 1;
-            labels.xax = ['Y (' yunits ')'];
-            labels.yax = 'Z (meter)';
-            
-        case 'y'
-            sliceax = yax(1,:)';
-            plotx = xax;
-            ploty = zax;
-            axind = 2;
-            labels.xax = ['X (' xunits ')'];
-            labels.yax = 'Z (meter)';
-
-        case 'z'
-            sliceax = squeeze(zax(ceil(vinfo.Size(1)/2),ceil(vinfo.Size(2)/2),:));
-            plotx = xax;
-            ploty = yax;
-            axind = 3;
-            labels.xax = ['X (' xunits ')'];
-            labels.yax = ['Y (' yunits ')'];
-            
-            if ischar(index) && str2double(index) > 0                
-                warning('Changed input depth %s m to -%s m', index, index);
-                index = num2str(-1 * str2double(index));
-            end
-            
-            if dim == 3 % catch ubar/vbar/zeta - free surface elevation
-                stride = [1 1 dt]; 
-                midflag = 0;
-                index  = 1;
-                sliceax(index) = 0;
-            end
-
-        otherwise
-            error('Invalid axis label.');
-    end
-
-    %% generic animate call
-    
-    % given location instead of index
-    if strcmpi(index,'end'),  index = vinfo.Size(axind); end
-    if midflag, index = num2str((sliceax(1)+sliceax(end))/2); end
-    if ischar(index), index = find_approx(sliceax,str2double(index),1); end
-    
-    if ~isempty(strfind(labels.yax,'degree')) || ~isempty(strfind(labels.xax,'degree'))
-        labels.dar = 1; 
-    else
-        labels.dar = 0; 
-    end
-    
-    % fix title string
-    if sliceax(index) > 1000
-         labels.title = [vartitle axis ' = ' sprintf('%5.2f', sliceax(index)/1000) ' km | '];
-    else
-        labels.title = [vartitle axis ' = ' sprintf('%5.2f', sliceax(index)) ' m | '];
-    end
-    labels.mm_instance = [];
 
     % read data
     if dim ~= 3
@@ -212,7 +214,15 @@ for i=0:iend-1
         read_count(axind) = 1;
     end
     
-    dv = double(squeeze(ncread(fname,varname,read_start,read_count,stride)));  
+    if axis ~= 'z' || dim == 3
+        dv = double(squeeze(ncread(fname,varname,read_start,read_count,stride)));  
+    else
+        warning off
+        for mmm = 1:read_count(4)
+            dv(:,:,mmm) = roms_zslice(fname,varname,read_start(4)+mmm-1,index)';
+        end
+        warning on
+    end
     
     % take care of walls for mitgcm - NEEDS TO BE CHECKED
     if gcm
@@ -227,7 +237,7 @@ for i=0:iend-1
         end
     end
     
-    s   = size(dv);            
+    s = size(dv);            
     if s(1) == 1 || s(2) == 1
         close(gcf);
         error('2D simulation?');
@@ -242,21 +252,20 @@ for i=0:iend-1
         labels.yax = [labels.yax ' x 10^3'];
     end
     
+    % fix axes
     switch axind
         case 1
-            plotx = squeeze(plotx(index,:,:));
-            ploty = squeeze(ploty(index,:,:));
+            plotx = squeeze(plotx(index,:,:,:));
+            ploty = squeeze(ploty(index,:,:,:));
             
         case 2
-            plotx = squeeze(plotx(:,index,:));
-            ploty = squeeze(ploty(:,index,:));
-            
-        case 3
-            plotx = squeeze(plotx(:,:,index));
-            ploty = squeeze(ploty(:,:,index));            
+            plotx = squeeze(plotx(:,index,:,:));
+            ploty = squeeze(ploty(:,index,:,:));          
     end
 
-    [labels.mm_instance,h_plot] = animate(plotx,ploty,dv,labels,commands,3,0.1);
+    % send to animate
+    [labels.mm_instance,h_plot] = animate(plotx,ploty,dv,labels,commands,3);
     
+    % for movie
     if ~isempty(labels.mm_instance), mm_render(labels.mm_instance); end
 end

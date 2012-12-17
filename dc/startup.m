@@ -38,3 +38,6 @@ set(0,'DefaultAxesZColor',[.3 .3 .3])
 set(0,'DefaultAxesLineWidth',1.5)
 set(0,'DefaultLineLineWidth',1.5);
 
+%% change to current working dir
+cd('E:\Work\eddyshelf\runs');
+

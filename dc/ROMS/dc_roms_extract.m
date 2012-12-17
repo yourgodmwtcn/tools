@@ -7,9 +7,11 @@
 %            'z' 'location1' 'location2'};
 % locations in strings - in units else provide axis index as number
 
-function [xax,yax,zax,vol] = roms_extract(fname,varname,volume)
+function [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume,tindex)
 
-    [xax,yax,zax,~,~] = roms_var_grid(fname,varname);
+    if ~exist('tindex','var'), tindex = 0; end
+
+    [xax,yax,zax,~,~] = roms_var_grid(fname,varname,tindex);
     
     vol = [1 Inf; 1 Inf; 1 Inf]; % default - choose all data
     

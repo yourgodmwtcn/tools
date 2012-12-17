@@ -7,7 +7,7 @@ function [xax,yax,zax,tax,xunits,yunits] = dc_roms_var_grid(fname,varname)
     
     if strcmp(varname,'pv')
         pos = 'p';
-    elseif strcmp(varname,'eke') | strcmp(varname,'mke') | strcmp(varname,'pe')
+    elseif strcmp(varname,'eke') || strcmp(varname,'mke') || strcmp(varname,'pe')
         pos = 'e';
     elseif strcmp(varname,'vor')
         pos = 'q';
