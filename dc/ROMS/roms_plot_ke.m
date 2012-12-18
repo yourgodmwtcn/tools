@@ -15,6 +15,10 @@ function [KE] = roms_plot_ke(fname)
     
     KE = domain_integrate(0.5 *(u.^2 + v.^2),xax,yax,zax);
     
+    subplot(211)
     plot(tax/86400,KE);
-    xlabel('time (days)');
     ylabel('KE / unit vol.');
+    subplot(212)
+    plot(tax/86400,KE./max(KE(:)));
+    xlabel('time (days)');
+    ylabel('KE / max KE');
