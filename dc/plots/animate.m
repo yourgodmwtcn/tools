@@ -188,6 +188,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
         
         ckey = get(gcf,'currentkey');% end
         
+        if isempty(button), button = 0; end
         % navigate : other keys move forward
         if strcmp(ckey,'leftarrow') || strcmp(ckey,'downarrow') || button == 28 || button == 31 || button == 3
             pflag = 1; spaceplay = 0;

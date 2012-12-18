@@ -1,8 +1,8 @@
-function [KE] = roms_plot_ke(fname)
+function [] = roms_diagnose_spinup(fname)
 
     u = double(ncread(fname,'u'));
     v = double(ncread(fname,'v'));
-    
+    zeta = double(ncread(fname,'zeta'));
     
     u = avg1(u(:,2:end-1,:,:),1);
     v = avg1(v(2:end-1,:,:,:),2);
@@ -14,11 +14,9 @@ function [KE] = roms_plot_ke(fname)
     zax = zax(2:end-1,2:end-1,:);
     
     KE = domain_integrate(0.5 *(u.^2 + v.^2),xax,yax,zax);
+    PE = squeeze(trapz(yax,trapz(xax,0.5*9.81*(zeta(2:end-1,2:end-1,:)).^2,1),2));
     
-    subplot(211)
-    plot(tax/86400,KE);
-    ylabel('KE / unit vol.');
-    subplot(212)
-    plot(tax/86400,KE./max(KE(:)));
+    plot(tax/86400,PE./PE(end) + 1,'b'); hold on
+    plot(tax/86400,KE./KE(end),'r');
     xlabel('time (days)');
-    ylabel('KE / max KE');
+    legend('PE/PE(end) + 1','KE/KE(end)','Location','SouthEast');

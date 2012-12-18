@@ -150,7 +150,7 @@ for i=0:iend-1
      
      [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt,volr);
      rho = ncread(fname,'rho',read_start,read_count,stride); pbar(cpb,i+1,4,iend,5);
-    zeta = ncread(fname,'zeta',[read_start(1:2) read_start(end)],[read_count(1:2) read_count(end)],[stride(1:2) stride(end)]); pbar(cpb,i+1,5,iend,5);
+    %zeta = ncread(fname,'zeta',[read_start(1:2) read_start(end)],[read_count(1:2) read_count(end)],[stride(1:2) stride(end)]); pbar(cpb,i+1,5,iend,5);
 	if isempty(cpb), fprintf('\n Done reading data... \n'); end
     
     % mean fields - average over ntavg timesteps
@@ -176,7 +176,7 @@ for i=0:iend-1
     
     % pull out rho & zeta at timesteps where i'm calculating eddy fields.
     rho  = (rho(2:end-1,2:end-1,:,ind1) + rho(2:end-1,2:end-1,:,ind2))/2;
-    zeta = (zeta(2:end-1,2:end-1,ind1) + zeta(2:end-1,2:end-1,ind2))/2;
+    %zeta = (zeta(2:end-1,2:end-1,ind1) + zeta(2:end-1,2:end-1,ind2))/2;
     
     up = bsxfun(@minus,(u(:,:,:,ind1) + u(:,:,:,ind2))/2,um);
     vp = bsxfun(@minus,(v(:,:,:,ind1) + v(:,:,:,ind2))/2,vm);
