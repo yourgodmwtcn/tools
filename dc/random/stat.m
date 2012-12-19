@@ -59,6 +59,8 @@ function [] = stat(var1)
     fprintf('%d ', s);
     fprintf('\b]');
     
+    if islogical(var1), var1 = double(var1); end
+    
     if ~isnumeric(var1)
         try
             cprintf('Red','\n\t\t\t Variable is not numeric: Structure / cell?.\n\n');
@@ -110,7 +112,7 @@ function [] = stat(var1)
     % Rank, Var & Std don't work for dim > 2 arrays    
     % Skipping missing columns because that doesnt seem to make much sense for ND arrays
     % None of the rest is valid for logical arrays either
-    if ~(length(s) > 2 || islogical(var1))    
+    if ~(length(s) > 2)    
     
         if n > 10^6, warning('Terminating because array is too large.'); return; end
 
