@@ -1,0 +1,162 @@
+%\input{E:/Work/tools/latex/glyphtounicode.tex}        % make pdf's searchable CHANGE TO mmap
+%% precompile using
+%% xelatex -ini -jobname=”preamble” “&xelatex” mylatexformat.ltx “””preamble.tex”””
+
+\RequirePackage[l2tabu, orthodox]{nag}
+\documentclass[11pt,oneside]{article}
+
+\usepackage{iftex}
+\ifPDFTeX
+	\usepackage{inputenx}
+	\usepackage[T1]{fontenc}  % better font encoding
+	\usepackage[sc]{mathpazo}    % fancy math fonts
+\fi
+
+\usepackage{fixltx2e}
+
+\usepackage{graphicx}   % add figures
+\usepackage{xcolor} 	 % support for color names
+\usepackage{array}
+\usepackage{booktabs}    % fancy tables
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{subfig}	% add subfigure support
+\usepackage{float}	     % stronger placement of floats
+
+\usepackage[envlayout=color]{fixme}
+\usepackage{etoolbox}
+\usepackage{letltxmacro}  % for new sqrt
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{paralist}
+\usepackage{rotating} % allow page rotation
+\usepackage{pdflscape} % allow landscape pages in pdf
+\usepackage{hyperref}  % hyperlinks in pdf
+\usepackage[figure,table]{hypcap} % Correct a problem with hyperref
+
+\usepackage[centering,text={16cm,22cm},dvips]{geometry}
+%\usepackage{fancyhdr}
+\usepackage{xfrac}
+\usepackage{mathtools} % fixed version of amsmath
+\usepackage[warning]{onlyamsmath}
+\usepackage[sort&compress]{natbib} % for bibliography
+\usepackage{cleveref}
+
+\ifXeTeX
+	\usepackage{fontspec}
+	\usepackage{unicode-math}
+	
+	\setromanfont[Ligatures=TeX]{TeX Gyre Pagella}
+	\setmathfont[math-style=ISO,bold-style=ISO,vargreek-shape=TeX]{TG Pagella Math}
+\fi
+
+\usepackage[tight-spacing=true]{siunitx} % Messes up tables
+\usepackage[protrusion=true,expansion]{microtype}  % super fancy typography support
+
+%% unused stuff
+%\usepackage{epstopdf}   % convert eps figures to pdf NOT NEEDED ANYMORE?
+%\usepackage{breakurl} % Only for dvips not pdflatex
+%\usepackage{psfragx}    % for use with LaPrint.m
+%\usepackage{fullpage}
+%\usepackage{doi}
+%\usepackage{uri}
+
+% Line spacing 1.5
+\linespread{1.5} 
+
+\frenchspacing
+\newcommand{\ifundefined}[1]{\expandafter\ifx\csname#1\endcsname\relax} 
+	
+% better sqrt (from wikibook)
+\LetLtxMacro{\oldsqrt}{\sqrt} % makes all sqrts closed
+\renewcommand{\sqrt}[1][]{%
+  \def\DHLindex{#1}\mathpalette\DHLhksqrt}
+\def\DHLhksqrt#1#2{%
+  \setbox0=\hbox{$#1\oldsqrt[\DHLindex]{#2\,}$}\dimen0=\ht0
+  \advance\dimen0-0.2\ht0
+  \setbox2=\hbox{\vrule height\ht0 depth -\dimen0}%
+  {\box0\lower0.71pt\box2}}
+  
+% make sure \pi looks like pi NOT NEEDED ANYMORE?
+% see: http://tex.stackexchange.com/questions/33140/mathpazo-siunitx-turns-into-ss?rq=1
+%\protected\def\numpi{\text{\ensuremath{\pi}}}
+%\sisetup{input-symbols = \numpi}
+
+%\setmainfont{Palatino}
+
+\hypersetup{
+    unicode=true,          % non-Latin characters in Acrobat’s bookmarks
+    pdftoolbar=true,        % show Acrobat’s toolbar?
+    pdfmenubar=true,        % show Acrobat’s menu?
+    pdffitwindow=false,     % window fit to page when opened
+    pdfstartview={FitH},    % fits the width of the page to the window
+    pdfnewwindow=true,      % links in new window
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=black,          % color of internal links
+    citecolor=black,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=blue           % color of external links
+}
+
+%\clubpenalty = 10000
+%\widowpenalty = 10000
+\setlength{\parskip}{1.2ex}
+\setlength{\parindent}{0em}
+
+\urlstyle{rm} %so it doesn't use a typewriter font for url's.
+
+% Here are a few math abbreviations that may be useful. Note that math 
+% variables should generally be set in italic, vectors in bold italic, and
+% constants, such as e and i should be upright. Operators like the 'd' in 
+% dx  and 'D' in D/Dt should also be upright. 
+\newcommand{\ir}{\mathrm{i}}
+\newcommand{\dr}{\mathrm{d}}
+\newcommand{\D}{\mathrm{D}}
+\newcommand{\e}{\, \mathrm{e}} \newcommand{\er}{\mathrm{e}}
+
+% The following makes ODEs and PDEs easier to write.
+% For an example, see the second problem below. - Vallis Solution template
+\newcommand{\dd}[3][]{{\frac{\dr^{#1} #2}{\dr #3^{#1}}}}
+\newcommand{\pp}[3][]{{\frac{\partial^{#1} #2}{\partial #3^{#1}}}}
+\newcommand{\DD}[1]{{\frac{\D#1}{\D t}}}
+
+% These are some of my math shortcuts
+\newcommand{\mb}[1]{\boldsymbol{#1}} % math bold font
+\newcommand{\ol}[1]{\overline{#1}}   
+\newcommand{\x}{\times}
+\newcommand{\mO}{\mathcal{O}}
+\newcommand{\ubr}{\underbracket}
+\newcommand{\disp}{\displaystyle}
+\newcommand{\vb}{\mb {v}\xspace}
+\newcommand{\ub}{\mb {u}\xspace}
+
+% Text shortcuts
+\newcommand{\textbox}[1]{
+	\begin{center}
+		\framebox{
+			\parbox{0.8\linewidth}{#1}
+	 	}
+	\end{center}
+}
+
+% non-dimensional numbers
+\newcommand{\Ro}{\mathit{Ro}}
+\newcommand{\Ri}{\mathit{Ri}}
+\newcommand{\Rif}{\Ri_f}
+\newcommand{\Pra}{\mathit{Pr}}
+\newcommand{\Pe}{\mathit{Pe}}
+\newcommand{\Ra}{\mathit{Ra}}
+\newcommand{\Rey}{\mathit{Re}}
+\newcommand{\Fr}{\mathit{Fr}}
+\newcommand{\Bu}{\mathit{Bu}}
+
+\def\preambleloaded{Precompiled preamble loaded.}
+
+\endofdump
+
+% Example: \dd \psi x + \pp[2]y x  -> dpsi/dx + d2y/dx2
+
+% Bibliography Code
+%\bibliographystyle{elsarticle-harv}
+%\bibliography{BIBFILENAME WITHOUT EXT}{}
