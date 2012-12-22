@@ -56,11 +56,12 @@ if ~exist('isDir','var'), isDir = 0; end
 
 % if folder, loop through all .nc files
 if isdir(fname)
-    files = ls([fname '\*.nc']);
+    files = ls([fname '\*his*.nc']);
     isDir = 1;
-    for ii=1:length(files)
+    for ii=1:size(files,1)
         h_plot = mod_movie([fname '\' files(ii,:)],varname,tindices,volume,axis,index,commands,isDir);
     end
+    return;
 end
 
 labels.isDir = isDir;
@@ -142,6 +143,14 @@ else
             axind = 3;
             labels.xax = ['X (' xunits ')'];
             labels.yax = ['Y (' yunits ')'];
+            
+        case 's'
+            sliceax = 1:size(zax,3);
+            plotx = xax;
+            ploty = yax;
+            axind = 3;
+            labels.xax = ['X (' xunits ')'];
+            labels.yax = ['Y (' yunits ')'];
 
 %             if ischar(index) && str2double(index) > 0                
 %                 warning('Changed input depth %s m to -%s m', index, index);
@@ -167,7 +176,7 @@ catch ME
 end 
 
 % overwrite current figure if loading multiple files from directory
-if ~isDir, figure; end
+% if ~isDir, figure; end
 
 % given location instead of index
 if axis ~= 'z'
@@ -185,14 +194,17 @@ else
 end
 
 % fix title string
-if axis ~= 'z'
+if axis == 'x' || axis == 'y'
     if sliceax(index) > 1000
         labels.title = [vartitle axis ' = ' sprintf('%5.2f', sliceax(index)/1000) ' km | '];
     else
         labels.title = [vartitle axis ' = ' sprintf('%5.2f', sliceax(index)) ' m | '];
     end
-else
-    labels.title = [vartitle 'z = ' num2str(index) ' m | '];
+else if axis == 'z'
+        labels.title = [vartitle 'z = ' num2str(index) ' m | '];
+    else
+        labels.title = [vartitle 's = ' num2str(index) ' | '];
+    end
 end
 labels.mm_instance = [];
 
