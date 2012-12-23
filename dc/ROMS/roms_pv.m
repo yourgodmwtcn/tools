@@ -23,7 +23,6 @@ rho0  = ncread(fname,'R0');
 tpv = ncread(fname,'ocean_time');
 tpv = tpv([tindices(1):tindices(2)]);
 f   = ncread(fname,'f',[1 1],[Inf Inf]);
-f   = mean(f(:));
 
 % xpv = grid.x_rho(1,2:end-1)';
 % ypv = grid.y_rho(2:end-1,1)';
@@ -33,15 +32,15 @@ xname = 'x_pv'; yname = 'y_pv'; zname = 'z_pv'; tname = 'ocean_time';
 
 grid1.xv = grid.x_v(1,:)';
 grid1.yv = grid.y_v(:,1);
-grid1.zv = grid.z_v(:,1,1);
+grid1.zv = permute(grid.z_v,[3 2 1]);
 
 grid1.xu = grid.x_u(1,:)';
 grid1.yu = grid.y_u(:,1);
-grid1.zu = grid.z_u(:,1,1);
+grid1.zu = permute(grid.z_u,[3 2 1]);
 
 grid1.xr = grid.x_rho(1,:)';
 grid1.yr = grid.y_rho(:,1);
-grid1.zr = grid.z_r(:,1,1);
+grid1.zr = permute(grid.z_r,[3 2 1]);
 
 %% setup netcdf file
 if ~exist('outname','var') || isempty(outname), outname = 'ocean_pv.nc'; end
