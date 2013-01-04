@@ -5,14 +5,9 @@
 
 function [pv,xpv,ypv,zpv] = pv_cgrid(grid,u,v,rho,f,rho0)
 
-    % get pot. temp.
-    %pres   = repmat(reshape(grid.z_r,[s(1) s(2) s(3)]),[1 1 1 s(4)]);
-    %theta  = sw_ptmp(32*ones(size(vars.temp)),vars.temp,pres,zeros(size(vars.temp)));
-    %lambda = rho; % choose either theta or rho
-    
     xpv = grid.xr(2:end-1);
     ypv = grid.yr(2:end-1);
-    zpv = avg1(grid.zr,3);
+    zpv = avg1(grid.zr(2:end-1,2:end-1,:),3);
     
     s = size(rho);
     if length(s) == 3

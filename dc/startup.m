@@ -17,16 +17,16 @@ set(0,'DefaultFigureColormap',flipud(cbrewer('div', 'RdYlGn', 32)));
 set(0,'DefaultFigureColor','w')
 set(0,'DefaultFigureRenderer','zbuffer')
 set(0,'DefaultFigurePaperPositionMode', 'auto');
-set(0,'DefaultTextFontName', 'AvantGarde');
+set(0,'DefaultTextFontName', 'TeXGyrePagella');
 set(0,'DefaultTextColor','k')
-set(0,'DefaultTextFontSize',12)
+set(0,'DefaultTextFontSize',14)
 
 % axes
-set(0,'DefaultAxesFontName','AvantGarde')
+set(0,'DefaultAxesFontName','TeXGyrePagella')
 set(0,'DefaultAxesFontWeight','normal')
 set(0,'DefaultAxesTickLength'  , [.01 .01]);
 set(0,'DefaultAxesLineWidth'  , 1);
-set(0,'DefaultAxesFontSize',10)
+set(0,'DefaultAxesFontSize',12)
 set(0,'DefaultAxesBox','on')
 set(0,'DefaultAxesTickDir','out')
 %set(0,'DefaultAxesXMinorTick','on')

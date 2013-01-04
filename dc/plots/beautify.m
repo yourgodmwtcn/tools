@@ -9,6 +9,9 @@
 function [] = beautify(fontSizes)
     
     if ~exist('fontSizes','var'), fontSizes = [12 12 14]; end
+    
+    font_name = 'TeXGyrePagella'; %'AvantGarde'
+    font_name_axis = font_name;
 
     % Get required handles for current figure
     hFig = evalin('caller','gcf');
@@ -34,15 +37,15 @@ function [] = beautify(fontSizes)
     set(hTitle, ...
          'FontSize'   , fontSizes(3) , ...
          'FontWeight' , 'normal', ...
-         'FontName'   , 'AvantGarde');
+         'FontName'   , font_name);
 
     set([hXLabel, hYLabel, hZLabel]  , ...
-         'FontName'   , 'AvantGarde', ... 
+         'FontName'   , font_name, ... 
          'FontWeight' , 'normal', ...
          'FontSize'   , fontSizes(2)         );
 
     set(hAxis, ...
-         'FontName'    , 'Helvetica', ...
+         'FontName'    , font_name_axis, ...
          'Box'         , 'on'     , ...
          'TickDir'     , 'out'     , ...
          'TickLength'  , [.005 .005] , ... % IMPROVE THIS
@@ -68,6 +71,10 @@ function [] = beautify(fontSizes)
          set(hFig,'renderer','zbuffer');
          set(hAxis,'box','on');
      end
+     
+     warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+     jframe = get(hFig,'JavaFrame');
+     jframe.setMaximized(true);
 
     % Makes Fullscreen
    %set(hFig,'un','n','pos',[0,0,0.95,0.95]); figure(hFig);

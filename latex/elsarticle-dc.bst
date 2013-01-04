@@ -202,7 +202,7 @@ FUNCTION {space.word}
  %% Each function has a name bbl.xxx where xxx is the English word.
  %% The language selected here is ENGLISH
 FUNCTION {bbl.and}
-{ "and"}
+{ "\&"}
 
 FUNCTION {bbl.etal}
 { "et~al." }

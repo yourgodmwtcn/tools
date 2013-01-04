@@ -1,6 +1,6 @@
-% Function that takes in structure, writes out appropriate grid
-% information to boundary conditions file.
-% inspired by d_obc_roms2roms.m
+% Function that takes in structure, writes out appropriate grid and passive
+% tracer  information to boundary conditions file.
+% inspird by d_obc_roms2roms.m
 
 function [] = dc_roms_create_bry_file(S)
 
@@ -21,9 +21,13 @@ function [] = dc_roms_create_bry_file(S)
         end
     end
     
-    % write out grid for each boundary
     bry = {'west','east','south','north'};
     out_var = {'u','v','rho'};
+    
+    pt_dim = {{'eta_rho' S.Mm+2 's_rho' S.N 'bry_time'}; ...
+              {'eta_rho' S.Mm+2 's_rho' S.N 'bry_time'}; ...
+              { 'xi_rho' S.Lm+2 's_rho' S.N 'bry_time'}; ...
+              { 'xi_rho' S.Lm+2 's_rho' S.N 'bry_time'}};
     
     if ~S.spherical
         ax = {'x','y'};
@@ -34,6 +38,7 @@ function [] = dc_roms_create_bry_file(S)
     for ii=1:length(bry)
         % if needed
         if OBC.(bry{ii})
+            % write out grid for OBC
             for jj=1:length(out_var)
                 for kk=1:length(ax)
                     part_name = [ax{kk} '_' out_var{jj}];
@@ -55,7 +60,14 @@ function [] = dc_roms_create_bry_file(S)
                     nc_write(S.ncname,full_name,var);     
                 end
             end
+            
+            % write out passive tracer for OBC
+            for mm=1:S.NPT
+                varname = sprintf('dye_%s_%02d',bry{ii},mm);
+                nccreate(S.ncname,varname,'dimensions',pt_dim{ii});
+                
+                % maybe add more attributes
+            end
         end                
-    end
-        
+    end     
     

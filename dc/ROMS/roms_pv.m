@@ -17,7 +17,7 @@ warning on
 % parse input
 if ~exist('tindices','var'), tindices = []; end
 
-[iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
+[iend,tindices,dt,~,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 
 rho0  = ncread(fname,'R0');
 tpv = ncread(fname,'ocean_time');
@@ -43,6 +43,7 @@ grid1.yr = grid.y_rho(:,1);
 grid1.zr = permute(grid.z_r,[3 2 1]);
 
 %% setup netcdf file
+
 if ~exist('outname','var') || isempty(outname), outname = 'ocean_pv.nc'; end
 if exist(outname,'file')
     %in = input('File exists. Do you want to overwrite (1/0)? ');
@@ -53,7 +54,7 @@ try
     nccreate(outname,'pv','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3)-1 tname length(tpv)});
     nccreate(outname,xname,'Dimensions',{xname s(1)-1});
     nccreate(outname,yname,'Dimensions',{yname s(2)-2});
-    nccreate(outname,zname,'Dimensions',{zname s(3)-1});
+    nccreate(outname,zname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)-1});
     nccreate(outname,tname,'Dimensions',{tname length(tpv)});
     
     ncwriteatt(outname,'pv','Description','Ertel PV calculated from ROMS output');
@@ -69,7 +70,7 @@ catch ME
 end
 
 %% calculate pv
-%pv = nan([s(1)-1 s(2)-2 s(3)-1 tindices(2)-tindices(1)+1]);
+
 misc = roms_load_misc(fname);
 
 for i=0:iend-1
@@ -90,14 +91,17 @@ for i=0:iend-1
 
     ncwrite(outname,'pv',pv,read_start); 
     
+    % write now so that file is still usable in case of crash
+    if i == 0
+        ncwrite(outname,xname,xpv);
+        ncwrite(outname,yname,ypv);
+        ncwrite(outname,zname,zpv);
+        ncwrite(outname,'ocean_time',tpv);
+    end
+    
     intPV(tstart:tend) = domain_integrate(pv,xpv,ypv,zpv);
     
 end
-
-ncwrite(outname,xname,xpv);
-ncwrite(outname,yname,ypv);
-ncwrite(outname,zname,zpv);
-ncwrite(outname,'ocean_time',tpv);
 
 save pv.mat pv xpv ypv zpv tpv intPV
 fprintf('\n Wrote file : %s \n\n',outname);
