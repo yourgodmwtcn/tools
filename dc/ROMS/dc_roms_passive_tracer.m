@@ -19,20 +19,3 @@ for i=1:S.NPT
     ncwriteatt(S.ncname,varname,'time','ocean_time');
     ncwriteatt(S.ncname,varname,'coordinates', 'xi_rho eta_rho s_rho ocean_time');
 end
-
-% Var.name            = Vname.temp;
-% Var.type            = nc_constant('nc_double');
-% Var.dimid           = [did.time did.Nr did.yr did.xr];
-% Var.long_name       = 'potential temperature';
-% Var.units           = 'Celsius';
-% Var.time            = Vname.time;
-% if (spherical),
-%   Var.coordinates   = strcat([Vname.rlon,' ',Vname.rlat,' ',            ...
-%                               Vname.s_rho,' ',Vname.time]); 
-% else
-%   Var.coordinates   = strcat([Vname.rx,' ',Vname.ry,' ',                ...
-%                               Vname.s_rho,' ',Vname.time]); 
-% end,
-% [~,status]=nc_vdef(ncid,Var);
-% if (status ~= 0), return, end,
-% clear Var

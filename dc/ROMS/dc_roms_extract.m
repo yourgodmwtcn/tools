@@ -13,6 +13,10 @@ function [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume,tindex)
 
     [xax,yax,zax,~,~] = roms_var_grid(fname,varname,tindex);
     
+    % Assuming cartesian grid
+    xax = xax(:,1);
+    yax = yax(1,:);
+    
     vol = [1 Inf; 1 Inf; 1 Inf]; % default - choose all data
     
     if ~exist('volume','var'), return; end

@@ -69,5 +69,9 @@ function [] = dc_roms_create_bry_file(S)
                 % maybe add more attributes
             end
         end                
-    end     
+    end   
+    
+    if S.NPT > 0
+        nccreate(S.ncname,'dye_time');        
+    end
     
