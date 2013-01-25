@@ -72,9 +72,9 @@ function [] = beautify(fontSizes)
          set(hAxis,'box','on');
      end
      
-     warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
-     jframe = get(hFig,'JavaFrame');
-     jframe.setMaximized(true);
+%      warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+%      jframe = get(hFig,'JavaFrame');
+%      jframe.setMaximized(true);
 
     % Makes Fullscreen
    %set(hFig,'un','n','pos',[0,0,0.95,0.95]); figure(hFig);

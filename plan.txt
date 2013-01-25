@@ -14,7 +14,6 @@ ROMS
 	- stat.m and subfunctions
 		
 	*** roms_pv
-		- fix use of mean f
 		- throw out edges
 
 	- SI analysis tools
@@ -23,7 +22,6 @@ ROMS
 		 - compute theoretical BI length scales from output fields
 		 
 	- animate.m
-		- fix fonts
 		- round off axis labels to given decimal place
 		
 Improvements:
@@ -40,7 +38,6 @@ Improvements:
 	- LaPrint
 	- get matlab to compile
 	
-	- update initial conditions ROMS script to newest version
 	- make analysis tools model-agnostic
 	- rename all of my roms_ tools to dc_roms
 	- ROMS grid / initial conditions creation like parker's?
@@ -48,8 +45,6 @@ Improvements:
 	- generalize momentum / vorticity balance code
 	- add correction to z-grid for free surface motion in all ROMS tool
 	- need to add bathymetry (land/sea mask) to mod_movie
-		- fix z-grid usage and add zeta correction
-		- change x_ to lon_
-		- use all grids as arrays not vectors
+		- add zeta correction
 	- generalize getting variable grid from netcdf files
 	- make scripts accept folder input
