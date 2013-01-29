@@ -1,59 +1,41 @@
-% calculates horizontal gradient of variable 'var' along axis 'ax'
-% does central difference
-%   grid - has grid.xmat,grid.ymat,grid.zmat
+% calculates horizontal gradient of variable 'var' along axis 'ax' using
+% co-ordinate transformation as in WikiROMS
+% does _forward_ difference 
+%   rgrid - from roms_get_grid.m - IMPORTANT - expects [z,y,x]
+%         - needs rgrid.z_w, rgrid.s_w
+%   vgrid - has vgrid.xmat,vgrid.ymat,vgrid.zmat for var - expects [x,y,z]
+%           and also appropriate vgrid.s vector (S.s_w or S.s_rho)
 %   var  - variable
-%   ax - 1,2 for x,y
+%   ax1 - 1,2 for x,y
 
-function [horgrad] = horgrad_cgrid(grid,var,ax)
+function [horgrad] = horgrad_cgrid(rgrid,vgrid,var,ax1)
 
-% #1 - loop through every point, linearly interpolate neighbouring
-% profiles to same depth and calculate derivative
-s = size(var);
+%[s,C] = stretching(rgrid.Vstretching,rgrid.theta_s,rgrid.theta_b,rgrid.hc,rgrid.N,0,0);
 
-if ax == 1
-    axmat = grid.xmat;
-else
-    axmat = grid.ymat;
+switch ax1
+    case 1
+        axmat = vgrid.xmat;
+    case 2 
+        axmat = vgrid.ymat;
 end
 
-horgrad = nan(s);
+% Hz = dz/d?
+% We compute Hz discretely as ?z/?? since this leads to the vertical sum of Hz
+% being exactly the total water depth D. (from WikiROMS / Manual)
+Hz = permute(bsxfun(@rdivide,diff(rgrid.z_w,1,1),diff(rgrid.s_w')),[3 2 1]);
 
-for ii = 2:s(1)-1
-    for jj = 2:s(2)-2
-        % appropriate indices
-        if ax == 1
-            im1 = ii-1;
-            ip1 = ii+1;
-            jm1 = jj;
-            jp1 = jj;
-        else
-            im1 = ii;
-            ip1 = ii;
-            jm1 = jj-1;
-            jp1 = jj+1;
-        end
-        
-        % figure out appropriate z grids
-        zz   = grid.zmat(ii,jj,:);
-        zzm1 = grid.zmat(im1,jm1,:);
-        zzp1 = grid.zmat(ip1,jp1,:);
-        
-        for kk = 1:s(3)
-            % var @ minus 1 point interpolated
-            vm1i = interp1(zzm1,squeeze(var(im1,jm1,:)),zz);
-            vp1i = interp1(zzp1,squeeze(var(ip1,jp1,:)),zz);
-            
-            dx   = (axmat(ip1,jp1,kk) - axmat(im1,jm1,kk))/2;
-           
-            horgrad(ii,jj,kk) = (vp1i(kk)-vm1i(kk))./dx;
-        end
-    end
-end
+% (dz/dx)_?
+dzdx_s = diff(vgrid.zmat,1,ax1)./diff(axmat,1,ax1);
 
-% #2 - interpolate to uniform grid, differentiate and then interpolate back
-% wont work because i'll need a lot of points to preserve resolution in
-% shallow water
-% zi = linspace(max(grid.zmat(:)),min(grid.zmat(:)),100);
-% [ximat,yimat,zimat] = ndgrid(grid.xmat(:,1,1),grid.ymat(1,:,1),zi);
-% 
-% vari = interpn(grid.xmat,grid.ymat,grid.zmat,var,ximat,yimat,zimat);
+% (df/dx)_?; x = ax1
+dfdx_s = diff(var,1,ax1)./diff(axmat,1,ax1);
+
+% df/d?
+dfds = nan(size(var));
+dfds(:,:,2:end-1) = avg1(bsxfun(@rdivide,diff(var,1,3),permute(diff(vgrid.s'),[3 2 1])),3);
+% pad on bottom and surface values.
+dfds(:,:,1) = dfds(:,:,2);
+dfds(:,:,end) = dfds(:,:,end-1); 
+
+% chain rule power!
+horgrad = dfdx_s - avg1(1./Hz,1) .* dzdx_s .* avg1(dfds,1);
