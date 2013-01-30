@@ -11,7 +11,7 @@ dim   = length(s);
 slab  = roms_slab(fname,0)-3;
 
 warning off
-grid = roms_get_grid(fname,fname,0,1);
+grid = roms_get_grid(fname,fname,1,1);
 warning on
 
 % parse input
@@ -41,6 +41,9 @@ grid1.zu = permute(grid.z_u,[3 2 1]);
 grid1.xr = grid.x_rho(1,:)';
 grid1.yr = grid.y_rho(:,1);
 grid1.zr = permute(grid.z_r,[3 2 1]);
+
+grid1.zw = grid.z_w;
+grid1.s_w = grid.s_w;
 
 %% setup netcdf file
 
@@ -87,7 +90,7 @@ for i=0:iend-1
         %fprintf('\n Assuming T0 = 14c\n');
     end
     
-    [pv,xpv,ypv,zpv] = pv_cgrid(grid1,u,v,rho,f,rho0);
+    [pv,xpv,ypv,zpv] = pv_cgrid(grid,u,v,rho,f,rho0);
 
     ncwrite(outname,'pv',pv,read_start); 
     

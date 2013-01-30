@@ -1,13 +1,20 @@
 % Calculate PV on C-grid. Result at interior W points
-%        [pv,xpv,ypv,zpv] = pv_cgrid(grid,u,v,rho,f,rho0)
-% supply grid structure with 
-%       xu,yu,zu & xv,yv,zv & xr,yr,zr
+%        [pv,xpv,ypv,zpv] = pv_cgrid(rgrid,u,v,rho,f,rho0)
+% supply rgrid structure with 
+%       xu,yu,zu & xv,yv,zv & xr,yr,zr (all matrices) 
+%                   & zw & s_w(vectors)
 
-function [pv,xpv,ypv,zpv] = pv_cgrid(grid,u,v,rho,f,rho0)
+function [pv,xpv,ypv,zpv] = pv_cgrid(rgrid,u,v,rho,f,rho0)
 
-    xpv = grid.xr(2:end-1);
-    ypv = grid.yr(2:end-1);
-    zpv = avg1(grid.zr(2:end-1,2:end-1,:),3);
+    xpv = rgrid.xr(2:end-1,2:end-1,end);
+    ypv = rgrid.yr(2:end-1,2:end-1,end);
+    zpv = avg1(rgrid.zr(2:end-1,2:end-1,:),3);
+    
+    gridu.xmat = rgrid.xu; gridu.ymat = rgrid.yu; gridu.zmat = rgrid.zu;
+    gridv.xmat = rgrid.xv; gridv.ymat = rgrid.yv; gridv.zmat = rgrid.zv;
+    gridr.xmat = rgrid.xr; gridr.ymat = rgrid.yr; gridr.zmat = rgrid.zr;
+    
+    gridu.s = rgrid.s_rho; gridv.s = rgrid.s_rho; gridr.s = rgrid.s_rho;
     
     s = size(rho);
     if length(s) == 3
@@ -27,18 +34,18 @@ function [pv,xpv,ypv,zpv] = pv_cgrid(grid,u,v,rho,f,rho0)
     end
     
     % calculate gradients
-    vx    = bsxfun(@rdivide,diff(v,1,1),diff(grid.xv)); %diff(v,1,1)./repmat(diff(grid.x_v',1,1),[1 1 s(3) s(4)]);
-    vy    = bsxfun(@rdivide,diff(v,1,2),diff(grid.yv')); %diff(v,1,2)./repmat(diff(grid.y_v',1,2),[1 1 s(3) s(4)]);
-    vz    = bsxfun(@rdivide,diff(v,1,3),diff(grid.zv,1,3)); %diff(v,1,3)./repmat(permute(diff(grid.z_v,1,1),[3 2 1]),[1 1 1 s(4)]);
+    vx    = horgrad_cgrid(rgrid,gridv,v,1); 
+    vy    = horgrad_cgrid(rgrid,gridv,v,2); 
+    vz    = bsxfun(@rdivide,diff(v,1,3),diff(rgrid.zv,1,3));
 
-    ux    = bsxfun(@rdivide,diff(u,1,1),diff(grid.xu)); %diff(v,1,1)./repmat(diff(grid.x_v',1,1),[1 1 s(3) s(4)]);
-    uy    = bsxfun(@rdivide,diff(u,1,2),diff(grid.yu')); %diff(v,1,2)./repmat(diff(grid.y_v',1,2),[1 1 s(3) s(4)]);
-    uz    = bsxfun(@rdivide,diff(u,1,3),diff(grid.zu,1,3)); %diff(v,1,3)./repmat(permute(diff(grid.z_v,1,1),[3 2 1]),[1 1 1 s(4)]);
+    ux    = horgrad_cgrid(rgrid,gridu,u,1); 
+    uy    = horgrad_cgrid(rgrid,gridu,u,2); 
+    uz    = bsxfun(@rdivide,diff(u,1,3),diff(rgrid.zu,1,3));
 
-    tx    = bsxfun(@rdivide,diff(rho,1,1),diff(grid.xr)); %diff(v,1,1)./repmat(diff(grid.x_v',1,1),[1 1 s(3) s(4)]);
-    ty    = bsxfun(@rdivide,diff(rho,1,2),diff(grid.yr')); %diff(v,1,2)./repmat(diff(grid.y_v',1,2),[1 1 s(3) s(4)]);
-    tz    = bsxfun(@rdivide,diff(rho,1,3),diff(grid.zr,1,3)); %diff(v,1,3)./repmat(permute(diff(grid.z_v,1,1),[3 2 1]),[1 1 1 s(4)]);
-    
+    tx    = horgrad_cgrid(rgrid,gridr,rho,1); 
+    ty    = horgrad_cgrid(rgrid,gridr,rho,2); 
+    tz    = bsxfun(@rdivide,diff(rho,1,3),diff(rgrid.zr,1,3));
+
     % PV calculated at interior rho points
                                 % f + vx - uy                      (rho)_z
     pv = -1* double((avgx(avgz(bsxfun(@plus,avg1(vx - uy,2),f)))  .*  tz(2:end-1,2:end-1,:,:) ...
@@ -79,3 +86,12 @@ function [um] = avgx(um)
 
 function [um] = avgz(um)
     um = (um(:,:,1:end-1,:)+um(:,:,2:end,:))/2;
+    
+% following for *flat bottom* only
+%     vx    = bsxfun(@rdivide,diff(v,1,1),diff(grid.xv)); %diff(v,1,1)./repmat(diff(grid.x_v',1,1),[1 1 s(3) s(4)]);
+%     vy    = bsxfun(@rdivide,diff(v,1,2),diff(grid.yv')); %diff(v,1,2)./repmat(diff(grid.y_v',1,2),[1 1 s(3) s(4)]);
+%     ux    = bsxfun(@rdivide,diff(u,1,1),diff(grid.xu)); %diff(v,1,1)./repmat(diff(grid.x_v',1,1),[1 1 s(3) s(4)]);
+%     uy    = bsxfun(@rdivide,diff(u,1,2),diff(grid.yu')); %diff(v,1,2)./repmat(diff(grid.y_v',1,2),[1 1 s(3) s(4)]);
+%     tx    = bsxfun(@rdivide,diff(rho,1,1),diff(grid.xr)); %diff(v,1,1)./repmat(diff(grid.x_v',1,1),[1 1 s(3) s(4)]);
+%     ty    = bsxfun(@rdivide,diff(rho,1,2),diff(grid.yr')); %diff(v,1,2)./repmat(diff(grid.y_v',1,2),[1 1 s(3) s(4)]);
+    
