@@ -19,7 +19,7 @@ switch ax1
         ax2 = 1;
 end
 
-if size(rgrid.zw,1) == size(axmat,3)
+if size(rgrid.zw,1)-1 == size(axmat,3)
     rgrid.zw = permute(rgrid.zw,[3 2 1]);
 end
 
