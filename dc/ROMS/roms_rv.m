@@ -1,7 +1,7 @@
 % calculates Ertel PV at interior RHO points (horizontal plane) and midway between rho points in the vertical
-%       [pv] = roms_pv(fname,tindices)
+%       [rv,xrv,yrv,zrv] = roms_rv(fname,tindices,outname)
 
-function [pv,xpv,ypv,zpv] = roms_pv(fname,tindices,outname)
+function [rv,xrv,yrv,zrv] = roms_rv(fname,tindices,outname)
 
 % parameters
 %lam = 'rho';
@@ -20,11 +20,11 @@ if ~exist('tindices','var'), tindices = []; end
 [iend,tindices,dt,~,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 
 rho0  = ncread(fname,'R0');
-tpv = ncread(fname,'ocean_time');
-tpv = tpv([tindices(1):tindices(2)]);
+trv = ncread(fname,'ocean_time');
+trv = trv([tindices(1):tindices(2)]);
 f   = ncread(fname,'f',[1 1],[Inf Inf]);
 
-xname = 'x_pv'; yname = 'y_pv'; zname = 'z_pv'; tname = 'ocean_time';
+xname = 'x_rv'; yname = 'y_rv'; zname = 'z_rv'; tname = 'ocean_time';
 
 grid1.xv = repmat(grid.x_v',[1 1 grid.N]);
 grid1.yv = repmat(grid.y_v',[1 1 grid.N]);
@@ -44,22 +44,22 @@ grid1.s_rho = grid.s_rho;
 
 %% setup netcdf file
 
-if ~exist('outname','var') || isempty(outname), outname = 'ocean_pv.nc'; end
+if ~exist('outname','var') || isempty(outname), outname = 'ocean_rv.nc'; end
 if exist(outname,'file')
     %in = input('File exists. Do you want to overwrite (1/0)? ');
     in = 1;
     if in == 1, delete(outname); end
 end
 try
-    nccreate(outname,'pv','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3)-1 tname length(tpv)});
+    nccreate(outname,'rv','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3) tname length(trv)});
     nccreate(outname,xname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
     nccreate(outname,yname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
     nccreate(outname,zname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
-    nccreate(outname,tname,'Dimensions',{tname length(tpv)});
+    nccreate(outname,tname,'Dimensions',{tname length(trv)});
     
-    ncwriteatt(outname,'pv','Description','Ertel PV calculated from ROMS output');
-    ncwriteatt(outname,'pv','coordinates',[xname ' ' yname ' ' zname ' ' ocean_time]);
-    ncwriteatt(outname,'pv','units','N/A');
+    ncwriteatt(outname,'rv','Description','Relative vorticity (in z) calculated from ROMS output');
+    ncwriteatt(outname,'rv','coordinates',[xname ' ' yname ' ' zname ' ' ocean_time]);
+    ncwriteatt(outname,'rv','units','N/A');
     ncwriteatt(outname,xname,'units',ncreadatt(fname,'x_u','units'));
     ncwriteatt(outname,yname,'units',ncreadatt(fname,'y_u','units'));
     ncwriteatt(outname,zname,'units','m');
@@ -80,35 +80,21 @@ for i=0:iend-1
     
     u      = ncread(fname,'u',read_start,read_count,stride);
     v      = ncread(fname,'v',read_start,read_count,stride);
-    try
-        rho = ncread(fname,'rho',read_start,read_count,stride); % theta
-    catch ME
-        rho = -misc.Tcoef*ncread(fname,'temp',read_start,read_count,stride);
-        %fprintf('\n Assuming T0 = 14c\n');
-    end
-    
-    [pv,xpv,ypv,zpv] = pv_cgrid(grid,u,v,rho,f,rho0);
 
-    ncwrite(outname,'pv',pv,read_start); 
+    [rv,xrv,yrv,zrv] = rvor_cgrid(grid1,u,v);
+
+    ncwrite(outname,'rv',rv,read_start); 
     
     % write now so that file is still usable in case of crash
     if i == 0
-        ncwrite(outname,xname,xpv);
-        ncwrite(outname,yname,ypv);
-        ncwrite(outname,zname,zpv);
-        ncwrite(outname,'ocean_time',tpv);
+        ncwrite(outname,xname,xrv);
+        ncwrite(outname,yname,yrv);
+        ncwrite(outname,zname,zrv);
+        ncwrite(outname,'ocean_time',trv);
     end
     
-    intPV(tstart:tend) = domain_integrate(pv,xpv,ypv,zpv);
-    
+    intRV(tstart:tend) = domain_integrate(rv,xrv,yrv,zrv); 
 end
 
-save pv.mat pv xpv ypv zpv tpv intPV
+save rv.mat rv xrv yrv zrv trv intRV
 fprintf('\n Wrote file : %s \n\n',outname);
-
-    %% old code
-    
-%     pv1    = avgx(avgz(bsxfun(@plus,avgy(vx - uy),f)))  .*  (tz(2:end-1,2:end-1,:,:));
-%     pv2    = (-1)*;
-%     pv3    = uz.*avgz(tx);
-    %pv = double((pv1 + avgy(pv2(2:end-1,:,:,:)) + avgx(pv3(:,2:end-1,:,:)))./avgz(lambda(2:end-1,2:end-1,:,:))); 

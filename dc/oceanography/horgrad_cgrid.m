@@ -5,7 +5,7 @@
 %         - needs rgrid.zw, rgrid.s_w
 %   vgrid - has vgrid.xmat,vgrid.ymat,vgrid.zmat for var - expects [x,y,z]
 %           and also appropriate vgrid.s vector (S.s_w or S.s_rho)
-%   var  - variable
+%   var  - variable [x y z t]
 %   ax1 - 1,2 for x,y
 
 function [horgrad] = horgrad_cgrid(rgrid,vgrid,var,ax1)
@@ -36,14 +36,14 @@ if size(Hz,2) ~= size(var,2), Hz = avg1(Hz,2); end
 dzdx_s = diff(vgrid.zmat,1,ax1)./diff(axmat,1,ax1);
 
 % (df/dx)_?; x = ax1
-dfdx_s = diff(var,1,ax1)./diff(axmat,1,ax1);
+dfdx_s = bsxfun(@rdivide,diff(var,1,ax1),diff(axmat,1,ax1));
 
 % df/d?
 dfds = nan(size(var));
-dfds(:,:,2:end-1) = avg1(bsxfun(@rdivide,diff(var,1,3),permute(diff(vgrid.s'),[3 2 1])),3);
+dfds(:,:,2:end-1,:) = avg1(bsxfun(@rdivide,diff(var,1,3),permute(diff(vgrid.s'),[3 2 1])),3);
 % pad on bottom and surface values.
-dfds(:,:,1) = dfds(:,:,2);
-dfds(:,:,end) = dfds(:,:,end-1); 
+dfds(:,:,1,:) = dfds(:,:,2,:);
+dfds(:,:,end,:) = dfds(:,:,end-1,:); 
 
 % chain rule power!
-horgrad = dfdx_s - avg1(1./Hz,ax1) .* dzdx_s .* avg1(dfds,ax1);
+horgrad = dfdx_s - bsxfun(@times,avg1(1./Hz,ax1) .* dzdx_s, avg1(dfds,ax1));

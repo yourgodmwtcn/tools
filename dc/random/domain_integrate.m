@@ -1,3 +1,6 @@
+% computes domain integral. accepts varying z grid but UNIFORM horizontal
+% grid
+
 function [out] = domain_integrate(in,xax,yax,zax)
 
     if isvector(xax) && isvector(yax) && isvector(zax)
@@ -12,4 +15,4 @@ function [out] = domain_integrate(in,xax,yax,zax)
         end
     end
     
-    out = squeeze(trapz(xax,trapz(yax,int_z,2),1));
+    out = squeeze(trapz(xax(:,1,1),trapz(yax(1,:,1),int_z,2),1));
