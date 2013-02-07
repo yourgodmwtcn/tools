@@ -109,7 +109,6 @@ slab   = 100; % slab for ncread. read 'n' records in at a time - faster response
 % set only possible axis and index for Eta / zeta / ubar / vbar
 if dim == 3
     axis = 'z';
-    index = 1;
     stride = [1 1 dt]; 
     index  = 1;
     sliceax(index) = 0;
@@ -272,7 +271,10 @@ for i=0:iend-1
             
         case 2
             plotx = squeeze(plotx(:,index,:,:));
-            ploty = squeeze(ploty(:,index,:,:));          
+            ploty = squeeze(ploty(:,index,:,:));    
+        case 3
+            plotx = squeeze(plotx(:,:,index,:));
+            ploty = squeeze(ploty(:,:,index,:));
     end
 
     % send to animate

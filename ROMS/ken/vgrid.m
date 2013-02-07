@@ -1,6 +1,6 @@
 %   Experiment with the the ROMS 3 vertical stretching functions
 %   Call as
-%       vgrid(vxform,vstretch,[ths,thb,tcline],hc,h,n)
+%       vgrid(vxform,vstretch,[param],hc,h,n,plot)
 %   where
 %       vxform = 1      original formulation
 %              = 2      new formulation    (new default)
@@ -16,6 +16,7 @@
 %       hc = tcline (m)
 %       h = water depth (m)
 %       n = # of s points
+%       plot = 1 - make plots
 %
 %       Assumes zeta = 0
 %       Theta_s -> surface

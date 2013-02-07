@@ -11,11 +11,11 @@ function [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume,tindex)
 
     if ~exist('tindex','var'), tindex = 0; end
 
-    [xax,yax,zax,~,~] = roms_var_grid(fname,varname,tindex);
+    [xax,yax,zax,~,~] = dc_roms_var_grid(fname,varname,tindex);
     
     % Assuming cartesian grid
-    xax = xax(:,1);
-    yax = yax(1,:);
+    xaxis = xax(:,1,end);
+    yaxis = yax(1,:,end)';
     
     vol = [1 Inf; 1 Inf; 1 Inf]; % default - choose all data
     
@@ -27,23 +27,25 @@ function [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume,tindex)
     for i=1:sa(1)
         switch volume{i,1}
             case 'x'
-                if ischar(volume{i,2}), volume{i,2} = find_approx(xax,str2double(volume{i,2}),1); end
-                if ischar(volume{i,3}), volume{i,3} = find_approx(xax,str2double(volume{i,3}),1); end
+                if ischar(volume{i,2}), volume{i,2} = find_approx(xaxis,str2double(volume{i,2}),1); end
+                if ischar(volume{i,3}), volume{i,3} = find_approx(xaxis,str2double(volume{i,3}),1); end
                 
                 if isinf(volume{i,3}), volume{i,3} = length(xax); end
                 
-                xax = xax(volume{i,2}:volume{i,3},:);
+                xax = xax(volume{i,2}:volume{i,3},:,:);
+                zax = zax(volume{i,2}:volume{i,3},:,:);
                 
                 vol(1,1) = volume{i,2};
                 vol(1,2) = volume{i,3};
                 
             case 'y'
-                if ischar(volume{i,2}), volume{i,2} = find_approx(yax,str2double(volume{i,2}),1); end
-                if ischar(volume{i,3}), volume{i,3} = find_approx(yax,str2double(volume{i,3}),1); end
+                if ischar(volume{i,2}), volume{i,2} = find_approx(yaxis,str2double(volume{i,2}),1); end
+                if ischar(volume{i,3}), volume{i,3} = find_approx(yaxis,str2double(volume{i,3}),1); end
                 
                 if isinf(volume{i,3}), volume{i,3} = length(yax); end
                 
-                yax = yax(:,volume{i,2}:volume{i,3});
+                yax = yax(:,volume{i,2}:volume{i,3},:);
+                zax = zax(:,volume{i,2}:volume{i,3},:);
                 
                 vol(2,1) = volume{i,2};
                 vol(2,2) = volume{i,3};

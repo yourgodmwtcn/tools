@@ -1,9 +1,11 @@
 %       [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
 % returns grids as matrices of appropriate size for variable
 
-function [xax,yax,zax,tax,xunits,yunits] = dc_roms_var_grid(fname,varname)
+function [xax,yax,zax,tax,xunits,yunits] = dc_roms_var_grid(fname,varname,tindex)
     
     warning off;
+    
+    if ~exist('tindex','var'), tindex = 0; end
     
     if strcmp(varname,'pv')
         pos = 'p';
@@ -12,7 +14,7 @@ function [xax,yax,zax,tax,xunits,yunits] = dc_roms_var_grid(fname,varname)
     elseif strcmp(varname,'vor')
         pos = 'q';
     else
-        grid = roms_get_grid(fname,fname,0,1);
+        grid = roms_get_grid(fname,fname,tindex,1);
 
         % from John Wilkin's roms_islice.m
         % determine where on the C-grid these values lie 

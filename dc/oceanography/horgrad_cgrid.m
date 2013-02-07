@@ -1,5 +1,5 @@
-% calculates horizontal gradient of variable 'var' along axis 'ax' using
-% co-ordinate transformation as in WikiROMS
+% calculates horizontal gradient of variable 'var' along axis 'ax' ON Z LEVEL
+% using co-ordinate transformation as in WikiROMS
 % does _forward_ difference 
 %   rgrid - from roms_get_grid.m - IMPORTANT - expects [z,y,x]
 %         - needs rgrid.zw, rgrid.s_w
