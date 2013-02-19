@@ -264,6 +264,7 @@ for i=0:iend-1
     end
     
     % fix axes
+    if dim == 3, index = 1; end
     switch axind
         case 1
             plotx = squeeze(plotx(index,:,:,:));

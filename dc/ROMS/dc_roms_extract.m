@@ -33,7 +33,10 @@ function [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume,tindex)
                 if isinf(volume{i,3}), volume{i,3} = length(xax); end
                 
                 xax = xax(volume{i,2}:volume{i,3},:,:);
-                zax = zax(volume{i,2}:volume{i,3},:,:);
+                yax = yax(volume{i,2}:volume{i,3},:,:);
+                if ~isempty(zax) % for zeta
+                    zax = zax(volume{i,2}:volume{i,3},:,:);
+                end
                 
                 vol(1,1) = volume{i,2};
                 vol(1,2) = volume{i,3};
@@ -44,8 +47,11 @@ function [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume,tindex)
                 
                 if isinf(volume{i,3}), volume{i,3} = length(yax); end
                 
+                xax = xax(:,volume{i,2}:volume{i,3},:);
                 yax = yax(:,volume{i,2}:volume{i,3},:);
-                zax = zax(:,volume{i,2}:volume{i,3},:);
+                if ~isempty(zax) % for zeta
+                    zax = zax(:,volume{i,2}:volume{i,3},:);
+                end
                 
                 vol(2,1) = volume{i,2};
                 vol(2,2) = volume{i,3};

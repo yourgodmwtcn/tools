@@ -2,19 +2,21 @@
 %        [pv,xpv,ypv,zpv] = pv_cgrid(rgrid,u,v,rho,f,rho0)
 % supply rgrid structure with 
 %       xu,yu,zu & xv,yv,zv & xr,yr,zr (all matrices) 
-%                   & zw & s_w(vectors)
+%                   & zw & s_w(vectors), s_rho
 
 function [pv,xpv,ypv,zpv] = pv_cgrid(rgrid,u,v,rho,f,rho0)
 
-    xpv = rgrid.xr(2:end-1,2:end-1,end);
-    ypv = rgrid.yr(2:end-1,2:end-1,end);
-    zpv = avg1(rgrid.zr(2:end-1,2:end-1,:),3);
+    xpv = rgrid.xr(2:end-1,2:end-1,:);
+    ypv = rgrid.yr(2:end-1,2:end-1,:);
+    zpv = avgz(rgrid.zr(2:end-1,2:end-1,:));
     
     gridu.xmat = rgrid.xu; gridu.ymat = rgrid.yu; gridu.zmat = rgrid.zu;
     gridv.xmat = rgrid.xv; gridv.ymat = rgrid.yv; gridv.zmat = rgrid.zv;
     gridr.xmat = rgrid.xr; gridr.ymat = rgrid.yr; gridr.zmat = rgrid.zr;
     
     gridu.s = rgrid.s_rho; gridv.s = rgrid.s_rho; gridr.s = rgrid.s_rho;
+    gridu.zw = rgrid.zw; gridv.zw = rgrid.zw; gridr.zw = rgrid.zw; 
+    gridu.s_w = rgrid.s_w; gridv.s_w = rgrid.s_w; gridr.s_w = rgrid.s_w;
     
     s = size(rho);
     if length(s) == 3
@@ -34,18 +36,24 @@ function [pv,xpv,ypv,zpv] = pv_cgrid(rgrid,u,v,rho,f,rho0)
     end
     
     % calculate gradients
-    vx    = horgrad_cgrid(rgrid,gridv,v,1); 
-    vy    = horgrad_cgrid(rgrid,gridv,v,2); 
-    vz    = bsxfun(@rdivide,diff(v,1,3),diff(rgrid.zv,1,3));
+    vx    = diff_cgrid(gridv,v,1); 
+    vy    = diff_cgrid(gridv,v,2); 
+    vz    = diff_cgrid(gridv,v,3);
 
-    ux    = horgrad_cgrid(rgrid,gridu,u,1); 
-    uy    = horgrad_cgrid(rgrid,gridu,u,2); 
-    uz    = bsxfun(@rdivide,diff(u,1,3),diff(rgrid.zu,1,3));
+    ux    = diff_cgrid(gridu,u,1); 
+    uy    = diff_cgrid(gridu,u,2); 
+    uz    = diff_cgrid(gridu,u,3);
 
-    tx    = horgrad_cgrid(rgrid,gridr,rho,1); 
-    ty    = horgrad_cgrid(rgrid,gridr,rho,2); 
-    tz    = bsxfun(@rdivide,diff(rho,1,3),diff(rgrid.zr,1,3));
-
+    tx    = diff_cgrid(gridr,rho,1); 
+    ty    = diff_cgrid(gridr,rho,2); 
+    tz    = diff_cgrid(gridr,rho,3);
+    
+    if size(tz,3) > size(vx,3)
+        tz = avgz(tz);
+        uz = avgz(uz);
+        vz = avgz(vz);
+    end
+    
     % PV calculated at interior rho points
                                 % f + vx - uy                      (rho)_z
     pv = -1* double((avgx(avgz(bsxfun(@plus,avg1(vx - uy,2),f)))  .*  tz(2:end-1,2:end-1,:,:) ...
@@ -62,7 +70,7 @@ function [pv,xpv,ypv,zpv] = pv_cgrid(rgrid,u,v,rho,f,rho0)
         yind = 3;
         
         figure;
-        contourf(xpv,zpv,squeeze(pv1(:,yind,:,tind))',20);colorbar
+        contourf(squeeze(xpv(:,yind,:)),zpv,squeeze(pv1(:,yind,:,tind))',20);colorbar
         title('(f + v_x -u_y)\rho_z');
         figure;
         contourf(xpv,zpv,squeeze(pv2(:,yind,:,tind))',20);colorbar
@@ -85,7 +93,7 @@ function [um] = avgx(um)
     um = (um(1:end-1,:,:,:)+um(2:end,:,:,:))/2;
 
 function [um] = avgz(um)
-    um = (um(:,:,1:end-1,:)+um(:,:,2:end,:))/2;
+    %um = um;(um(:,:,1:end-1,:)+um(:,:,2:end,:))/2;
     
 % following for *flat bottom* only
 %     vx    = bsxfun(@rdivide,diff(v,1,1),diff(grid.xv)); %diff(v,1,1)./repmat(diff(grid.x_v',1,1),[1 1 s(3) s(4)]);
