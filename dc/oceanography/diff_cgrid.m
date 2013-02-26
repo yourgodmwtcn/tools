@@ -27,10 +27,8 @@ dfdz = avg1(dfdz,ax1);
 switch ax1
     case 1
         axmat = grid.xmat;
-        ax2 = 2;
     case 2 
         axmat = grid.ymat;
-        ax2 = 1;
 end
 
 % (dz/dx)_?
@@ -42,12 +40,27 @@ dfdx_s = bsxfun(@rdivide,diff(var,1,ax1),diff(axmat,1,ax1));
 % chain rule power!
 der = dfdx_s - bsxfun(@times,dzdx_s, dfdz);
 
-debug = 0;
+debug = 1;
 
 if debug
-    h(1) = subplot(131);
-    contourf(avg1(squeeze(grid.xmat(:,1,:)),1)/1000,avg1(squeeze(zrmat(:,1,:)),1),Tgrad,20);
-    title('horgrad'); colorbar; cx = caxis;
+    figure
+    h(1) = subplot(141);
+    contourf(avg1(squeeze(grid.xmat(:,1,:)),ax1)/1000,avg1(squeeze(grid.zmat(:,1,:)),ax1), ...
+        squeeze(dfdx_s(:,1,:)));
+    title('(df/dx)_s'); colorbar; cx = caxis;
+    h(2) = subplot(142);
+    contourf(avg1(squeeze(grid.xmat(:,1,:)),ax1)/1000,avg1(squeeze(grid.zmat(:,1,:)),ax1), ...
+        squeeze(dfdz(:,1,:)));
+    title('df/dz'); colorbar; cx = caxis;
+    h(3) = subplot(143);
+    contourf(avg1(squeeze(grid.xmat(:,1,:)),ax1)/1000,avg1(squeeze(grid.zmat(:,1,:)),ax1), ...
+        squeeze(dzdx_s(:,1,:)));
+    title('(dz/dx)_s'); colorbar; cx = caxis;
+    h(4) = subplot(144);
+    contourf(avg1(squeeze(grid.xmat(:,1,:)),ax1)/1000,avg1(squeeze(grid.zmat(:,1,:)),ax1), ...
+        squeeze(der(:,1,:)));
+    title('(df/dx)_z = (df/dx)_s - (dz/dx)_s * df/dz'); colorbar; cx = caxis;
+    linkaxes(h,'xy');
 end
 
 % moved to dz_cgrid.m
