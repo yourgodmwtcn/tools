@@ -235,6 +235,8 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
         % square axis if appropriate
         if abs((max(xax(:))-min(xax(:))) - (max(yax(:))-min(yax(:)))) < 1
             axis square;
+        else
+            axis image;
         end
         
         % colorbar

@@ -37,7 +37,7 @@ function [dvdz] = dz_cgrid(grid,var)
     dvdz(:,:,end,:) = dvdz(:,:,end-1,:) + ...
                         bsxfun(@times,dvdz(:,:,end-1,:)-dvdz(:,:,end-2,:),dz2);
                     
-    debug = 1;
+    debug = 0;
     
     if debug
         figure
