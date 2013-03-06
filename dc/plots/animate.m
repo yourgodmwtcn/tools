@@ -142,7 +142,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
     spaceplay = 1; % if 1, space pauses. if 0, space plays
     
     %% parse options
-    cmds = {'nocaxis','pcolor','imagesc','contour','pause','fancy_cmap','movieman','topresent'};
+    cmds = {'nocaxis','pcolor','imagesc','contour','pause','fancy_cmap','movieman','topresent','image'};
     flags = zeros(1,length(cmds));
     if ~isempty(commands),
         [flags, commands] = parse_commands(cmds,commands);
@@ -228,15 +228,17 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
                 format short
                 clabel(C,handles.h_plot,'FontSize',9);
             otherwise
-                [~,handles.h_plot] = contourf(xax,yax,plotdata(:,:,i),linspace(datamin,datamax,25)); shading flat
-            
+                [~,handles.h_plot] = contourf(xax,yax,plotdata(:,:,i),linspace(datamin,datamax,25)); 
+                shading flat
         end
         
         % square axis if appropriate
         if abs((max(xax(:))-min(xax(:))) - (max(yax(:))-min(yax(:)))) < 1
             axis square;
         else
-            axis image;
+           if flags(9)
+               axis image;
+           end
         end
         
         % colorbar
@@ -280,7 +282,6 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
             end
             caxis([cmin cmax]);
         end
-        
         eval(commands); % execute custom commands
         beautify;
         % make fonts bigger for presentation / movie plots

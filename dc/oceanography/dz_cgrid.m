@@ -48,7 +48,7 @@ function [dvdz] = dz_cgrid(grid,var)
         pcolorcen(squeeze(grid.xmat(:,1,:))/1000,squeeze(grid.zmat(:,1,:)),squeeze(dvds(:,1,:)));
         title('d/ds'); colorbar;shading flat
         ax(3) = subplot(143);
-        pcolorcen(squeeze(grid.xmat(:,1,:))/1000,squeeze(grid.zmat(:,1,:)),squeeze(dvdz(:,1,:))-6e-3);
+        pcolorcen(squeeze(grid.xmat(:,1,:))/1000,squeeze(grid.zmat(:,1,:)),squeeze(dvdz(:,1,:)));
         title('d/dz = 1/Hz * d/ds'); colorbar; shading flat
         ax(4) = subplot(144);
         pcolorcen(squeeze(grid.xmat(:,1,:))/1000,squeeze(grid.zmat(:,1,:)),squeeze(zeros(size(grid.xmat(:,1,:)))));

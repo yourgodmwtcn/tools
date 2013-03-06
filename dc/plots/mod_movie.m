@@ -60,6 +60,18 @@ if isdir(fname)
     isDir = 1;
     for ii=1:size(files,1)
         h_plot = mod_movie([fname '\' files(ii,:)],varname,tindices,volume,axis,index,commands,isDir);
+        if strcmp(get(gcf,'currentkey'),'escape'), return; end 
+        if ii == 1 % allow uninterrupted playback
+            [~,commands] = parse_commands({'pause'},commands);
+            try % preserve contour levels
+                levels = get(h_plot.h_plot,'LevelList');
+            catch ME
+            end
+        end
+        % preserve colorbar & contour levels
+        cax = caxis; % reseting label list removes flat shading
+        newc = ['set(handles.h_plot, ''LevelList'',[' num2str(levels) ']); shading flat;'];
+        commands = [commands '; caxis([' num2str(cax(1)) ' ' num2str(cax(2)) ']);' newc];
     end
     return;
 end
@@ -142,6 +154,7 @@ else
             axind = 3;
             labels.xax = ['X (' xunits ')'];
             labels.yax = ['Y (' yunits ')'];
+            commands = [commands '; image'];
             
         case 's'
             sliceax = 1:size(zax,3);
@@ -150,6 +163,7 @@ else
             axind = 3;
             labels.xax = ['X (' xunits ')'];
             labels.yax = ['Y (' yunits ')'];
+            commands = [commands '; image'];
 
 %             if ischar(index) && str2double(index) > 0                
 %                 warning('Changed input depth %s m to -%s m', index, index);

@@ -1,5 +1,5 @@
 % Returns Beckmann & haidvogel; Haney numbers in that order
-%           [r_x0,r_x1] = grid_metrics(h,zrmat)
+%           [r_x0,r_x1] = stiffness(h,zrmat)
 
 function [r_x0,r_x1] = stiffness(h,zrmat)
 
