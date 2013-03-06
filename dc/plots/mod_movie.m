@@ -58,19 +58,28 @@ if ~exist('isDir','var'), isDir = 0; end
 if isdir(fname)
     files = ls([fname '\*his*.nc']);
     isDir = 1;
+    [flag_skiplevels,commands] = parse_commands({'skiplevels'},commands);
     for ii=1:size(files,1)
         h_plot = mod_movie([fname '\' files(ii,:)],varname,tindices,volume,axis,index,commands,isDir);
         if strcmp(get(gcf,'currentkey'),'escape'), return; end 
         if ii == 1 % allow uninterrupted playback
+            % remove pause if it exists
             [~,commands] = parse_commands({'pause'},commands);
-            try % preserve contour levels
-                levels = get(h_plot.h_plot,'LevelList');
-            catch ME
+            % preserve contour levels
+            if ~flag_skiplevels
+                try 
+                    levels = get(h_plot.h_plot,'LevelList');
+                    % reseting level list removes flat shading
+                    newc = ['set(handles.h_plot, ''LevelList'',['  ...
+                                num2str(levels) ']); shading flat;'];
+                catch ME
+                end
+            else
+                newc = '';
             end
         end
-        % preserve colorbar & contour levels
-        cax = caxis; % reseting label list removes flat shading
-        newc = ['set(handles.h_plot, ''LevelList'',[' num2str(levels) ']); shading flat;'];
+        % preserve colorbar
+        cax = caxis;
         commands = [commands '; caxis([' num2str(cax(1)) ' ' num2str(cax(2)) ']);' newc];
     end
     return;
