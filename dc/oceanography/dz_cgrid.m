@@ -17,16 +17,16 @@ function [dvdz] = dz_cgrid(grid,var)
         grid.zw = permute(grid.zw,[3 2 1]);
     end
 
-    Hz = bsxfun(@rdivide,diff(grid.zw,1,3),permute(diff(grid.s_w',1,1),[3 2 1]));
+    dzds = bsxfun(@rdivide,diff(grid.zw,1,3),permute(diff(grid.s_w',1,1),[3 2 1]));
     
-    if size(Hz,1) ~= size(dvds,1)
-        Hz = avg1(Hz,1);
+    if size(dzds,1) ~= size(dvds,1)
+        dzds = avg1(dzds,1);
     end
-    if size(Hz,2) ~= size(dvds,2)
-        Hz = avg1(Hz,2);
+    if size(dzds,2) ~= size(dvds,2)
+        dzds = avg1(dzds,2);
     end
 
-    dvdz = 1./Hz .* dvds;
+    dvdz = 1./dzds .* dvds;
     
     % pad on bottom and surface values - IN Z - seems to work better than s
     dz1 = (grid.zmat(:,:,2)-grid.zmat(:,:,1))./(grid.zmat(:,:,3) - grid.zmat(:,:,2));
@@ -42,14 +42,14 @@ function [dvdz] = dz_cgrid(grid,var)
     if debug
         figure
         ax(1) = subplot(141);
-        pcolorcen(squeeze(grid.xmat(:,1,:))/1000,squeeze(grid.zmat(:,1,:)),squeeze(1./Hz(:,1,:)));
-        shading flat; title('1/Hz = 1/height of grid cell'); colorbar
+        pcolorcen(squeeze(grid.xmat(:,1,:))/1000,squeeze(grid.zmat(:,1,:)),squeeze(1./dzds(:,1,:)));
+        shading flat; title('1/dzds = 1/height of grid cell'); colorbar
         ax(2) = subplot(142);
         pcolorcen(squeeze(grid.xmat(:,1,:))/1000,squeeze(grid.zmat(:,1,:)),squeeze(dvds(:,1,:)));
         title('d/ds'); colorbar;shading flat
         ax(3) = subplot(143);
         pcolorcen(squeeze(grid.xmat(:,1,:))/1000,squeeze(grid.zmat(:,1,:)),squeeze(dvdz(:,1,:)));
-        title('d/dz = 1/Hz * d/ds'); colorbar; shading flat
+        title('d/dz = 1/dzds * d/ds'); colorbar; shading flat
         ax(4) = subplot(144);
         pcolorcen(squeeze(grid.xmat(:,1,:))/1000,squeeze(grid.zmat(:,1,:)),squeeze(zeros(size(grid.xmat(:,1,:)))));
         shading faceted

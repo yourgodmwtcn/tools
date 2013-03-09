@@ -54,11 +54,14 @@ if ~exist('tindices','var'), tindices = []; end
 if ~exist('commands','var'), commands = ''; end
 if ~exist('isDir','var'), isDir = 0; end
 
+% prevent error by removing skiplevels if file and not directory is
+% specified
+[flag_skiplevels,commands] = parse_commands({'skiplevels'},commands);
+
 % if folder, loop through all .nc files
 if isdir(fname)
     files = ls([fname '\*his*.nc']);
     isDir = 1;
-    [flag_skiplevels,commands] = parse_commands({'skiplevels'},commands);
     for ii=1:size(files,1)
         h_plot = mod_movie([fname '\' files(ii,:)],varname,tindices,volume,axis,index,commands,isDir);
         if strcmp(get(gcf,'currentkey'),'escape'), return; end 
@@ -138,6 +141,7 @@ if dim == 3
     axind = 3;
     labels.xax = ['X (' xunits ')'];
     labels.yax = ['Y (' yunits ')'];
+    commands = [commands '; image'];
 else
     switch axis
         case 'x'
