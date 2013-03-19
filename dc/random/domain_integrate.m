@@ -1,5 +1,6 @@
 % computes domain integral. accepts varying z grid but UNIFORM horizontal
 % grid
+% does multiple timesteps
 
 function [out] = domain_integrate(in,xax,yax,zax)
 

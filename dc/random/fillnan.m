@@ -2,6 +2,7 @@
 %       [out] = fillnan(in,val)
 
 function [out] = fillnan(in,val,recursive)
+    in = double(in);
     mask = in == val;
     out = in;
     out(mask) = NaN;
