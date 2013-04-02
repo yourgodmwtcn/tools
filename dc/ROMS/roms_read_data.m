@@ -1,7 +1,6 @@
 function [out] = roms_read_data(folder,varname,tindices)
     
     % get all history files
-    folder = 'runs\runte-11\';
     files = ls([folder '*_his*.nc']);
         
     k = 1;
