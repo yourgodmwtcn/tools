@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="48"
+   name=""
+   committed-date="2004-11-10T13:29:59.000000Z"
+   url="https://svn.sourceforge.net/svnroot/mexcdf/netcdf_toolbox/trunk/netcdf/nctype"
+   last-author="johnevans007"
+   kind="dir"
+   uuid="7777c5ed-ba16-0410-9800-bbefcde0efde"
+   repos="https://svn.sourceforge.net/svnroot/mexcdf"
+   revision="2088"/>
+<entry
+   committed-rev="48"
+   name="ncbyte.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="3580c0c4a5e2eb300a7c9e29241294df"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncsetstr.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="127d9e70adb69a672027106543ef0f23"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncfloat.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="bcd07ad38cdc03c8169b7fefc79b0b10"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncdouble.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="30f001b26789d918faa3f6e98c1b67c9"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncint.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="0204ecb920c9e4e847fbe98e2da38918"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncchar.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="dd08f8461d4f17b32e23b01dad7dd4c2"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="nclong.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="78755eb2217c2482517e61ab7521c6aa"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncshort.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="517628d88fdec16d807ecceb8ea35ac6"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="nctype.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="ec29534a20fc387a2214f6153344e3fe"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+</wc-entries>

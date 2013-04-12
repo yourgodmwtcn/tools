@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="48"
+   name=""
+   committed-date="2004-11-10T13:29:59.000000Z"
+   url="https://svn.sourceforge.net/svnroot/mexcdf/netcdf_toolbox/trunk/netcdf/@ncdim"
+   last-author="johnevans007"
+   kind="dir"
+   uuid="7777c5ed-ba16-0410-9800-bbefcde0efde"
+   repos="https://svn.sourceforge.net/svnroot/mexcdf"
+   revision="2088"/>
+<entry
+   committed-rev="48"
+   name="subsindex.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="bae68ed818d6adb7c864e50e008809f1"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="subsasgn.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="5298ebe41676789973776b7cb434c6d9"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="version.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="b9d9b6602fb034bf664b81c3aa2949c4"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="att.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="3d229cff9d02bc902ff8e9b748f024f8"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="var.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="c726821d5148e9812a113f102e89bd2f"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="subsref.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="17505120b2e4e0b142d026128c4abe55"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="copy.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="60a88b51ee93f11974a937c535a41076"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="gt.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="8869f5e4fa2bfccfdb4d1e5c2653fee6"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncdim.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="609f7c6c8d7c69a4d1d7e6ad62831b18"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="isrecdim.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="0661f0e2a5a1acd0fbb72a2729894847"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="numel.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="b6df9953676d5d992a7bd6c558887c2a"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="resize.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="877f976a0565188ee99de71232ef1e64"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="iscoord.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="0d51633f82700d55e1896c68e3f2bce8"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+</wc-entries>

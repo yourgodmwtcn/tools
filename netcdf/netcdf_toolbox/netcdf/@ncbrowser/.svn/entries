@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="48"
+   name=""
+   committed-date="2004-11-10T13:29:59.000000Z"
+   url="https://svn.sourceforge.net/svnroot/mexcdf/netcdf_toolbox/trunk/netcdf/@ncbrowser"
+   last-author="johnevans007"
+   kind="dir"
+   uuid="7777c5ed-ba16-0410-9800-bbefcde0efde"
+   repos="https://svn.sourceforge.net/svnroot/mexcdf"
+   revision="2088"/>
+<entry
+   committed-rev="48"
+   name="ncbevent.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="100c382cb39bf111c5f950587e594b2f"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncbgraph.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="bee4d9cd7888f3cd18dee34e9755f8f1"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncbrowser.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="e11ec688502bf309dbb93588fc1b5194"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="display.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="e9620ae3529613701354420ffb9863f8"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="version.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="9ff03a04de053fd9c3475d0f99989c93"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncbmenu.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="35adadd479dfa7f64c14eb6ec407e76d"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="disp.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="051f581dc43564890c750406471010ae"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="numel.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="b6df9953676d5d992a7bd6c558887c2a"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncbplot.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="9e2ab52f2bb1bba5b030695112e1ce71"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncbrefresh.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="4da645841d5212937f8015b748115039"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncbclipboard.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="526658c3e7561730389c7986a51c9884"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+</wc-entries>

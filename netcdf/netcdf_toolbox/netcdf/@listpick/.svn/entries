@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="48"
+   name=""
+   committed-date="2004-11-10T13:29:59.000000Z"
+   url="https://svn.sourceforge.net/svnroot/mexcdf/netcdf_toolbox/trunk/netcdf/@listpick"
+   last-author="johnevans007"
+   kind="dir"
+   uuid="7777c5ed-ba16-0410-9800-bbefcde0efde"
+   repos="https://svn.sourceforge.net/svnroot/mexcdf"
+   revision="2088"/>
+<entry
+   committed-rev="48"
+   name="version.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="2f5387a18a63ceb7deea9b0b6c7985e2"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="event.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="2a8bbf5044e267417c6e264976129462"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="listpick.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="d63c87adbead9dec7682614950f233a2"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+</wc-entries>

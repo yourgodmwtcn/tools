@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="2083"
+   name=""
+   committed-date="2006-12-06T13:07:25.035210Z"
+   url="https://svn.sourceforge.net/svnroot/mexcdf/netcdf_toolbox/trunk/netcdf/@netcdf"
+   last-author="johnevans007"
+   kind="dir"
+   uuid="7777c5ed-ba16-0410-9800-bbefcde0efde"
+   repos="https://svn.sourceforge.net/svnroot/mexcdf"
+   revision="2088"/>
+<entry
+   committed-rev="48"
+   name="mode.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="3cb758a2ac0ad38ffdd1cc48b53e55a6"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="version.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="99c1b50873e4f0760ff5a497d0edfc2c"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="subsasgn.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="4599b468724bfae1099af81705b7e12e"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="redef.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="77a357458191347fca1630eb87164240"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="var.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="3f8b6309e5c08c2f1488e33a20a9618a"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="permission.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="ffad62b57fea1e915bbc826a7edd9ca8"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="att.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="02596e3a493ce91f4e79a11c57bf9eee"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="fatnames.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="b4e07ece78fb342693015518f0c85b58"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="open.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="627001379227cf60c0b28589ee6c2626"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="setfill.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="27e1c2c49bf86adb823304b6c45f01d2"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="delete.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="d3bcb7c602c2fdbdcf8405ab20b150ed"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="create.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="34518aaf347bdac0816001258cf1297c"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="865"
+   name="netcdf.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2005-08-03T14:27:03.000000Z"
+   checksum="6095c760bbf6788daea1c61737197e4e"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="close.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="14257beaf1d5da64506a075831c6859a"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncregister.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="167194be9bb81a5ee6e02034cb0de3c2"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="coord.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="13db1ee72c7923dd32020f092a16165f"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="abort.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="915a56df0608edb6774bcc9d290a3d8b"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="dim.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="fcd3833ffffb98392a1e7b45536ea92c"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="rec.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="74d146c4bea560ea3ed04a1a29438199"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="2083"
+   name="subsref.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2006-12-06T13:07:25.035210Z"
+   checksum="635d49740ba0d4113c707392a3388aae"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="copy.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="07ac368576ac708f67f1787cf5ff16db"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="isepic.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="aefcb7ce55426a99d2ad55862b829049"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="sync.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="a143f2da6feb4f43f5008a6a62cc435d"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="lt.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="a3a989acc08b08a99b52a3add770a214"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="numel.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="b6df9953676d5d992a7bd6c558887c2a"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="whos.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="ccbfd698084a9baaae0abbe1857d3c08"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="endef.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="762f03d2c75874fd144b1173e681d40f"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+<entry
+   committed-rev="48"
+   name="recvar.m"
+   text-time="2006-12-07T13:38:40.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="2b46f05cd0a1de141010f5611b0b95ed"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:40.000000Z"/>
+</wc-entries>

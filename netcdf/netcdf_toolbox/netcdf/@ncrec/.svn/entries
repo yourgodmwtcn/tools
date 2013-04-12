@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="48"
+   name=""
+   committed-date="2004-11-10T13:29:59.000000Z"
+   url="https://svn.sourceforge.net/svnroot/mexcdf/netcdf_toolbox/trunk/netcdf/@ncrec"
+   last-author="johnevans007"
+   kind="dir"
+   uuid="7777c5ed-ba16-0410-9800-bbefcde0efde"
+   repos="https://svn.sourceforge.net/svnroot/mexcdf"
+   revision="2088"/>
+<entry
+   committed-rev="48"
+   name="subsasgn.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="2c06e8e16bc8b8f0fd24811ee77cffc4"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="version.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="1c082a11a953d8de7703d19f44437ee2"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="subsref.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="c035f7f031732b7dbfe081db1cf44ae1"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="gt.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="b1d2329a9bf8379d023b40123b81eb17"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="ncrec.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="60b7895a1ccd3a4e8a22b82f16fbee2a"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="size.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="1be2131610322f84030eb6552363a05e"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+<entry
+   committed-rev="48"
+   name="numel.m"
+   text-time="2006-12-07T13:38:42.000000Z"
+   committed-date="2004-11-10T13:29:59.000000Z"
+   checksum="b6df9953676d5d992a7bd6c558887c2a"
+   last-author="johnevans007"
+   kind="file"
+   prop-time="2006-12-07T13:38:42.000000Z"/>
+</wc-entries>
