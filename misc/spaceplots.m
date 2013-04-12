@@ -18,6 +18,17 @@ function [] = spaceplots(fpad,axpad)
 % 
 %   SPACEPLOTS without any input arguments assumes zero figure padding and
 %   axes padding
+%
+% FOR ERROR:
+% "Attempted to access GridLeft...index must be a positive integer or logical", 
+% you need to call spaceplots BEFORE changing axis ticks, or adding colorbar, etc... 
+% For example for the colorbar, try
+% 
+% a1=subplot(2,1,1);scatter(rand(10,1),rand(10,1),5,rand(10,1)) 
+% a2=subplot(2,1,2); scatter(rand(10,1),rand(10,1),5,rand(10,1)) 
+% spaceplots 
+% axes(a1); colorbar 
+% axes(a2); colorbar 
 %  
 %   version 1.1
 %   (c) Aditya Joshi, 2012

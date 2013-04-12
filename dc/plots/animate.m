@@ -128,10 +128,9 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
         plotdata = double(squeeze(shiftdim(data,index)));
     end    
     
-    if labels.stride == 0
-        datamax = nanmax(plotdata(:));
-        datamin = nanmin(plotdata(:));
-    else
+    datamax = nanmax(plotdata(:));
+    datamin = nanmin(plotdata(:));
+    if labels.stride ~= 0
         clim = caxis;
     end
     
@@ -152,6 +151,10 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
     if flags(5) && stop ~= 1, spaceplay = 0; fprintf('\n Hit a key to advance frame. \n\n'); end
     
     fancy_map = flipud(cbrewer('div', 'RdYlGn', 32));
+    
+    % make fonts bigger for presentation / movie plots
+    if flags(8), fontSize = 20; else fontSize = 12; end
+    set(gca,'FontSize',fontSize);
     
     if flags(6) % Build colormap
         radius = 50;
@@ -182,7 +185,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
             if button == 32, spaceplay = 1; end % resumes when paused
             if button == 27, break; end % exit when Esc is pressed.
         else
-            pause(0.02);%(pausetime);
+            pause(0.0001);%(pausetime);
         end  
         
         ckey = get(gcf,'currentkey');% end
@@ -229,34 +232,29 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
                 clabel(C,handles.h_plot,'FontSize',9);
             otherwise
                 [~,handles.h_plot] = contourf(xax,yax,plotdata(:,:,i),linspace(datamin,datamax,25)); 
-                shading flat
         end
-        
-        % square axis if appropriate
-        if abs((max(xax(:))-min(xax(:))) - (max(yax(:))-min(yax(:)))) < 1
-            axis square;
-        else
-           if flags(9)
-               axis image;
-           end
-        end
-        
-        % colorbar
-        if plotflag ~=4 
-            if ~flags(1)
-                if labels.stride > 0
-                    caxis(clim);
-                else
-                    if datamax ~= datamin,caxis([datamin datamax]); end
-                end
-            end
-        end        
         shading flat;
-        colormap(fancy_map);
-        if plotflag ~= 4, handles.h_cbar = colorbar;  end
+        if i == 1
+            colormap(fancy_map);
+            
+            % maximize window
+            jframe = get(gcf,'JavaFrame');
+            jframe.setMaximized(true);
+        end
         
         % fix display aspect ratio for lat,lon plots
-        if labels.dar, Z_dar; end
+        if labels.dar
+            Z_dar; 
+        else
+            % square axis if appropriate
+            if abs((max(xax(:))-min(xax(:))) - (max(yax(:))-min(yax(:)))) < 1
+                axis square;
+            else
+               if flags(9)
+                   axis image;
+               end
+            end
+        end
         
         % labels
         if labels.revz, revz; end;
@@ -269,7 +267,23 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
                 addtitle = [addtitle ' (instant = ' num2str(labels.t0+i+(labels.dt-1)*(i-1)+100*labels.stride) ')'];
             end
         end
+        if plotflag ~= 4, handles.h_cbar = colorbar;  end
         
+        % add labels
+        handles.h_title = title([labels.title addtitle],'FontSize',fontSize);
+        xlabel(labels.xax,'FontSize',fontSize);
+        ylabel(labels.yax,'FontSize',fontSize);
+        
+        % colorbar
+        if plotflag ~=4 
+            if ~flags(1)
+                if labels.stride > 0
+                    caxis(clim);
+                else
+                    if datamax ~= datamin,caxis([datamin datamax]); end
+                end
+            end
+        end
         % center colorbar
         if flags(7) || flags(8)
             [cmin,cmax] = caxis;
@@ -282,17 +296,13 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
             end
             caxis([cmin cmax]);
         end
+        
+        %beautify;
         eval(commands); % execute custom commands
-        beautify;
-        % make fonts bigger for presentation / movie plots
-        if flags(8), fontSize = 20; else fontSize = 12; end
         
-        handles.h_title = title([labels.title addtitle],'FontSize',fontSize);
-        xlabel(labels.xax,'FontSize',fontSize);
-        ylabel(labels.yax,'FontSize',fontSize);
-        set(gca,'FontSize',fontSize);
-        
+        % video making
         if flags(7)  
+            beautify
             if isempty(labels.mm_instance)
                 labels.mm_instance = mm_setup;
                 labels.mm_instance.pixelSize = [1600 900];
@@ -307,8 +317,5 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
         else
             mm_instance = [];
         end
-        
-        jframe = get(gcf,'JavaFrame');
-        jframe.setMaximized(true);
         
     end
