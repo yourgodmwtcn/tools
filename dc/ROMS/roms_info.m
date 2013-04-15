@@ -20,6 +20,7 @@ function [] = roms_info(fname,plot)
     warning on;
     
     title_file  = ncreadatt(fname,'/','title');
+    cpp    = ncreadatt(fname,'/','CPP_options');
     lbc    = ncreadatt(fname,'/','NLM_LBC');
     hist   = ncreadatt(fname,'/','history');
     ntimes = ncread(fname,'ntimes');
@@ -36,6 +37,26 @@ function [] = roms_info(fname,plot)
     R0     = ncread(fname,'R0');
     TCOEF  = ncread(fname,'Tcoef');
     SCOEF  = ncread(fname,'Scoef');
+    
+    % viscosities
+    rdrg   = ncread(fname,'rdrg');
+    rdrg2  = ncread(fname,'rdrg2');
+    ii = 0;
+    if strfind(cpp,'UV_VIS2')
+        tnu   = ncread(fname,'nl_tnu2');
+        visc  = ncread(fname,'nl_visc2');
+        ii = 2;
+    end
+    if strfind(cpp,'UV_VIS4')
+        tnu   = ncread(fname,'nl_tnu4');
+        visc  = ncread(fname,'nl_visc4');
+        ii = 4;
+    end
+    if strfind(cpp,'UV_QDRAG')
+        rdrg = 0;
+    else
+        rdrg2 = 0;
+    end
     
     Vtransform  = ncread(fname,'Vtransform');
     Vstretching = ncread(fname,'Vstretching');
@@ -87,6 +108,9 @@ function [] = roms_info(fname,plot)
             '\n', ...
             '\n\t\t %10s: [%d %d %d %d %.2f]  | %s: %d      ', ...
             '\n', ...
+            '\n\t\t %10s: visc%d = %.2e  | tnu%d = %.2e      ', ...
+            '\n\t\t %10s: rdrg  = %.2e  | rdrg2 = %.2e      ', ...
+            '\n', ...
             '\n\t\t %10s:   R0 = %.2f   | TCOEF = %1.3e | SCOEF = %1.3e ', ...
             '\n\t\t %10s:    f = %1.2e  | beta  = %1.3e               ', ...
             '\n', ...
@@ -97,6 +121,7 @@ function [] = roms_info(fname,plot)
             'Domain: X',X,xunit,Lm,xdiff(1),xdiff(2), 'Y', Y,yunit,Mm, ydiff(1),ydiff(2), 'Z', Z,'m',N,zdiff(1),zdiff(2), ...
             'T',length(ocean_time),ocean_time(1),dt,ocean_time(end), dtfast,    ...
             'Stretching', Vtransform, Vstretching,theta_s,theta_b,Tcline, 'Spherical', spherical, ...
+            'Viscosity', ii, visc(1),ii,tnu(1), 'Bott Fric', rdrg,rdrg2,...
             'EOS',R0, TCOEF, SCOEF,'Coriolis',f0,beta, ...
             'Output HIS',nhis,nhis*dt/3600,'DIA',ndia,ndia*dt/3600, 'AVG',navg,navg*dt/3600,'RST',nrst,double(nrst)*dt/3600);
     
