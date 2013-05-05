@@ -2,6 +2,7 @@ function [out] = roms_read_data(folder,varname,tindices)
     
     % get all history files
     files = ls([folder '*_his*.nc']);
+    if isempty(files), files = ls([folder '*_avg*.nc']); end
         
     k = 1;
     
