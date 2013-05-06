@@ -1,3 +1,5 @@
+% [params] = read_params_from_ini(fname)
+
 function [params] = read_params_from_ini(fname)
 
     info = ncinfo(fname);
