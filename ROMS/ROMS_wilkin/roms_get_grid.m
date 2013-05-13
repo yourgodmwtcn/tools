@@ -309,4 +309,9 @@ if nargin > 1
   grd.s_w = s_w;
   grd.s_rho = s_rho;
   
+  try
+      grd.ocean_time = ncread(grd_file,'ocean_time');
+  catch ME
+  end
+  
 end

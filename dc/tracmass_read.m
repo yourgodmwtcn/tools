@@ -44,7 +44,7 @@ function [floats] = tracmass_read(fname,rgrid)
             if fx == 0, fx = 1; end
             dz = rgrid.z_r(cz,fy,fx) - rgrid.z_r(fz,fy,fx);
             % not all floats start at t=0
-            dt = floats.t0(i)-floats.time(1);
+            dt = (floats.t0(i)-floats.time(1))./ (floats.time(2)-floats.time(1));
             floats.x(k+dt,i) = xr(fx) + (ix(j)-fx) * dx;
             floats.y(k+dt,i) = yr(fy) + (iy(j)-fy) * dy;
             floats.z(k+dt,i) = rgrid.z_r(fz,fy,fx) + (iz(j)-fz) * dz;
