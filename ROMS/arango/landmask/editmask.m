@@ -31,9 +31,9 @@ function editmask(grid_file, coast_file)
 %           BUTTON, RADIOBOX, TEXTBOX, AXISSCROLL,
 %
 
-% svn $Id: editmask.m 614 2012-05-02 21:52:32Z arango $
+% svn $Id: editmask.m 663 2013-05-16 20:06:58Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                            A. Shcherbina        %
 %=========================================================================%
@@ -56,6 +56,7 @@ CMAP=[.5 1 0;1 1 0;0 0 .7;0 0 1];
 
 LineColor='k';
 LineWidth=1;
+got_coast=false;
 
 % Check input arguments.
 
@@ -64,7 +65,10 @@ if (nargin < 1 || isempty(grid_file)),
 end
 if (nargin < 2 || isempty(coast_file)),
   coast_file='*.mat';
-  got_coast=1;
+  got_coast=true;
+end
+if (nargin == 2),
+  got_coast=true;
 end
 
 FIGURE_NAME='Land/Sea Mask Editor';

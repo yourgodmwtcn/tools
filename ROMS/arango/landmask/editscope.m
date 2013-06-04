@@ -31,9 +31,9 @@ function editscope(grid_file, coast_file);
 %           BUTTON, RADIOBOX, TEXTBOX, AXISSCROLL,
 %
 
-% svn $Id: editscope.m 614 2012-05-02 21:52:32Z arango $
+% svn $Id: editscope.m 647 2013-01-22 23:40:00Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%

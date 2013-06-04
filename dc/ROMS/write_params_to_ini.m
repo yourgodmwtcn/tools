@@ -1,4 +1,5 @@
 % writes setup parameters to _ini.nc file for ROMS runs
+%   [] = write_params_to_ini(ininame, param, varname)
 
 function [] = write_params_to_ini(ininame, param, varname)
 

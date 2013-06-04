@@ -1,267 +1,205 @@
-function [] = spaceplots(fpad,axpad)
-% SPACEPLOTS: Reposition plots in a figure with custom spacing between them
+function spaceplots(varargin)
+%SPACEPLOTS: Reposition plots in a figure with custom spacing between them
 % 
-%   Usage: Draw your figure, with all the subplots. Make sure it is the
-%   current figure before you call SPACEPLOTS. Function simply repositions
-%   axes in a figure, it does not change any other properties of the figure
+%   Usage: Draw your figure, with all the subplots, then call SPACEPLOTS. 
 % 
-%   SPACEPLOTS(fpad,axpad) repositions plots to add figure padding and axes
-%   padding as specified by fpad and axpad respectively
+%   SPACEPLOTS(fid,fpad,axpad) repositions plots in the figure given by
+%   handle fid by adding the figure padding and axes padding given by fpad
+%   and axpad respectively.
 % 
 %   "fpad" is a 4 element vector specifying (in normalized units)
 %   the space to be left around the entire subplot grid. The format for
-%   figure padding is [left right top bottom]
+%   figure padding is [left right top bottom].
 % 
 %   "axpad" is a 2 element vector specifying (in normalized units) the
 %   horizontal and vertical padding between the panels of the subplot grid.
-%   The format for axes padding is [horizontal vertical]
+%   The format for axes padding is [horizontal vertical].
 % 
-%   SPACEPLOTS without any input arguments assumes zero figure padding and
-%   axes padding
-%
-% FOR ERROR:
-% "Attempted to access GridLeft...index must be a positive integer or logical", 
-% you need to call spaceplots BEFORE changing axis ticks, or adding colorbar, etc... 
-% For example for the colorbar, try
+%   SPACEPLOTS(fpad,axpad) uses the current figure.
 % 
-% a1=subplot(2,1,1);scatter(rand(10,1),rand(10,1),5,rand(10,1)) 
-% a2=subplot(2,1,2); scatter(rand(10,1),rand(10,1),5,rand(10,1)) 
-% spaceplots 
-% axes(a1); colorbar 
-% axes(a2); colorbar 
+%   SPACEPLOTS without any input arguments uses the current figure, and
+%   assumes zero figure padding and axes padding.
+% 
+%   SPACEPLOTS simply repositions axes in a figure, it does not change any 
+%   other properties of the figure. Also, in case of figures with multiple 
+%   axes, SPACEPLOTS works only if these axes were created using the 
+%   standard Matlab function "subplot".
+% 
+%NOTE: Please replace the default Matlab subplot.m file with the modified 
+%version available with SPACEPLOTS v3.0 for the function to work properly.
 %  
-%   version 1.1
-%   (c) Aditya Joshi, 2012
+%version 3.0
+%(c) Aditya Joshi, 2013
 
+
+%% Parse Inputs
+
+cargin = {};
+if nargin > 0
+    if ishandle(varargin{1})
+        figure(varargin{1})
+        cargin = varargin(2:end);
+    else
+        cargin = varargin;
+    end
+end
+
+fpad = [0 0 0 0]; axpad = [0 0];
+if numel(cargin) > 0, fpad = cargin{1}; end
+if numel(cargin) > 1, axpad = cargin{2}; end
+        
 u1 = get(gcf,'units');      %to restore later
 set(gcf,'units','normalized')
 
-if nargin < 2, axpad = [0 0]; end
-if nargin < 1, fpad = [0 0 0 0]; end
+if isequal(getappdata(gcf,'spaceplots'),1)
+    hAxGrid = getappdata(gcf,'SubplotGrid');
+    if isempty(hAxGrid)
+        error(['Cannot use SPACEPLOTS on this figure. An essential figure' ...
+               ' property has been deleted, possibly because of a user operation.'])
+    end
+elseif isequal(numel(findobj(gcf,'type','axes','-and','-not','tag','legend')),1)
+    hAxGrid = gca;
+elseif isequal(numel(findobj(gcf,'type','axes','-and','-not','tag','legend')),0)
+    return;
+else
+    error(['Either the figure contains multiple axes created without using the '...
+           'default MATLAB function subplot.m, or this version of SPACEPLOTS is '...
+           'not compatible with the default MATLAB '...
+           'function subplot.m. In order to ensure compatibility, replace '...
+           'the original subplot.m with the modified version available with '...
+           'SPACEPLOTS v2.0'])
+end
 
 fPadLeft = fpad(1); fPadRight = fpad(2);
 fPadTop = fpad(3);  fPadBottom = fpad(4);
-fBox = [fPadLeft fPadBottom 1-fPadLeft-fPadRight 1-fPadTop-fPadBottom];
-axpadH = axpad(1); axpadV = axpad(2);
-
-% Get axes handles. If SubplotGrid is empty, there is only 1 axes
-hAxGrid = getappdata(gcf,'SubplotGrid');
-if isempty(hAxGrid)
-    hAxes = gca;
-    oneAxes = 1;
-else
-    oneAxes = 0;
-end
-
-%==========================================================================
-% For Single Axes
-%==========================================================================
-if oneAxes
-        
-    t = get(hAxes,'TightInset');
-    
-    InsetLeft = t(1); InsetBottom = t(2);
-    InsetRight = t(3); InsetTop = t(4);
-
-    axWidth = 1 - fPadLeft - fPadRight - InsetLeft - InsetRight;
-    axHeight = 1 - fPadTop - fPadBottom - InsetTop - InsetBottom;
-    
-    axPos = [InsetLeft+fPadLeft InsetBottom+fPadBottom axWidth axHeight];
-    set(gca,'Position',axPos)
-    
-    return
-end
-
-%==========================================================================
-% For Multiple Axes (Subplots)
-%==========================================================================
+axPadH = axpad(1); axPadV = axpad(2);
 
 nRows = size(hAxGrid,1);
 nCols = size(hAxGrid,2);
 
-defAx = getappdata(gcf,'SubplotDefaultAxesLocation');
-fRow = 1/nRows; fCol = 1/nCols;
 
-hAxes = findobj('Parent',gcf,'-and','Type','axes','-and','-not','Tag','legend');
+%% Get Current Axes Information
 
-% -------------------------------------------------------------------------
-% Information about current figure: For each axes, get the starting row, 
-% column and row span, column span
-% -------------------------------------------------------------------------
+% hAxGrid is the grid of axes handles, where (1,1) corresponds to the
+% bottom-left corner
 
-row0 = zeros(size(hAxes)); col0 = zeros(size(hAxes));
-rowSpan = zeros(size(hAxes)); colSpan = zeros(size(hAxes));
+TightInsets = cell(size(hAxGrid));
 
-for i = 1:length(hAxes)
-    
-    axPos = get(hAxes(i),'Position');
-    
-    row0(i) = (floor(((axPos(2)-defAx(2))/defAx(4))/fRow)) + 1;
-    col0(i) = floor(((axPos(1)-defAx(1))/defAx(3))/fCol) + 1;
-    
-    if abs(axPos(4) - defAx(4)) < 0.005
-        disp('ccc')
-        rowSpan(i) = nRows;
-    else
-        rowSpan(i) = floor((axPos(4)/defAx(4))/fRow) + 1;
+for i = 1:nRows
+    for j = 1:nCols       
+        if isequal(hAxGrid(i,j),0)    
+            TightInsets{i,j} = zeros(1,4);             
+        else           
+            TightInsets{i,j} = get(hAxGrid(i,j),'TightInset');
+        end
     end
-    
-    if abs(axPos(3) - defAx(3)) < 0.005
-        disp('ddd')
-        colSpan(i) = nCols;
-    else
-        colSpan(i) = floor((axPos(3)/defAx(3))/fCol) + 1;
-    end
-    
 end
 
-% -------------------------------------------------------------------------
-% Information about current figure: Define consistent TightInset values for
-% axes, so that they line up in the grid
-% -------------------------------------------------------------------------
 
-InsetLeft = zeros(nRows,nCols);
-InsetRight = zeros(nRows,nCols);
-InsetTop = zeros(nRows,nCols);
-InsetBottom = zeros(nRows,nCols);
+%% Define New Properties
 
-for m = 1:nRows
-    
-    % bottom inset
-    ax = find(row0 == m);
-    if isempty(ax)
-        InsetBottom(m,:) = 0;
-    else
-        bpad = zeros(size(ax));
-        for i = 1:length(ax)
-            t = get(hAxes(ax(i)),'TightInset');
-            bpad(i) = t(2);
-        end
-        InsetBottom(m,:) = max(bpad);
-    end
-    
-    % top inset
-    vcomp = row0 + rowSpan - ones(size(row0));
-    ax = find(vcomp == m);
-    if isempty(ax)
-        InsetTop(m,:) = 0;
-    else     
-        tpad = zeros(size(ax));
-        for i = 1:length(ax)
-            t = get(hAxes(ax(i)),'TightInset');
-            tpad(i) = t(4);
-        end
-        InsetTop(m,:) = max(tpad);
-    end
-    
-end
+OuterPositions = cell(size(hAxGrid));
+LooseInsets = cell(size(hAxGrid));
+
+opWidth = (1-fPadLeft-fPadRight-((nCols-1)*axPadH))/nCols;
+opHeight = (1-fPadTop-fPadBottom-((nRows-1)*axPadV))/nRows;
+
+for i = 1:nRows
+    for j = 1:nCols
         
-for n = 1:nCols
-
-    % left inset
-    ax = find(col0 == n);
-    if isempty(ax)
-        InsetLeft(:,n) = 0;
-    else
-        lpad = zeros(size(ax));
-        for i = 1:length(ax)
-            t = get(hAxes(ax(i)),'TightInset');
-            lpad(i) = t(1);
-        end
-        InsetLeft(:,n) = max(lpad);
-    end
-
-    % right inset
-    vcomp = col0 + colSpan - ones(size(col0));
-    ax = find(vcomp == n);
-    if isempty(ax)
-        InsetRight(:,n) = 0;
-    else
-        rpad = zeros(size(ax));
-        for i = 1:length(ax)
-            t = get(hAxes(ax(i)),'TightInset');
-            rpad(i) = t(3);
-        end
-        InsetRight(:,n) = max(rpad);
-    end
-
-end
-
-% -------------------------------------------------------------------------
-% Information about new figure: Define basic grid
-% -------------------------------------------------------------------------
-
-GridLeft = zeros(nRows,nCols);
-GridBottom = zeros(nRows,nCols);
-GridWidth = zeros(nRows,nCols);
-GridHeight = zeros(nRows,nCols);
-
-for m = 1:nRows
-    for n = 1:nCols
+        if isequal(hAxGrid(i,j),0), continue; end
         
-        if  m == 1
-            GridBottom(m,n) = fBox(2);
-            GridHeight(m,n) = (fBox(4)/nRows) - axpadV/2;
-        elseif m == nRows
-            GridBottom(m,n) = fBox(2) + (m-1)*(fBox(4)/nRows) + axpadV/2;
-            GridHeight(m,n) = (fBox(4)/nRows) - axpadV/2;
-        else
-            GridBottom(m,n) = fBox(2) + (m-1)*(fBox(4)/nRows) + axpadV/2;
-            GridHeight(m,n) = (fBox(4)/nRows) - axpadV;
+        nop(1) = fPadLeft + (j-1)*(opWidth+axPadH);
+        nop(2) = fPadBottom + (i-1)*(opHeight+axPadV);
+        nop(3) = opWidth;
+        nop(4) = opHeight;
+        
+        OuterPositions{i,j} = nop;
+          
+        inLeft = 0; inRight = 0; inTop = 0; inBottom = 0;
+        for m = 1:nRows
+            inLeft = max([inLeft TightInsets{m,j}(1)]);
+            inRight = max([inRight TightInsets{m,j}(3)]);
+        end
+        for m = 1:nCols
+            inTop = max([inTop TightInsets{i,m}(4)]);
+            inBottom = max([inBottom TightInsets{i,m}(2)]);
         end
         
-        if n == 1
-            GridLeft(m,n) = fBox(1);
-            GridWidth(m,n) = fBox(3)/nCols - axpadH/2;
-        elseif n == nCols
-            GridLeft(m,n) = fBox(1) + (n-1)*(fBox(3)/nCols) + axpadH/2;
-            GridWidth(m,n) = fBox(3)/nCols - axpadH/2;
-        else
-            GridLeft(m,n) = fBox(1) + (n-1)*(fBox(3)/nCols) + axpadH/2;
-            GridWidth(m,n) = fBox(3)/nCols - axpadH;
-        end
+        LooseInsets{i,j} = [inLeft inBottom inRight inTop];
         
     end
 end
 
-% -------------------------------------------------------------------------
-% New figure: Reposition axes
-% -------------------------------------------------------------------------
 
-for i = 1:length(hAxes)
-    
-    r0 = row0(i);
-    c0 = col0(i);
-    
-    r1 = r0 + rowSpan(i) - 1;
-    c1 = c0 + colSpan(i) - 1;
-    
-    axLeft = GridLeft(r0,c0) + InsetLeft(r0,c0);
-    axBottom = GridBottom(r0,c0) + InsetBottom(r0,c0);
-    
-    axHeight = sum(GridHeight(r0:r1,c0)) + axpadV*(rowSpan(i)-1) ...
-               - InsetBottom(r0,c0) - InsetTop(r1,c1);
+%% Reposition Axes
+
+moved = zeros(size(hAxGrid));
+
+for i = 1:nRows
+    for j = 1:nCols
+        
+        if isequal(hAxGrid(i,j),0), continue; end     
+        if moved(i,j) == 1, continue; end
+        
+        ax = hAxGrid(i,j);
+
+        inds = find(hAxGrid == ax);
+        
+        if numel(inds) == 1
+            
+            op = OuterPositions{i,j};
+            li = LooseInsets{i,j};
+            
+            lb = [op(1)+li(1) op(2)+li(2) op(3)-li(1)-li(3) op(4)-li(2)-li(4)];
+            
+            set(ax,'OuterPosition',op)
+            set(ax,'Position',lb)
+          
+            moved(i,j) = 1;
+            
+        elseif numel(inds) > 1
+            
+            r = zeros(numel(inds),1);
+            c = zeros(numel(inds),1);
+            
+            for k = 1:numel(inds)
+                [rr,cc] = ind2sub(size(hAxGrid),inds(k));
+                r(k) = rr; c(k) = cc;
+            end
+            
+            rmin = min(r); rmax = max(r);
+            cmin = min(c); cmax = max(c);
+            
+            op(1) = OuterPositions{rmin,cmin}(1);
+            op(2) = OuterPositions{rmin,cmin}(2);
+            op(3) = OuterPositions{rmax,cmax}(1) + ...
+                    OuterPositions{rmax,cmax}(3) - ...
+                    OuterPositions{rmin,cmin}(1);
+            op(4) = OuterPositions{rmax,cmax}(2) + ...
+                    OuterPositions{rmax,cmax}(4) - ...
+                    OuterPositions{rmin,cmin}(2);
+            
+            li(1) = LooseInsets{rmin,cmin}(1);
+            li(2) = LooseInsets{rmin,cmin}(2);
+            li(3) = LooseInsets{rmax,cmax}(3);
+            li(4) = LooseInsets{rmax,cmax}(4);
+            
+            lb = [op(1)+li(1) op(2)+li(2) op(3)-li(1)-li(3) op(4)-li(2)-li(4)];
+            
+            set(ax,'OuterPosition',op)
+            set(ax,'Position',lb)
            
-    axWidth = sum(GridWidth(r0,c0:c1)) + axpadH*(colSpan(i)-1) ...
-               - InsetLeft(r0,c0) - InsetRight(r1,c1);
-    
-    set(hAxes(i),'Position',[axLeft axBottom axWidth axHeight])
-    
-    % recalculate SubplotDefaultAxesLocation
-    if i == 1
-        sdx = [axLeft axLeft+axWidth];
-        sdy = [axBottom axBottom+axHeight];
-    else
-        sdx = [min([sdx(1) axLeft]) max([sdx(2) axLeft+axWidth])];
-        sdy = [min([sdy(1) axBottom]) max([sdy(2) axBottom+axHeight])];
+            moved(inds) = 1;
+            
+        end
+        
+        set(ax,'ActivePositionProperty','OuterPosition')
+        
     end
-    
 end
 
-% -------------------------------------------------------------------------
-% reset properties
-% -------------------------------------------------------------------------
+%% Reset Figure Properties
 
 set(gcf,'units',u1)
 setappdata(gcf,'SubplotGrid',hAxGrid)
-setappdata(gcf,'SubplotDefaultAxesLocation',[sdx(1) sdy(1) sdx(2)-sdx(1) sdy(2)-sdy(1)])

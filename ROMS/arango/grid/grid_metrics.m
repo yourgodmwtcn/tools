@@ -58,9 +58,9 @@ function [pm, pn, dndx, dmde] = grid_metrics(G, GreatCircle)
 %    G.x_v           V-points   Y-location (meters)
 
   
-% svn $Id: grid_metrics.m 614 2012-05-02 21:52:32Z arango $
+% svn $Id: grid_metrics.m 647 2013-01-22 23:40:00Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%

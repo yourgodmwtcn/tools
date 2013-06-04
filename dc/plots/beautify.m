@@ -1,6 +1,6 @@
 % Makes all graphs kickass. Call after making all modifications to plot
 %       function [] = beautify(fontSizes)
-% fontSizes = [Axis,Labels,Title]
+% fontSizes = [Axis,Labels,Title] = [12 12 14] - default
 
 %TODO: Support for multiple axes
 

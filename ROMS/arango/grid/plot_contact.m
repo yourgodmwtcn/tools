@@ -18,9 +18,9 @@ function plot_contact(G, S)
 %                 [S, G] = contact (Gnames, Cname, ...)
 %
 
-% svn $Id: plot_contact.m 625 2012-07-03 20:07:22Z arango $
+% svn $Id: plot_contact.m 647 2013-01-22 23:40:00Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%

@@ -33,9 +33,9 @@ function [code]=day_code(month, day, year);
 % Calls:  none
 %
 
-% svn $Id: day_code.m 586 2012-01-03 20:19:25Z arango $
+% svn $Id: day_code.m 647 2013-01-22 23:40:00Z arango $
 %===========================================================================%
-%  Copyright (c) 2002-2012 The ROMS/TOMS Group                              %
+%  Copyright (c) 2002-2013 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
 %    See License_ROMS.txt                           Hernan G. Arango        %
 %===========================================================================%

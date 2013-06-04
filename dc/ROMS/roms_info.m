@@ -6,22 +6,16 @@
 function [] = roms_info(fname,plot)
 
     %fname = find_file(fname);
-
+    if isdir(fname)
+        fnames = roms_find_file(fname,'his');
+        fname = [fname '/' fnames(1,:)];
+    end
     if ~exist('plot','var')
         plot = 0;
     end
  
     if ~exist('fname','var')
         fname = 'ocean_his.nc';
-    end
-    
-    if isdir(fname)
-       list = ls([fname '/*his*.nc']);
-       if isempty(list)
-           list = ls([fname '/*avg*.nc']);
-       end
-       
-       fname = [fname '/' list(1,:)];
     end
     
     warning off;

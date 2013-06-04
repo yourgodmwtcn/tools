@@ -62,9 +62,9 @@ function [Uout,Vout]=roms_vectors(Uinp,Vinp,angle,umask,vmask,boundary);
 %    Vout(i,j,k) = 0.5 * (Vinp(i,j-1,k) + Vinp(i,j,k))
 %
 
-% svn $Id: roms_vectors.m 595 2012-01-17 19:44:46Z arango $
+% svn $Id: roms_vectors.m 647 2013-01-22 23:40:00Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%

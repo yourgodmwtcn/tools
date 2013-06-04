@@ -84,9 +84,9 @@ function B = interp_boundary(I,varargin)
 %    B             Interpolated lateral boundary conditions (struct array)
 %
 
-% svn $Id: interp_boundary.m 630 2012-08-28 17:58:33Z arango $
+% svn $Id: interp_boundary.m 647 2013-01-22 23:40:00Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license           Hernan G. Arango      %
 %    See License_ROMS.txt                           John Wilkin           %
 %=========================================================================%  

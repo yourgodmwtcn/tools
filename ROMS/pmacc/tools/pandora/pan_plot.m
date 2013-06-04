@@ -20,15 +20,18 @@ Tdir = pan_start;
 % choose file or files to plot
 disp('********* pan_plot.m ********************************')
 disp(' ')
-indir = 'E:\Work\CattlePass\runs\';
+indir = 'E:\Work\archive\CattlePass\runs\';
 
 % choose which run to use, and set the basename
 % [fn,pth]=uigetfile([indir,'*.nc'],'Select NetCDF file or files...','multiselect','on');
-    pth = 'E:\Work\CattlePass\runs\final\';
+    pth = 'E:\Work\archive\CattlePass\runs\final\';
     files = ls(pth); %files = files(83-15:end,:);
-    files_flood = files((83-15):(83+19),:);
+    files_flood1 = files((83-15):(83+19),:);
+    indi = strmatch('ocean_his_2280.nc',files);
+    indf = strmatch('ocean_his_2310.nc',files);
+    files_flood2 = files(indi:indf,:);
     %files = 'ocean_his_2195.nc';
-    files = files_flood;
+    files = files_flood2;
     fn = cellstr(files)';
 % ASSUMES that "pth" is something like:
 % /Users/PM/Documents/Salish/runs/ptx_med_2005_1/OUT/
@@ -60,7 +63,7 @@ plot_file = strrep(fn_p,'.m',''); % used in an "eval" call below
 figure;
 set(gcf,'position',[0 0 1600 900]);
 % determine how many files to plot
-if make_movie; ntt = size(fn,2); else; ntt = 1; end;
+if make_movie; ntt = size(fn,2); else ntt = 1; end;
 
 for ii = 1:ntt % MOVIE loop start (or just make single plot)
     if make_movie;
@@ -118,16 +121,18 @@ for ii = 1:ntt % MOVIE loop start (or just make single plot)
                 time_flag,'_',num2str(tt),'.tif']);
         end
     else % make a folder of jpegs for a movie
+        outdir = [Tdir.pan_mov,plot_file,'_',basename,time_flag];
         if ii==1
             outdir = [Tdir.pan_mov,plot_file,'_',basename,time_flag];
             if exist(outdir)==7; rmdir(outdir,'s'); end;
             mkdir(outdir);
         end        
-        export_fig('-q90','-nocrop','-zbuffer',sprintf([strrep(outdir,'\','\\'),'\\%04d.png'],ii));
+        export_fig('-q90','-zbuffer',sprintf([strrep(outdir,'\','\\'),'\\%04d.png'],ii));
         if ii<length(fn); clf; end;
     end
     
 end % MOVIE loop end
 
 disp('DONE');
+if make_movie, disp(['output images in ' outdir]); end
 

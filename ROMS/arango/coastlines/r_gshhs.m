@@ -33,9 +33,9 @@ function [C]=r_gshhs(Llon, Rlon, Blat, Tlat, Fname)
 %                           C.type=4 => pond_in_island_in_lake
 %
 
-% svn $Id: r_gshhs.m 627 2012-08-01 21:59:45Z arango $
+% svn $Id: r_gshhs.m 647 2013-01-22 23:40:00Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%

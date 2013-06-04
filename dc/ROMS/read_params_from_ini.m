@@ -4,12 +4,8 @@
 function [params] = read_params_from_ini(fname)
 
     if isdir(fname)
-        if isempty(strfind(fname,'config')), fname = [fname '/config/']; end
-        in = ls([fname '/*.in']);
-        [~,p] = grep('ININAME == ',[fname in]); 
-        % line in p.match must be processed to extract *.nc name
-        A = sscanf(char(p.match),' ININAME == %s');
-        fname = [fname '/' A];
+        fname1 = roms_find_file(fname,'ini');
+        fname = [fname fname1]; % there can only be one hit
     end
     info = ncinfo(fname);
     n = length(info.Variables);

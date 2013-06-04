@@ -24,9 +24,9 @@ function [spherical,x,y,bath,Rscope]=read_scope(Gname)
 %                  matrix): Rscope=0 inactive, Rscope=1 active.
 %
 
-% svn $Id: read_scope.m 614 2012-05-02 21:52:32Z arango $
+% svn $Id: read_scope.m 647 2013-01-22 23:40:00Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%

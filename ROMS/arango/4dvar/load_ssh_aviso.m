@@ -37,9 +37,9 @@ function [D]=load_ssh_aviso(GRDfile, StartDay, EndDay)
 %          to read NetCDF data.
 %
 
-% svn $Id: load_ssh_aviso.m 586 2012-01-03 20:19:25Z arango $
+% svn $Id: load_ssh_aviso.m 647 2013-01-22 23:40:00Z arango $
 %===========================================================================%
-%  Copyright (c) 2002-2012 The ROMS/TOMS Group                              %
+%  Copyright (c) 2002-2013 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
 %    See License_ROMS.txt                           Brian Powell            %
 %===========================================================================%

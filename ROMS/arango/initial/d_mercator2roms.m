@@ -7,9 +7,9 @@
 %  as a prototype for their application.
 %
 
-% svn $Id: d_mercator2roms.m 595 2012-01-17 19:44:46Z arango $
+% svn $Id: d_mercator2roms.m 647 2013-01-22 23:40:00Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%

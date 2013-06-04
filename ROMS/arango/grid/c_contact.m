@@ -21,9 +21,9 @@ function c_contact(ncname, spherical, Ngrids, Ndatum)
 %    Ndatum      Total number of contact points (optional)
 %
 
-% svn $Id: c_contact.m 625 2012-07-03 20:07:22Z arango $
+% svn $Id: c_contact.m 660 2013-04-18 23:34:36Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%
@@ -206,7 +206,7 @@ netcdf.putAtt(ncid, varid, 'long_name',                                 ...
 netcdf.putAtt(ncid, varid, 'flag_values',                               ...
               [int32(0), int32(1), int32(2), int32(3), int32(4)]);
 netcdf.putAtt(ncid, varid, 'flag_meanings',                             ...
-              'false western southern eastern northern');
+              'other western southern eastern northern');
 
 % Donor grid cell indices.
 

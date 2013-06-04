@@ -62,9 +62,9 @@ function Tide = otps2roms(gfile,base_date,pred_date,ofile,model_file)
 % Revised by Hernan Arango 08/02/2012
 %
   
-% svn $Id: otps2roms.m 630 2012-08-28 17:58:33Z arango $
+% svn $Id: otps2roms.m 647 2013-01-22 23:40:00Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2012 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%
