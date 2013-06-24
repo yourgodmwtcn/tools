@@ -8,8 +8,8 @@ function [vor,xvor,yvor,zvor] = vorticity_cgrid(grid,u,v,toUTM,plot_fig)
     if ~exist('toUTM','var'), toUTM = 0; end
     if ~exist('plot_fig','var'), plot_fig = 0; end
     
-    vx    = bsxfun(@rdivide,diff(v,1,1),diff(grid.xv));
-    uy    = bsxfun(@rdivide,diff(u,1,2),diff(grid.yu'));
+    vx    = bsxfun(@rdivide,diff(v,1,1),diff(grid.xv,1,1));
+    uy    = bsxfun(@rdivide,diff(u,1,2),diff(grid.yu,1,2));
     
     if toUTM
         mx = mean(grid.xv);
@@ -22,7 +22,7 @@ function [vor,xvor,yvor,zvor] = vorticity_cgrid(grid,u,v,toUTM,plot_fig)
     vor  = vx - uy;
     
     xvor = avgx(grid.xv);
-    yvor = grid.yv;
+    yvor = avgx(grid.yv);
     zvor = avgx(permute(grid.zv,[3 2 1]));
     
     if plot_fig
