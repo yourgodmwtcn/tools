@@ -1,4 +1,6 @@
 % adds passive tracers to initial conditions file with proper attributes
+%   [] = dc_roms_passive_tracer(S,tracer_names)
+%           tracer_names = cell with descriptions for each tracer
 
 function [] = dc_roms_passive_tracer(S,tracer_names)
 
