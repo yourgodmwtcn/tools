@@ -21,23 +21,37 @@ function [floats] = read_floats(type,file,rgrid)
 
             floats.init(ii,:) = [floats.x(ind,ii) floats.y(ind,ii) floats.z(ind,ii) floats.time(ind)];
         end
-
-        floats.comment = 'init = (x,y,z,t) = initial location, release time in meters, seconds';
-        return;
+        floats.type = 'roms';
     end
     
     if strcmpi(type,'ltrans')
-        floats.y = ncread(track_file,'lat');
-        floats.x = ncread(track_file,'lon');
-        floats.z = ncread(track_file,'depth');
-        floats.time = ncread(track_file,'age')/86400; 
-        return;
+        floats.y = ncread(file,'lat')';
+        floats.x = ncread(file,'lon')';
+        floats.z = ncread(file,'depth')';
+        floats.age = ncread(file,'age')'; 
+        floats.time = ncread(file,'model_time');
+        da = -1*diff(floats.age == 0,1,1);
+        da(end+1,:) = 0;
+        tinit = cut_nan(fillnan(da .* repmat(floats.time,[1 size(da,2)]),0));
+        
+        floats.type = 'ltrans';
+        floats.init = [floats.x(1,:)' floats.y(1,:)' floats.z(1,:)' tinit];
+        dfx = (diff(floats.x,1,1) == 0);
+        floats.x(dfx) = NaN;
+        floats.y(dfx) = NaN;
+        floats.z(dfx) = NaN;
+        floats.age(dfx) = NaN;
     end
     
     if strcmpi(type,'tracmass')
        floats = tracmass_read(file,rgrid);
-       return;
     end
+    floats.comment = ['init = (x,y,z,t) = initial location, release time in meters, seconds | ' ...
+        'fac = number float timesteps per ROMS output timestep'];
+    % calculate fac
+    dtroms = rgrid.ocean_time(2)-rgrid.ocean_time(1);
+    dtltr  = floats.time(2,1)-floats.time(1,1);
+    floats.fac = dtroms/dtltr;
     
 % ASSUMES REGULAR GRID
 function [floats] = tracmass_read(fname,rgrid)
@@ -132,5 +146,5 @@ function [floats] = tracmass_read(fname,rgrid)
    
    floats.fac = 1; % outputs at model output
    floats.comment = 'init = (x,y,z,t) = initial location, release time in meters, seconds';
-   trac = floats;
+   floats.type = 'tracmass';
    toc

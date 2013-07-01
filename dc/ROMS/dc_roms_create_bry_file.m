@@ -21,13 +21,17 @@ function [] = dc_roms_create_bry_file(S)
         end
     end
     
-    bry = {'west','east','south','north'};
-    out_var = {'u','v','rho'};
-    
-    pt_dim = {{'eta_rho' S.Mm+2 's_rho' S.N 'bry_time'}; ...
-              {'eta_rho' S.Mm+2 's_rho' S.N 'bry_time'}; ...
-              { 'xi_rho' S.Lm+2 's_rho' S.N 'bry_time'}; ...
-              { 'xi_rho' S.Lm+2 's_rho' S.N 'bry_time'}};
+    if S.NPT > 0
+        bry = {'west','east','south','north'};
+        out_var = {'u','v','rho'};
+
+        pt_dim = {{'eta_rho' S.Mm+2 's_rho' S.N 'dye_time'}; ...
+                  {'eta_rho' S.Mm+2 's_rho' S.N 'dye_time'}; ...
+                  { 'xi_rho' S.Lm+2 's_rho' S.N 'dye_time'}; ...
+                  { 'xi_rho' S.Lm+2 's_rho' S.N 'dye_time'}};
+              
+        nccreate(S.ncname,'dye_time','dimensions',{'dye_time' 1});
+    end
     
     if ~S.spherical
         ax = {'x','y'};
@@ -67,11 +71,9 @@ function [] = dc_roms_create_bry_file(S)
                 nccreate(S.ncname,varname,'dimensions',pt_dim{ii});
                 
                 % maybe add more attributes
+                ncwriteatt(S.ncname,varname,'time','dye_time');
+                ncwriteatt(S.ncname,varname,'units','kilogram meter-3');
             end
         end                
     end   
-    
-    if S.NPT > 0
-        nccreate(S.ncname,'dye_time');        
-    end
     
