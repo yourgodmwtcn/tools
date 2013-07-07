@@ -60,7 +60,7 @@ if ~exist('isDir','var'), isDir = 0; end
 
 % if folder, loop through all .nc files
 if isdir(fname)
-    files = ls([fname '\*his*.nc']);
+    files = roms_find_file(fname,'his');
     isDir = 1;
     for ii=1:size(files,1)
         h_plot = mod_movie([fname '\' files(ii,:)],varname,tindices,volume,axis,index,commands,isDir);
@@ -75,7 +75,8 @@ if isdir(fname)
                     % reseting level list removes flat shading
                     newc = ['set(handles.h_plot, ''LevelList'',['  ...
                                 num2str(levels) ']); shading flat;'];
-                catch ME
+                catch ME % not a contour plot
+                    newc = '';
                 end
             else
                 newc = '';

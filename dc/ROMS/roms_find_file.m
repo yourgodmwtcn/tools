@@ -8,6 +8,15 @@ function [fname] = roms_find_file(dir,type)
     if isempty(strfind(dir,'config')), fname = [dir '/config/']; end
     in = ls([fname '/*.in']);
     
+    if size(in,1) > 1
+        for ii=1:size(in,1)
+            if ii > size(in,1), break; end
+            if strcmpi(in(ii,:),'floats.in') || strcmpi(in(ii,:),'stations.in')
+               in(ii,:) = []; 
+            end
+        end
+    end
+    
     % files from *.in 
     if strcmpi(type,'ini') || strcmpi(type,'bry') ||  strcmpi(type,'grd')
         fname = ['/config/' grep_in([fname in],type)];

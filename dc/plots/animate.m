@@ -119,6 +119,8 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
     if isvector(xax), xax = repmat(xax ,[1 s(2)]); end
     if isvector(yax), yax = repmat(yax',[s(1) 1]); end
     
+    mm_instance = [];
+    
     %% processing
   
     if stop == 1, 
@@ -169,6 +171,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
     if flags(7) || flags(8), set(gcf,'Position',[0 0 1600 900]); flags(8)=1; end % maximize for recording + activate topresent
 
     set(gcf,'Renderer','zbuffer'); % performance!
+    firstplot = 1;
     i=0;
     while i<=stop-1
 
@@ -208,56 +211,52 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
         if i < 1, i = 1; end
         
         %% Plot
-        hold off; % just in case
+        if firstplot, hold off; end
         switch plotflag
             case 2
-                try
-                    handles.h_plot = pcolorcen(xax,yax,plotdata(:,:,i));
-                catch ME
+                if firstplot
+                    %try
+                %    handles.h_plot = pcolorcen(xax,yax,plotdata(:,:,i));
+                %catch ME
                     handles.h_plot = pcolor(xax,yax,plotdata(:,:,i));
+                    shading interp;
+                %end
+                else
+                    set(handles.h_plot,'CData',plotdata(:,:,i));
+                    shading interp;
                 end
             case 3
-                try
-                    handles.h_plot = imagescnan(xax,yax,plotdata(:,:,i));
-                    set(gca,'yDir','normal');
-                catch ME
-                    handles.h_plot = imagesc(xax,yax,plotdata(:,:,i));
-                    set(gca,'yDir','normal');
+                if firstplot
+                    try
+                        handles.h_plot = imagescnan(xax,yax,plotdata(:,:,i));
+                        set(gca,'yDir','normal');
+                    catch ME
+                        handles.h_plot = imagesc(xax,yax,plotdata(:,:,i));
+                        set(gca,'yDir','normal');
+                    end
+                else
+                    set(handles.h_plot,'CData',plotdata(:,:,i));
                 end
+                    
             case 4
-                set(gcf,'Renderer','painters');
-                clf;
-                [C,handles.h_plot] = contour(xax,yax,plotdata(:,:,i),linspace(datamin,datamax,30),'Color','k');
-                format short
-                clabel(C,handles.h_plot,'FontSize',9);
+                if firstplot
+                    set(gcf,'Renderer','painters');
+                    clf;
+                    [C,handles.h_plot] = contour(xax,yax,plotdata(:,:,i),linspace(datamin,datamax,25),'Color','k');
+                    format short
+                    clabel(C,handles.h_plot,'FontSize',9);
+                else
+                    set(handles.h_plot,'ZData',plotdata(:,:,i));
+                end
             otherwise
-                [~,handles.h_plot] = contourf(xax,yax,plotdata(:,:,i),linspace(datamin,datamax,25)); 
-        end
-        shading flat;
-        if i == 1
-            colormap(fancy_map);
-            
-            % maximize window
-            jframe = get(gcf,'JavaFrame');
-            jframe.setMaximized(true);
+                if firstplot
+                    [~,handles.h_plot] = contourf(xax,yax,plotdata(:,:,i),linspace(datamin,datamax,25)); 
+                else
+                    set(handles.h_plot,'ZData',plotdata(:,:,i));
+                    shading flat
+                end
         end
         
-        % fix display aspect ratio for lat,lon plots
-        if labels.dar
-            Z_dar; 
-        else
-            % square axis if appropriate
-            if abs((max(xax(:))-min(xax(:))) - (max(yax(:))-min(yax(:)))) < 1
-                axis square;
-            else
-               if flags(9)
-                   axis image;
-               end
-            end
-        end
-        
-        % labels
-        if labels.revz, revz; end;
         if isempty(labels.time)
             addtitle = [' t instant = ' num2str(labels.t0+i+(labels.dt-1)*(i-1)+100*labels.stride)];
         else
@@ -267,55 +266,86 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
                 addtitle = [addtitle ' (instant = ' num2str(labels.t0+i+(labels.dt-1)*(i-1)+100*labels.stride) ')'];
             end
         end
-        if plotflag ~= 4, handles.h_cbar = colorbar;  end
         
-        % add labels
-        handles.h_title = title([labels.title addtitle],'FontSize',fontSize);
-        xlabel(labels.xax,'FontSize',fontSize);
-        ylabel(labels.yax,'FontSize',fontSize);
+        if firstplot
+            colormap(fancy_map);
+            
+            % maximize window
+            jframe = get(gcf,'JavaFrame');
+            jframe.setMaximized(true);
         
-        % colorbar
-        if plotflag ~=4 
-            if ~flags(1)
-                if labels.stride > 0
-                    caxis(clim);
+        
+            % fix display aspect ratio for lat,lon plots
+            if labels.dar
+                Z_dar; 
+            else
+                % square axis if appropriate
+                if abs((max(xax(:))-min(xax(:))) - (max(yax(:))-min(yax(:)))) < 1
+                    axis square;
                 else
-                    if datamax ~= datamin,caxis([datamin datamax]); end
+                   if flags(9)
+                       axis image;
+                   end
                 end
             end
-        end
-        % center colorbar
-        if flags(7) || flags(8)
-            [cmin,cmax] = caxis;
-            if cmax*cmin < 0 % make colorbar symmetric about zero
-                if cmax > abs(cmin)
-                    cmin = -abs(cmax);
-                else
-                    cmax = abs(cmin);
+        
+            % labels
+            if labels.revz, revz; end;
+        
+            % add labels
+            handles.h_title = title([labels.title addtitle],'FontSize',fontSize);
+            xlabel(labels.xax,'FontSize',fontSize);
+            ylabel(labels.yax,'FontSize',fontSize);
+        
+            % colorbar
+            if plotflag ~= 4, handles.h_cbar = colorbar;  end
+            if plotflag ~=4 
+                if ~flags(1)
+                    if labels.stride > 0
+                        caxis(clim);
+                    else
+                        if datamax ~= datamin,caxis([datamin datamax]); end
+                    end
                 end
             end
-            caxis([cmin cmax]);
+            % center colorbar
+            if flags(7) || flags(8)
+                [cmin,cmax] = caxis;
+                if cmax*cmin < 0 % make colorbar symmetric about zero
+                    if cmax > abs(cmin)
+                        cmin = -abs(cmax);
+                    else
+                        cmax = abs(cmin);
+                    end
+                end
+                caxis([cmin cmax]);
+            end
+            
+            beautify;
+        
+        else
+            set(handles.h_title,'String',[labels.title addtitle]);
+            % video making
+            if flags(7)  
+                if isempty(labels.mm_instance)
+                    labels.mm_instance = mm_setup;
+                    labels.mm_instance.pixelSize = [1600 900];
+                    labels.mm_instance.outputFile = 'mm_output.avi';
+                    labels.mm_instance.ffmpegArgs = '-q:v 1 -g 1';
+                    labels.mm_instance.InputFrameRate = 3;
+                    labels.mm_instance.frameRate = 3;
+                end
+                set(gcf,'Renderer','zbuffer');
+                mm_addFrame(labels.mm_instance,gcf);
+                mm_instance = labels.mm_instance;             
+            else
+                mm_instance = [];
+            end
         end
         
         %beautify;
         eval(commands); % execute custom commands
         
-        % video making
-        if flags(7)  
-            beautify
-            if isempty(labels.mm_instance)
-                labels.mm_instance = mm_setup;
-                labels.mm_instance.pixelSize = [1600 900];
-                labels.mm_instance.outputFile = 'mm_output.avi';
-                labels.mm_instance.ffmpegArgs = '-q:v 1 -g 1';
-                labels.mm_instance.InputFrameRate = 3;
-                labels.mm_instance.frameRate = 3;
-            end
-            set(gcf,'Renderer','zbuffer');
-            mm_addFrame(labels.mm_instance,gcf);
-            mm_instance = labels.mm_instance;             
-        else
-            mm_instance = [];
-        end
-        
+        firstplot = 0;
+       
     end

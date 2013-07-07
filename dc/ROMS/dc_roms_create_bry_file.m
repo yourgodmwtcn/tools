@@ -21,10 +21,9 @@ function [] = dc_roms_create_bry_file(S)
         end
     end
     
+    bry = {'west','east','south','north'};
+    out_var = {'u','v','rho'};
     if S.NPT > 0
-        bry = {'west','east','south','north'};
-        out_var = {'u','v','rho'};
-
         pt_dim = {{'eta_rho' S.Mm+2 's_rho' S.N 'dye_time'}; ...
                   {'eta_rho' S.Mm+2 's_rho' S.N 'dye_time'}; ...
                   { 'xi_rho' S.Lm+2 's_rho' S.N 'dye_time'}; ...

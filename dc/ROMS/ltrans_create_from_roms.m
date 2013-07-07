@@ -1,5 +1,7 @@
 % creates LTRANS initial location csv file based on ROMS float output
-%   [] = ltrans_create(fname,flt,rgrid)
+%   [] = ltrans_create_from_roms(fname,flt,rgrid)
+% fname = output file name; flt = ROMS float file, rgrid
+
 function [] = ltrans_create_from_roms(fname,flt,rgrid)
 
     fid = fopen(fname,'w');
