@@ -3,7 +3,7 @@
 
 function [params] = read_params_from_ini(fname)
 
-    if isdir(fname)
+    if isempty(strfind(fname,'_ini.nc'))
         fname1 = roms_find_file(fname,'ini');
         fname = [fname fname1]; % there can only be one hit
     end

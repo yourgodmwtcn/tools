@@ -111,9 +111,13 @@ if ~exist(cptpath, 'dir')
     error('You have moved the cptfiles directory.  Please modify the cptpath variable in this code to point to the directory where your.cpt files are stored');
 end
 
+if nargin < 1
+    error('You must provide a colormap name');
+end
+
 % Check for 'showall' option first
 
-if nargin == 1 & strcmp(varargin{1}, 'showall')
+if nargin == 1 && strcmp(varargin{1}, 'showall')
     plotcmaps(cptpath);
     return;
 end
@@ -310,7 +314,8 @@ if isnan(ncol)
     
     space = diff(endpoints);
     space = unique(space);
-    space = roundn(space, -3); % To avoid floating point issues when converting to integers
+%     space = roundn(space, -3); % To avoid floating point issues when converting to integers
+    space = round(space*1e3)/1e3;
     
     nspace = length(space);
     if ~isscalar(space)
@@ -397,6 +402,13 @@ switch colmodel
     case 'cmyk'
         error('CMYK color conversion not yet supported');
 end
+
+% Rouding issues: occasionally, the above calculations lead to values just
+% above 1, which colormap doesn't like at all.  This is a bit kludgy, but
+% should solve those issues
+
+isnear1 = cmap > 1 & (abs(cmap-1) < 2*eps);
+cmap(isnear1) = 1;
 
 %------------------------------
 % Subfunction: Display all

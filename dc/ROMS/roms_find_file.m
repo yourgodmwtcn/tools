@@ -4,6 +4,15 @@
 % directory
 
 function [fname] = roms_find_file(dir,type)
+
+    if ~isdir(dir)
+        if strcmpi(type,'his') || strcmpi(type,'avg')
+            fname = dir;
+        else
+            index = strfind(dir,'/');
+            dir = dir(1:index(end));
+        end
+    end
     
     if isempty(strfind(dir,'config')), fname = [dir '/config/']; end
     in = ls([fname '/*.in']);

@@ -1,12 +1,20 @@
 function [out] = roms_read_data(folder,varname)
     
     % get all history files
-    files = roms_find_file(folder,'his');
+    if isdir(folder)
+        files = roms_find_file(folder,'his');
+    else
+        files = folder;
+    end
         
     k = 1;
     
     for ii=1:size(files,1)
-        fname = [folder '\' files(ii,:)];
+        if isdir(folder)
+            fname = [folder '\' files(ii,:)];
+        else
+            fname = folder;
+        end
         
         temp = double(ncread(fname,varname));
         switch ndims(temp)
