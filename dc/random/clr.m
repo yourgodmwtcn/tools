@@ -1,3 +1,3 @@
 close all
-clear all
+clear variables
 clc

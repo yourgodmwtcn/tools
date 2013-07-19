@@ -1,9 +1,9 @@
 % plot 'var1' at appropriate depths 'z_series' for x_series
-%       [] = disp_plot(var1,x_series,z_series
+%       [] = disp_plot(var1,x_series,z_series)
 
 function [] = disp_plot(var1,x_series,z_series)
     
-	if ndims(x_series)~=2 | ndims(z_series)~=2
+	if ndims(x_series)~=2 || ndims(z_series)~=2
         fprintf(' \n Error in either X/Z series. ');
         return;
 	end

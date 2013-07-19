@@ -68,7 +68,7 @@ function [] = beautify(fontSizes)
      % find contours / images and then set box on + renderer = zbuffer
      if ~isempty(findall(gcf,'type','contourgroup','visible','on')) || ...
                ~isempty(findall(gcf,'type','image','visible','on'))
-         set(hFig,'renderer','zbuffer');
+         %set(hFig,'renderer','zbuffer');
          set(hAxis,'box','on');
      end
      

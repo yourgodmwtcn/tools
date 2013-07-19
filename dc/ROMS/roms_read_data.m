@@ -1,4 +1,4 @@
-function [out] = roms_read_data(folder,varname)
+function [out] = roms_read_data(folder,varname,start,count,stride)
     
     % get all history files
     if isdir(folder)
@@ -15,8 +15,15 @@ function [out] = roms_read_data(folder,varname)
         else
             fname = folder;
         end
-        
-        temp = double(ncread(fname,varname));
+        if ii == 1
+            vinfo  = ncinfo(fname,varname);
+            dim = length(vinfo.Size);
+            
+            if ~exist('start','var'), start = ones([1 dim]); end
+            if ~exist('count','var'), count = inf([1 dim]); end
+            if ~exist('stride','var'), stride = ones([1 dim]); end
+        end
+        temp = squeeze(double(ncread(fname,varname,start,count,stride)));
         switch ndims(temp)
             case 2
                 out(k:k+length(temp)-1) = temp;
