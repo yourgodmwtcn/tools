@@ -14,7 +14,11 @@ function [A] = avg1(X,index)
 %%
      dim = length(size(X));
      if size(X,index) == 1
-         A = X; 
+         if isvector(X)
+             A = avg1(X',index);
+         else
+            A = X; 
+         end
      else
          cnv = ones(1,dim);
          cnv(index) = 2;

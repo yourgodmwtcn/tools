@@ -9,7 +9,7 @@ function [] = write_params_to_ini(ininame, param, varname)
         names = fieldnames(param);
         for i=1:length(names)
             field = param.(names{i});
-            if numel(field) < 2 || ischar(field)
+            if ~isempty(field) && (numel(field) < 2 || ischar(field))
                 write_params_to_ini(ininame,field,[inputname(2) '.' names{i}]);
             end
         end
@@ -19,7 +19,7 @@ function [] = write_params_to_ini(ininame, param, varname)
     % create & write variable in netcdf file
     try
         if ~ischar(param)
-            nccreate(ininame,varname,'Datatype',class(param));%,'Dimensions',{size(param)},'Datatype',class(param));
+            nccreate(ininame,varname,'Datatype','double');%,'Dimensions',{size(param)},'Datatype',class(param));
         else
             nccreate(ininame,varname,'Datatype',class(param),'Dimensions', ...
                      {[varname '_1'] 1 [varname '_2'] length(param)});
@@ -27,4 +27,6 @@ function [] = write_params_to_ini(ininame, param, varname)
     catch ME
     end
     
-    ncwrite(ininame,varname,param)
+    if islogical(param), param = double(param); end
+    
+    ncwrite(ininame,varname,param);

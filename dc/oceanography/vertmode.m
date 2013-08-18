@@ -1,6 +1,6 @@
 function [Vmode, Hmode, c] = vertmode(N2, Z, n, make_plot)
 	
-	% function [Vmode, Hmode] = vertmode(N2, Z, n)
+	% function [Vmode, Hmode, c] = vertmode(N2, Z, n, make_plot)
 	% Takes input N2 -> Buoyancy frequency squared (@ mid pts of Z)
 	%              Z -> Vertical co-ordinate
 	%              n -> No. of modes to isolate
@@ -13,6 +13,7 @@ function [Vmode, Hmode, c] = vertmode(N2, Z, n, make_plot)
     if ~exist('make_plot','var'), make_plot = 1; end
     
 	lz = length(Z);
+    if size(Z,1) == 1, Z = Z'; end
     
     if n > (lz-1)
         fprintf('\n n too big. Reducing to (length(Z) - 1)');
@@ -58,8 +59,10 @@ function [Vmode, Hmode, c] = vertmode(N2, Z, n, make_plot)
     %Vmode = Vmode./repmat(max(abs(Vmode)),length(Vmode),1);
     
     % Normalize by energy (following Wunsch(1999)
-    norm = sqrt(sum(avg1(Hmode).^2.*repmat(diff(Zmid),1,n)));
+    % why am I doing this using Hmode norm?
+    norm = sqrt(sum(avg1(Vmode).^2.*repmat(diff(Zmid),1,n)));
     Vnorm = Vmode./repmat(norm,lz-1,1);
+    norm = sqrt(sum(avg1(Hmode).^2.*repmat(diff(Zmid),1,n)));
     Hnorm = Hmode./repmat(norm,lz-1,1);
 
     % check normalization
@@ -77,29 +80,33 @@ function [Vmode, Hmode, c] = vertmode(N2, Z, n, make_plot)
     % Plot first n modes
     if make_plot
         figure;
-        subplot(121)
+        ax(1) = subplot(131);
+        plot(N2,Zmid);
+        title('N^2');
+        ylabel('Z (m)');
+        if Z > 0, set(gca,'ydir','reverse'); end
+        
+        ax(2) = subplot(132);        
         plot(Vmode,Zmid);
-        set(gca,'ydir','reverse');
         hold on;
-        %xlim([-1.5 1.5]);
-        %ylim([0 600]);
-        plot([0 0],ylim, 'k-');
-        plot(xlim,[4000 4000], 'k--');
+        linex(0);
         ylabel('Z (m)');
         title('Vertical Structure of Vertical Velocity');
         legend(num2str((1:n)'));
+        if Z > 0, set(gca,'ydir','reverse'); end
         beautify;
 
-        subplot(122)
+        ax(3) = subplot(133);
         plot(Hmode,Zmid);
-        %xlim([-1.5 1.5]);
-        %ylim([0 600]);
         set(gca,'ydir','reverse');
         hold on;
-        plot([0 0],ylim, 'k-');
+        linex(0);
         plot(xlim,[4000 4000], 'k--');
         ylabel('Z (m)');
         title('Vertical Structure of Horizontal Velocity');
         legend(num2str([1:n]'));
+        linkaxes(ax,'y');
+        
+        if Z > 0, set(gca,'ydir','reverse'); end
         beautify;
     end
