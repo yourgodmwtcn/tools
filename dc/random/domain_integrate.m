@@ -9,6 +9,10 @@ function [out] = domain_integrate(in,xax,yax,zax)
         return
     end
     
+    if isvector(yax) && size(yax,1) ~= 1
+        yax = yax';
+    end
+    
     int_z = nan([size(zax,1) size(yax,2) size(in,4)]);
     for i=1:size(zax,1)
         for j=1:size(zax,2)
