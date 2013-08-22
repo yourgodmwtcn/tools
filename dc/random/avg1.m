@@ -12,6 +12,10 @@ function [A] = avg1(X,index)
 %     A = (X(1:end-1,:) + X(2:end,:))/2;
 %     if m, A = A'; end
 %%
+     if isscalar(X)
+         A = X;
+         return;
+     end
      dim = length(size(X));
      if size(X,index) == 1
          if isvector(X)
