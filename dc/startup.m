@@ -42,8 +42,8 @@ set(0,'DefaultLineLineWidth',1.5);
 if ~strcmpi(computer,'GLNXA64')
    cd('E:\Work\eddyshelf\');
 else
-   mach = evalc('system(''hostname'')');
-   if strcmpi(mach,'poison')
+   mach = evalc('system hostname');
+   if strfind(mach,'poison')
      cd('/home/poison/deepak/ROMS/runs/eddyshelf/scripts/');
    else
      cd('/media/data/Work/eddyshelf/');
