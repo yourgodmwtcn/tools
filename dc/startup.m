@@ -39,5 +39,14 @@ set(0,'DefaultAxesLineWidth',1.5)
 set(0,'DefaultLineLineWidth',1.5);
 
 %% change to current working dir
-cd('E:\Work\eddyshelf\');
+if ~strcmpi(computer,'GLNXA64')
+   cd('E:\Work\eddyshelf\');
+else
+   mach = evalc('system(''hostname'')');
+   if strcmpi(mach,'poison')
+     cd('/home/poison/deepak/ROMS/runs/eddyshelf/scripts/');
+   else
+     cd('/media/data/Work/eddyshelf/');
+   end
+end
 
