@@ -10,7 +10,7 @@ function [] = write_params_to_ini(ininame, param, varname)
         for i=1:length(names)
             field = param.(names{i});
             if ~isempty(field) && (numel(field) < 2 || ischar(field))
-                write_params_to_ini(ininame,field,[inputname(2) '.' names{i}]);
+                write_params_to_ini(ininame,field,[varname '.' names{i}]);
             end
         end
         return
