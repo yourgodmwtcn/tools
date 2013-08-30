@@ -9,9 +9,9 @@ function [out] = roms_read_data(folder,varname,start,count,stride)
         
     k = 1;
     
-    for ii=1:size(files,1)
+    for ii=1:length(files)
         if isdir(folder)
-            fname = [folder '\' files(ii,:)];
+            fname = [folder '/' char(files(ii))];
         else
             fname = folder;
         end
@@ -24,6 +24,11 @@ function [out] = roms_read_data(folder,varname,start,count,stride)
             if ~exist('stride','var'), stride = ones([1 dim]); end
         end
         temp = squeeze(double(ncread(fname,varname,start,count,stride)));
+        if count(end) == 1
+            out = temp;
+            return;
+        end
+        
         switch ndims(temp)
             case 2
                 out(k:k+length(temp)-1) = temp;
