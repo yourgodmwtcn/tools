@@ -10,7 +10,11 @@ function [] = beautify(fontSizes)
     
     if ~exist('fontSizes','var'), fontSizes = [12 12 14]; end
     
-    font_name = 'TeXGyrePagella'; %'AvantGarde'
+    if strcmpi(computer,'GLNXA64')
+        font_name = 'Helvetica';
+    else
+        font_name = 'TeXGyrePagella'; %'AvantGarde'
+    end
     font_name_axis = font_name;
 
     % Get required handles for current figure

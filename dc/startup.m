@@ -17,12 +17,18 @@ set(0,'DefaultFigureColormap',flipud(cbrewer('div', 'RdYlGn', 32)));
 set(0,'DefaultFigureColor','w')
 set(0,'DefaultFigureRenderer','zbuffer')
 set(0,'DefaultFigurePaperPositionMode', 'auto');
-set(0,'DefaultTextFontName', 'TeXGyrePagella');
+if strcmpi(computer,'GLNXA64')
+        font_name = 'Helvetica';
+    else
+        font_name = 'TeXGyrePagella'; %'AvantGarde'
+end
+    
+set(0,'DefaultTextFontName', font_name);
 set(0,'DefaultTextColor','k')
 set(0,'DefaultTextFontSize',14)
 
 % axes
-set(0,'DefaultAxesFontName','TeXGyrePagella')
+set(0,'DefaultAxesFontName',font_name);
 set(0,'DefaultAxesFontWeight','normal')
 set(0,'DefaultAxesTickLength'  , [.01 .01]);
 set(0,'DefaultAxesLineWidth'  , 1);
