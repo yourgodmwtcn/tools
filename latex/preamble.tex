@@ -25,7 +25,6 @@
 
 \usepackage{ulem}
 
-\usepackage[envlayout=color]{fixme}
 \usepackage{etoolbox}
 \usepackage{letltxmacro}  % for new sqrt
 \usepackage{parskip}
@@ -40,7 +39,10 @@
 \usepackage[centering,text={16cm,22cm},dvips]{geometry}
 %\usepackage{fancyhdr}
 \usepackage{xfrac}
-\usepackage{undertilde}
+% can't get undertilde to work on TeXLive
+%\usepackage{undertilde}
+% fixme introduces error
+%\usepackage[envlayout=color]{fixme}
 \usepackage{bigints}
 \usepackage{mathtools} % fixed version of amsmath
 \usepackage[warning]{onlyamsmath}
@@ -51,8 +53,8 @@
 	\usepackage{fontspec}
 	\usepackage{unicode-math}
 	
-	\setromanfont[Ligatures=TeX]{TeXGyrePagella}
-	\setmathfont[math-style=ISO,bold-style=ISO,vargreek-shape=TeX]{TGPagellaMath}
+	\setromanfont[Ligatures=TeX]{TeX Gyre Pagella}
+	\setmathfont[math-style=ISO,bold-style=ISO,vargreek-shape=TeX]{TG Pagella Math}
 \fi
 
 \usepackage[tight-spacing=true]{siunitx} % Messes up tables
@@ -157,7 +159,7 @@
 
 \def\preambleloaded{Precompiled preamble loaded.}
 
-\endofdump
+\csname endofdump\endcsname
 
 % Example: \dd \psi x + \pp[2]y x  -> dpsi/dx + d2y/dx2
 

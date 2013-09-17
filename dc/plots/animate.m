@@ -188,7 +188,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
             if button == 32, spaceplay = 1; end % resumes when paused
             if button == 27, break; end % exit when Esc is pressed.
         else
-            pause(0.0001);%(pausetime);
+            pause(0.01);%(pausetime);
         end  
         
         ckey = get(gcf,'currentkey');% end
