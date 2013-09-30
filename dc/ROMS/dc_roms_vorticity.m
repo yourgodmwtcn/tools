@@ -4,10 +4,10 @@ function [] = dc_roms_vorticity(fname,tindices,outname,isDir)
 if ~exist('isDir','var'), isDir = 0; end
 
 if isdir(fname)
-    files = ls([fname '\*.nc']);
+    files = ls([fname '/*.nc']);
     isDir = 1;
     for ii=1:length(files)
-        dc_roms_vorticity([fname '\' files(ii,:)],tindices,outname,ii);
+        dc_roms_vorticity([fname '/' files(ii,:)],tindices,outname,ii);
     end
 end
     

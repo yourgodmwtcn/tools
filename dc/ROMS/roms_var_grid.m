@@ -13,8 +13,9 @@ function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname,tindex)
     elseif strcmp(varname,'vor')
         pos = 'q';
     else
+        
         grid = roms_get_grid(fname,fname,tindex,1);
-
+    
         % from John Wilkin's roms_islice.m
         % determine where on the C-grid these values lie 
         varcoords = nc_attget(fname,varname,'coordinates');
@@ -123,3 +124,4 @@ function [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname,tindex)
     yunits = strrep(yunits,'_',' '); 
     
     warning on;
+    
