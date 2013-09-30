@@ -75,7 +75,7 @@ else
   for v = varlist
     vname = char(v);
     try
-      tmp = ncread(grd_file,vname);
+      tmp = ncread(grd_file,vname)';
       grd.(vname) = tmp; % grd = setfield(grd,vname,tmp);
     catch
       warning('RomsGetGrid:NoVariable',['Variable not found: ' vname])
@@ -84,7 +84,7 @@ else
       end
       if strcmp(vname,'h')
         warning('Using initial bath for h')
-        grd.(vname) = ncread(grd_file,'bath',[1 1 1],[1 -1 -1]);
+        grd.(vname) = ncread(grd_file,'bath',[1 1 1],[1 -1 -1])';
       end
     end
   end
@@ -94,7 +94,7 @@ else
     for v = varlist
       vname = char(v);
       try
-        tmp = ncread(grd_file,vname);
+        tmp = ncread(grd_file,vname)';
         grd.(vname) = tmp; %replaces grd = setfield(grd,vname,tmp);
       catch
         warning('RomsGetGrid:NoVariable',['Variable not found: ' vname])
@@ -108,7 +108,7 @@ else
   for v = varlist
     vname = char(v);
     try
-      tmp = ncread(grd_file,vname);
+      tmp = ncread(grd_file,vname)';
       grd.(vname) = tmp; %replaces grd = setfield(grd,vname,tmp);     
     catch
 %      warning('RomsGetGrid:NoVariable',[vname ' not found. Substituting x/y coords instead'])
@@ -140,11 +140,11 @@ else
   % If the grid file includes coastline data, such as a file being used
   % with the Rutgers version of editmask.m, load this too
   try
-    grd.lon_coast = ncread(grd_file,'lon_coast');
+    grd.lon_coast = ncread(grd_file,'lon_coast')';
   catch
   end
   try
-    grd.lat_coast = ncread(grd_file,'lat_coast');
+    grd.lat_coast = ncread(grd_file,'lat_coast')';
   catch
   end
   
@@ -226,9 +226,9 @@ if nargin > 1
           warning([ 'Cannot process zeta from file(2) in the case that ' ...
             ' scoord parameters are input as a vector'])
           disp(['Reading zeta from ' grd_file ' for record ' int2str(tindex)])
-          zeta = ncread(grd_file,'zeta',[tindex-1 0 0],[1 -1 -1]);
+          zeta = ncread(grd_file,'zeta',[tindex-1 1 1],[1 -1 -1])';
         else
-          zeta = ncread(scoord,'zeta',[tindex-1 0 0],[1 -1 -1]);
+          zeta = ncread(scoord,'zeta',[tindex-1 1 1],[1 -1 -1])';
         end
         if isempty(zeta)
           warning([ 'zeta not found in ' scoord '. Assuming zeta=0.'])
