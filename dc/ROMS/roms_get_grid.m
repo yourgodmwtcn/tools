@@ -1,4 +1,4 @@
-function grd = roms_get_grid(grd_file,scoord,tindex,calc_zuv)
+function grd = roms_get_grid(grd_file,scoord,tindex,~)
 % $Id: roms_get_grid.m 409 2012-02-16 15:51:31Z wilkin $
 % grd = roms_get_grid(grd_file)
 % grd = roms_get_grid(grd_file,scoord);
@@ -53,7 +53,7 @@ function grd = roms_get_grid(grd_file,scoord,tindex,calc_zuv)
 % available using svn from https://www.myroms.org/svn/src/matlab/utility
 % Made do calc_zuv the default
 
-if exist('stretching')~=2
+if exist('stretching','file')~=2
   disp(['You need to add stretching.m and set_depth.m to your matlab ' ...
         'path'])
   error(['from e.g.  https://www.myroms.org/svn/src/matlab/' ...
@@ -124,8 +124,7 @@ else
   
   if isfield(grd,'mask_rho')
     grd.mask_rho_nan = grd.mask_rho;
-    land = find(grd.mask_rho_nan==0);
-    grd.mask_rho_nan(land) = NaN;
+    grd.mask_rho_nan(grd.mask_rho_nan == 0) = NaN;
   else
     % there is no mask information in the file so create unit masks in case
     % code tries to use them
@@ -155,7 +154,7 @@ if nargin > 1
   h = grd.h;
   % hmin=min(min(h));
   % hmax=max(max(h));
-  [Mp Lp]=size(h);
+  [Mp,Lp]=size(h);
   L=Lp-1;
   M=Mp-1;
   

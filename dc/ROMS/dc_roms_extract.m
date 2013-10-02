@@ -1,6 +1,6 @@
 % Given a cell 'volume' with locations, figures out indices on the axes and
 % returns correct axes for the section. 
-%           [xax,yax,zax,vol] = roms_extract(fname,varname,volume)
+%           [xax,yax,zax,vol] = roms_extract(fname/grd,varname,volume)
 %   volume is cell array of form
 %           {'x' 'location1' 'location2';
 %            'y' 'location1' 'location2';
