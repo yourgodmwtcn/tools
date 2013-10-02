@@ -226,9 +226,9 @@ if nargin > 1
           warning([ 'Cannot process zeta from file(2) in the case that ' ...
             ' scoord parameters are input as a vector'])
           disp(['Reading zeta from ' grd_file ' for record ' int2str(tindex)])
-          zeta = ncread(grd_file,'zeta',[tindex-1 1 1],[1 -1 -1])';
+          zeta = ncread(grd_file,'zeta',[1 1 tindex],[Inf Inf 1])';
         else
-          zeta = ncread(scoord,'zeta',[tindex-1 1 1],[1 -1 -1])';
+          zeta = ncread(scoord,'zeta',[1 1 tindex],[Inf Inf 1])';
         end
         if isempty(zeta)
           warning([ 'zeta not found in ' scoord '. Assuming zeta=0.'])
@@ -308,6 +308,8 @@ if nargin > 1
   grd.Cs_r = Cs_r;
   grd.s_w = s_w;
   grd.s_rho = s_rho;
+  
+  grd.Hz = diff(z_w,1,3); 
   
   try
       grd.ocean_time = ncread(grd_file,'ocean_time');
