@@ -285,6 +285,8 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
                 else
                    if flags(9)
                        axis image;
+                       xlim([min(xax(:)) max(xax(:))]);
+                       ylim([min(yax(:)) max(yax(:))]);
                    end
                 end
             end

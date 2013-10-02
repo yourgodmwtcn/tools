@@ -118,8 +118,9 @@ else
         varname(1) = lower(varname(1));
     end
     % set up grid for first time instant
-    [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume,1);
-    [~,~,~,time,xunits,yunits] = roms_var_grid(fname,varname);
+    grd = roms_get_grid(fname,fname,0,1);
+    [xax,yax,zax,vol] = dc_roms_extract(grd,varname,volume,1);
+    [~,~,~,time,xunits,yunits] = dc_roms_var_grid(grd,varname);
     time = time./3600/24;
 end
 
@@ -257,9 +258,16 @@ for i=0:iend-1
         dv = double(squeeze(ncread(fname,varname,read_start,read_count,stride)));  
     else
         warning off
+        read_start(3) = 1;
+        read_count(3) = Inf;
         for mmm = 1:read_count(4)
-            dv(:,:,mmm) = roms_zslice(fname,varname,read_start(4)+mmm-1,index)';
+            disp(['reading & interpolating timestep ' num2str(mmm) '/' num2str(read_count(4))]);
+            data = squeeze(double(ncread(fname,varname, ...
+                            [read_start(1:3) read_start(4)+mmm-1], ...
+                            [read_count(1:3) 1],stride)));
+            [dv(:,:,mmm),~,~] = roms_zslice_var(permute(data,[3 2 1]),NaN,index,grd);
         end
+        dv = permute(dv,[2 1 3]);
         warning on
     end
     
@@ -302,8 +310,8 @@ for i=0:iend-1
             plotx = squeeze(plotx(:,index,:,:));
             ploty = squeeze(ploty(:,index,:,:));    
         case 3
-            plotx = squeeze(plotx(:,:,index,:));
-            ploty = squeeze(ploty(:,:,index,:));
+            plotx = squeeze(plotx(:,:,1,:));
+            ploty = squeeze(ploty(:,:,1,:));
     end
 
     % send to animate
