@@ -8,7 +8,7 @@ function [] = roms_info(fname,plot)
     %fname = find_file(fname);
     if isdir(fname)
         fnames = roms_find_file(fname,'his');
-        fname = [fname '/' fnames(1,:)];
+        fname = [fname '/' char(fnames(:,1))];
     end
     if ~exist('plot','var')
         plot = 0;

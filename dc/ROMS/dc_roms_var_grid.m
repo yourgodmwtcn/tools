@@ -14,7 +14,12 @@ function [xax,yax,zax,tax,xunits,yunits] = dc_roms_var_grid(fname,varname,tindex
     elseif strcmp(varname,'vor')
         pos = 'q';
     else
-        grid = roms_get_grid(fname,fname,tindex,1);
+        if isstruct(fname)
+            grd = fname;
+            fname = grd.grd_file;
+        else
+            grd = roms_get_grid(fname,fname,tindex,1);
+        end
 
         % from John Wilkin's roms_islice.m
         % determine where on the C-grid these values lie 
@@ -30,15 +35,16 @@ function [xax,yax,zax,tax,xunits,yunits] = dc_roms_var_grid(fname,varname,tindex
         else
           error('Unable to parse the coordinates variables to know where the data fall on C-grid')
         end
+        
+    N = size(grd.z_r,1);
     end
     
-    N = size(grid.z_r,1);
 
     switch pos
         case 'u'
-            xax = repmat(grid.lon_u',[1 1 N]);
-            yax = repmat(grid.lat_u',[1 1 N]);
-            zax = permute(grid.z_u,[3 2 1]);
+            xax = repmat(grd.lon_u',[1 1 N]);
+            yax = repmat(grd.lat_u',[1 1 N]);
+            zax = permute(grd.z_u,[3 2 1]);
             tax = ncread(fname,'ocean_time');
             
             try
@@ -50,9 +56,9 @@ function [xax,yax,zax,tax,xunits,yunits] = dc_roms_var_grid(fname,varname,tindex
             end
             
         case 'v'
-            xax = repmat(grid.lon_v',[1 1 N]);
-            yax = repmat(grid.lat_v',[1 1 N]);
-            zax = permute(grid.z_v,[3 2 1]);
+            xax = repmat(grd.lon_v',[1 1 N]);
+            yax = repmat(grd.lat_v',[1 1 N]);
+            zax = permute(grd.z_v,[3 2 1]);
             tax = ncread(fname,'ocean_time');
             
             try
@@ -64,9 +70,9 @@ function [xax,yax,zax,tax,xunits,yunits] = dc_roms_var_grid(fname,varname,tindex
             end                
             
         case 'w'
-            xax = repmat(grid.lon_rho',[1 1 N+1]);
-            yax = repmat(grid.lat_rho',[1 1 N+1]);
-            zax = permute(grid.z_w,[3 2 1]);
+            xax = repmat(grd.lon_rho',[1 1 N+1]);
+            yax = repmat(grd.lat_rho',[1 1 N+1]);
+            zax = permute(grd.z_w,[3 2 1]);
             tax = ncread(fname,'ocean_time');
             
             try
@@ -82,13 +88,13 @@ function [xax,yax,zax,tax,xunits,yunits] = dc_roms_var_grid(fname,varname,tindex
             tax = ncread(fname,'ocean_time');
             
             if strcmp(varname, 'zeta');
-                xax = grid.lon_rho';
-                yax = grid.lat_rho';
+                xax = grd.lon_rho';
+                yax = grd.lat_rho';
                 zax = [];
             else
-                xax = repmat(grid.lon_rho',[1 1 N]);
-                yax = repmat(grid.lat_rho',[1 1 N]);
-                zax = permute(grid.z_r,[3 2 1]);
+                xax = repmat(grd.lon_rho',[1 1 N]);
+                yax = repmat(grd.lat_rho',[1 1 N]);
+                zax = permute(grd.z_r,[3 2 1]);
             end
             
             try

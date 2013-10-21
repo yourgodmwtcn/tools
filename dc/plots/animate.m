@@ -188,7 +188,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
             if button == 32, spaceplay = 1; end % resumes when paused
             if button == 27, break; end % exit when Esc is pressed.
         else
-            pause(0.0001);%(pausetime);
+            pause(0.01);%(pausetime);
         end  
         
         ckey = get(gcf,'currentkey');% end
@@ -285,6 +285,8 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
                 else
                    if flags(9)
                        axis image;
+                       xlim([min(xax(:)) max(xax(:))]);
+                       ylim([min(yax(:)) max(yax(:))]);
                    end
                 end
             end
@@ -332,8 +334,8 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
                     labels.mm_instance.pixelSize = [1600 900];
                     labels.mm_instance.outputFile = 'mm_output.avi';
                     labels.mm_instance.ffmpegArgs = '-q:v 1 -g 1';
-                    labels.mm_instance.InputFrameRate = 3;
-                    labels.mm_instance.frameRate = 3;
+                    labels.mm_instance.InputFrameRate = 5;
+                    labels.mm_instance.frameRate = 5;
                 end
                 set(gcf,'Renderer','zbuffer');
                 mm_addFrame(labels.mm_instance,gcf);

@@ -3,28 +3,36 @@
 % can return a list for last two types. fname does NOT contain input
 % directory
 
-function [fname] = roms_find_file(dir,type)
+function [fname] = roms_find_file(dirin,type)
 
-    if ~isdir(dir)
+    if ~isdir(dirin)
         if strcmpi(type,'his') || strcmpi(type,'avg')
-            fname = dir;
+            fname = dirin;
         else
-            index = strfind(dir,'/');
-            dir = dir(1:index(end));
+            index = strfind(dirin,'/');
+            dirin = dirin(1:index(end));
         end
     end
     
-    if isempty(strfind(dir,'config')), fname = [dir '/config/']; end
-    in = ls([fname '/*.in']);
+    if isempty(strfind(dirin,'config')), fname = [dirin '/config/']; end
+    % ls gives different results on windows and linux
+    %in = ls([fname '/*.in']);
+    in = dir([fname '/*.in']);
     
     if size(in,1) > 1
-        for ii=1:size(in,1)
-            if ii > size(in,1), break; end
-            if strcmpi(in(ii,:),'floats.in') || strcmpi(in(ii,:),'stations.in')
-               in(ii,:) = []; 
+        ii = 1;
+        while size(in,1) > 1
+            if strcmpi(in(ii,:).name,'floats.in') || ...
+                    strcmpi(in(ii,:).name,'stations.in') || ...
+                    strfind(in(ii,:).name,'rst_')
+               in(ii,:) = [];
+               continue
             end
+            ii = ii+1;
         end
     end
+    
+    in = in.name;
     
     % files from *.in 
     if strcmpi(type,'ini') || strcmpi(type,'bry') ||  strcmpi(type,'grd')
@@ -37,12 +45,17 @@ function [fname] = roms_find_file(dir,type)
     end
     
     if strcmpi(type,'his') || strcmpi(type,'avg')
-        fname = ls([dir '/*_his*.nc']);
-        if isempty(fname)
-            fname = ls([dir '/*_avg*.nc']); 
+        fnames = dir([dirin '/*_his*.nc*']);
+        if isempty(fnames)
+            fnames = dir([dirin '/*_avg*.nc*']); 
             if strcmpi(type,'his'), disp('Using avg files instead.'); end
         end
         
+        % convert from struct to names
+        clear fname
+        for kk=1:size(fnames)
+            fname{kk}= fnames(kk,:).name;
+        end
     end
     
 

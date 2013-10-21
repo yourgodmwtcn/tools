@@ -118,8 +118,13 @@ else
         varname(1) = lower(varname(1));
     end
     % set up grid for first time instant
-    [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume,1);
-    [~,~,~,time,xunits,yunits] = roms_var_grid(fname,varname);
+    try
+        grd = roms_get_grid(fname,fname,0,1);
+    catch ME
+        grd = fname;
+    end
+    [xax,yax,zax,vol] = dc_roms_extract(grd,varname,volume,1);
+    [~,~,~,time,xunits,yunits] = dc_roms_var_grid(grd,varname);
     time = time./3600/24;
 end
 
@@ -214,11 +219,11 @@ else
     index = abs(str2double(index));
 end
 
-if ~isempty(strfind(labels.yax,'degree')) || ~isempty(strfind(labels.xax,'degree'))
-    labels.dar = 1; 
-else
+%if ~isempty(strfind(labels.yax,'degree')) || ~isempty(strfind(labels.xax,'degree'))
+%    labels.dar = 1; 
+%else
     labels.dar = 0; 
-end
+%end
 
 % fix title string
 if axis == 'x' || axis == 'y'
@@ -256,11 +261,25 @@ for i=0:iend-1
     if axis ~= 'z' || dim == 3
         dv = double(squeeze(ncread(fname,varname,read_start,read_count,stride)));  
     else
+        grids.xax = xax;
+        grids.yax = yax;
+        grids.zax = zax;
         warning off
+        read_start(3) = 1;
+        read_count(3) = Inf;
         for mmm = 1:read_count(4)
-            dv(:,:,mmm) = roms_zslice(fname,varname,read_start(4)+mmm-1,index)';
+            disp(['reading & interpolating timestep ' num2str(mmm) '/' num2str(read_count(4))]);
+            data = squeeze(double(ncread(fname,varname, ...
+                            [read_start(1:3) read_start(4)+mmm-1], ...
+                            [read_count(1:3) 1],stride)));
+
+            dv(:,:,mmm) = dc_roms_zslice_var(data,index,grids);
         end
+        clear data
         warning on
+        % pause since this takes a long time and I might go do something
+        % else
+        commands = [commands; 'pause'];
     end
     
     % take care of walls for mitgcm - NEEDS TO BE CHECKED
@@ -302,12 +321,16 @@ for i=0:iend-1
             plotx = squeeze(plotx(:,index,:,:));
             ploty = squeeze(ploty(:,index,:,:));    
         case 3
-            plotx = squeeze(plotx(:,:,index,:));
-            ploty = squeeze(ploty(:,:,index,:));
+            plotx = squeeze(plotx(:,:,1,:));
+            ploty = squeeze(ploty(:,:,1,:));
     end
 
     % send to animate
-    [labels.mm_instance,h_plot] = animate(plotx,ploty,dv,labels,commands,3);
+    torepeat = 1;
+    while torepeat
+        [labels.mm_instance,h_plot] = animate(plotx,ploty,dv,labels,commands,3);
+        torepeat = input('Repeat? (1/0): ');
+    end
     
     % for movie
     if ~isempty(labels.mm_instance), mm_render(labels.mm_instance); end

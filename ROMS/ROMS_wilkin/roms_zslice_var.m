@@ -1,4 +1,4 @@
-function [data,x,y] = roms_zslice_var(data,time,depth,grd)
+function [data,x,y] = roms_zslice_var(data,~,depth,grd)
 % $Id: roms_zslice_var.m 358 2008-04-07 14:15:03Z zhang $
 % Get a constant-z slice out of a 4-D ROMS variable 
 % [data,x,y] = roms_zslice_var(data,time,depth,grd)
@@ -17,11 +17,11 @@ depth = -abs(depth);
 % interpolate to requested depth 
 
 % make 2d 'ribbon' out of the data
-[N L M] = size(data);
+[N,L,M] = size(data);
 data = data(:,1:L*M);
 
 % make 2d 'ribbon' out of the depth coordinates
-z_r = grd.z_r;
+%z_r = grd.z_r;
 
 if ~any(sizexy-size(grd.lon_u))
   var = 'u';
@@ -34,31 +34,40 @@ end
 switch var
   case 'u'    
     % average z_r to Arakawa-C u points
-    zM = size(z_r,2);
+    zM = size(grd.z_r,2);
     zMm = zM-1;
-    zL = size(z_r,3);
+    zL = size(grd.z_r,3);
     zLm = zL-1;
-    z = 0.5*(z_r(:,:,1:zLm)+z_r(:,:,2:zL));
-    x = grd.lon_u;
-    y = grd.lat_u;
+    z = 0.5*(grd.z_r(:,:,1:zLm)+grd.z_r(:,:,2:zL));
+    try
+        x = grd.lon_u;
+        y = grd.lat_u;
+    catch ME
+    end
     mask = grd.mask_u;
     
   case 'v'
     % average z_r to Arakawa-C v points
-    zM = size(z_r,2);
+    zM = size(grd.z_r,2);
     zMm = zM-1;
-    zL = size(z_r,3);
+    zL = size(grd.z_r,3);
     zLm = zL-1;
-    z = 0.5*(z_r(:,1:zMm,:)+z_r(:,2:zM,:));
-    x = grd.lon_v;
-    y = grd.lat_v;
+    z = 0.5*(grd.z_r(:,1:zMm,:)+grd.z_r(:,2:zM,:));
+    try
+         x = grd.lon_v;
+         y = grd.lat_v;
+    catch ME
+    end
     mask = grd.mask_v; 
     
   otherwise    
     % for temp, salt, rho, w
-    z = z_r;
-    x = grd.lon_rho;
-    y = grd.lat_rho;
+    z = grd.z_r;
+    try
+        x = grd.lon_rho;
+        y = grd.lat_rho;
+    catch ME
+    end
     mask = grd.mask_rho; 
     if size(data,1) ~= size(z,1)
       % trap the var='omega' case
@@ -69,8 +78,6 @@ switch var
 end
 
 z = reshape(z,[size(z,1) size(z,2)*size(z,3)]);
-
-size(z);
 
 % code lifted from omviz/scrum_zslice:
 
@@ -105,6 +112,5 @@ data = reshape(data_at_depth,[L M]);
 
 % Apply mask to catch shallow water values where the z interpolation does
 % not create NaNs in the data
-dry = find(mask==0);
-mask(dry) = NaN;
+mask(mask == 0) = NaN;
 data = data.*mask;

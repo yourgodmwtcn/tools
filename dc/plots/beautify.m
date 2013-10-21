@@ -10,7 +10,11 @@ function [] = beautify(fontSizes)
     
     if ~exist('fontSizes','var'), fontSizes = [12 12 14]; end
     
-    font_name = 'TeXGyrePagella'; %'AvantGarde'
+    if strcmpi(computer,'GLNXA64')
+        font_name = 'Helvetica';
+    else
+        font_name = 'TeXGyrePagella'; %'AvantGarde'
+    end
     font_name_axis = font_name;
 
     % Get required handles for current figure
@@ -60,10 +64,10 @@ function [] = beautify(fontSizes)
          'YColor'      , [.3 .3 .3], ...
          'ZColor'      , [.3 .3 .3], ...
          'FontSize'    , fontSizes(1), ...
-         'LineWidth'   , 1.5         );
+         'LineWidth'   , 2        );
      
-     % Line Width 1.5
-     set(findobj('Type','line'),'LineWidth',1.5)
+     % Line Width 2
+     set(findobj('Type','line'),'LineWidth',2)
      
      % find contours / images and then set box on + renderer = zbuffer
      if ~isempty(findall(gcf,'type','contourgroup','visible','on')) || ...

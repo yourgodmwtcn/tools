@@ -39,5 +39,5 @@ set(0,'DefaultAxesLineWidth',1.5)
 set(0,'DefaultLineLineWidth',1.5);
 
 %% change to current working dir
-cd('E:\Work\eddyshelf\');
+cd('/media/data/Work/eddyshelf/');
 

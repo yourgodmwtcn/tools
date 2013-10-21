@@ -42,12 +42,12 @@ end
 t = roms_get_date(file,time); % gets output in matlab datenum convention
 
 % check the grid information
-if nargin<5 | (nargin==5 & isempty(grd))
+if nargin<5 || (nargin==5 && isempty(grd))
   % no grd input given so try to get grd_file name from the history file
   grd_file = file;
   grd = roms_get_grid(grd_file,file);
 else
-  if isstr(grd)
+  if ischar(grd)
     grd = roms_get_grid(grd,file);
   else
     % input was a grd structure but check that it includes the z values    
@@ -58,7 +58,9 @@ else
 end
 
 % get the data to be zsliced
-data = nc_varget(file,var,[time-1 0 0 0],[1 -1 -1 -1]);
+%data = nc_varget(file,var,[time-1 0 0 0],[1 -1 -1 -1]);
+data = ncread(file,var,[1 1 1 time],[Inf Inf Inf 1]);
+data = permute(data,[3 2 1]);
 
 % slice at requested depth
 [data,x,y] = roms_zslice_var(data,1,depth,grd);
@@ -76,8 +78,6 @@ end
 
 % Apply mask to catch shallow water values where the z interpolation does
 % not create NaNs in the data
-if 1
-dry = find(mask==0);
-mask(dry) = NaN;
+
+mask(mask == 0) = NaN;
 data = data.*mask;
-end

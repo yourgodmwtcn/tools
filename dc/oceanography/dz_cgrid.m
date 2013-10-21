@@ -26,7 +26,7 @@ function [dvdz] = dz_cgrid(grid,var)
         dzds = avg1(dzds,2);
     end
 
-    dvdz = 1./dzds .* dvds;
+    dvdz = bsxfun(@rdivide,dvds,dzds);
     
     % pad on bottom and surface values - IN Z - seems to work better than s
     dz1 = (grid.zmat(:,:,2)-grid.zmat(:,:,1))./(grid.zmat(:,:,3) - grid.zmat(:,:,2));
