@@ -118,15 +118,11 @@ else
         varname(1) = lower(varname(1));
     end
     % set up grid for first time instant
-<<<<<<< HEAD
     try
         grd = roms_get_grid(fname,fname,0,1);
     catch ME
         grd = fname;
     end
-=======
-    grd = roms_get_grid(fname,fname,0,1);
->>>>>>> ecf0a1e05f3e4b6b97c373789eebcfc51daea9e7
     [xax,yax,zax,vol] = dc_roms_extract(grd,varname,volume,1);
     [~,~,~,time,xunits,yunits] = dc_roms_var_grid(grd,varname);
     time = time./3600/24;
@@ -223,19 +219,11 @@ else
     index = abs(str2double(index));
 end
 
-<<<<<<< HEAD
 %if ~isempty(strfind(labels.yax,'degree')) || ~isempty(strfind(labels.xax,'degree'))
 %    labels.dar = 1; 
 %else
     labels.dar = 0; 
 %end
-=======
-if ~isempty(strfind(labels.yax,'degree')) || ~isempty(strfind(labels.xax,'degree'))
-    labels.dar = 1; 
-else
-    labels.dar = 0; 
-end
->>>>>>> ecf0a1e05f3e4b6b97c373789eebcfc51daea9e7
 
 % fix title string
 if axis == 'x' || axis == 'y'
@@ -273,12 +261,11 @@ for i=0:iend-1
     if axis ~= 'z' || dim == 3
         dv = double(squeeze(ncread(fname,varname,read_start,read_count,stride)));  
     else
-<<<<<<< HEAD
+
         grids.xax = xax;
         grids.yax = yax;
         grids.zax = zax;
-=======
->>>>>>> ecf0a1e05f3e4b6b97c373789eebcfc51daea9e7
+
         warning off
         read_start(3) = 1;
         read_count(3) = Inf;
@@ -287,7 +274,6 @@ for i=0:iend-1
             data = squeeze(double(ncread(fname,varname, ...
                             [read_start(1:3) read_start(4)+mmm-1], ...
                             [read_count(1:3) 1],stride)));
-<<<<<<< HEAD
 
             dv(:,:,mmm) = dc_roms_zslice_var(data,index,grids);
         end
@@ -296,12 +282,6 @@ for i=0:iend-1
         % pause since this takes a long time and I might go do something
         % else
         commands = [commands; 'pause'];
-=======
-            [dv(:,:,mmm),~,~] = roms_zslice_var(permute(data,[3 2 1]),NaN,index,grd);
-        end
-        dv = permute(dv,[2 1 3]);
-        warning on
->>>>>>> ecf0a1e05f3e4b6b97c373789eebcfc51daea9e7
     end
     
     % take care of walls for mitgcm - NEEDS TO BE CHECKED
@@ -348,15 +328,12 @@ for i=0:iend-1
     end
 
     % send to animate
-<<<<<<< HEAD
+
     torepeat = 1;
     while torepeat
         [labels.mm_instance,h_plot] = animate(plotx,ploty,dv,labels,commands,3);
         torepeat = input('Repeat? (1/0): ');
     end
-=======
-    [labels.mm_instance,h_plot] = animate(plotx,ploty,dv,labels,commands,3);
->>>>>>> ecf0a1e05f3e4b6b97c373789eebcfc51daea9e7
     
     % for movie
     if ~isempty(labels.mm_instance), mm_render(labels.mm_instance); end

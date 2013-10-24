@@ -3,7 +3,7 @@
 
 function [handles] = linex(x,label,color)
     
-    if ~exist('label','var'), []; end
+    if ~exist('label','var'), label = []; end
 
     if ~exist('color','var'), color = 'k'; end
     

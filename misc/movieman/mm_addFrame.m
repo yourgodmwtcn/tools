@@ -1,10 +1,10 @@
-function ok = ff_addFrame(mm,f,n)
+function ok = mm_addFrame(mm,f,n)
 % MM_ADDFRAME Add a frame to your movieman movie.
-%   FF_ADDFRAME(MM,FIGNUM)
+%   MM_ADDFRAME(MM,FIGNUM)
 %    MM is a movieman struct (created using MM_SETUP).
 %    FIGNUM is a figure handle.
 %
-%   FF_ADDFRAME(MM,FIGNUM,N)
+%   MM_ADDFRAME(MM,FIGNUM,N)
 >>>>>>> ecf0a1e05f3e4b6b97c373789eebcfc51daea9e7
 %    The optional argument N prints the frame N times.
 %
