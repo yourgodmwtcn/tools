@@ -1,5 +1,7 @@
 function [out] = roms_read_data(folder,varname,start,count,stride)
     
+    disp(['Reading ' varname]);
+    tic;
     if strcmpi(varname,'vor')
         files{1}='ocean_vor.nc';
     else
@@ -22,9 +24,9 @@ function [out] = roms_read_data(folder,varname,start,count,stride)
             vinfo  = ncinfo(fname,varname);
             dim = length(vinfo.Size);
             
-            if ~exist('start','var'), start = ones([1 dim]); end
-            if ~exist('count','var'), count = inf([1 dim]); end
-            if ~exist('stride','var'), stride = ones([1 dim]); end
+            if ~exist('start','var') || isempty(start), start = ones([1 dim]); end
+            if ~exist('count','var') || isempty(count), count = inf([1 dim]); end
+            if ~exist('stride','var') || isempty(stride), stride = ones([1 dim]); end
         end
         temp = squeeze(double(ncread(fname,varname,start,count,stride)));
         if count(end) == 1
@@ -48,5 +50,6 @@ function [out] = roms_read_data(folder,varname,start,count,stride)
                     k = k+size(temp,4);
             end  
         end
-    end   
+    end 
+    toc;
     
