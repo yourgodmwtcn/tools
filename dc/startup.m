@@ -13,11 +13,13 @@ feature('DefaultCharacterSet', 'UTF8')
 set(0,'DefaultFigureColormap',flipud(cbrewer('div', 'RdYlGn', 32)));
 
 fontName = 'helvetica';
+
 % figure properties
 %set(0,'DefaultTextInterpreter','latex')
 set(0,'DefaultFigureColor','w')
 set(0,'DefaultFigureRenderer','zbuffer')
 set(0,'DefaultFigurePaperPositionMode', 'auto');
+
 set(0,'DefaultTextFontName', fontName);
 set(0,'DefaultTextColor','k')
 set(0,'DefaultTextFontSize',16);
@@ -39,6 +41,7 @@ set(0,'DefaultAxesZColor',[.3 .3 .3])
 set(0,'DefaultAxesLineWidth',2)
 set(0,'DefaultLineLineWidth',2);
 
+
 % multiple monitor support
 mm = get(0,'MonitorPositions');
 if size(mm,1) == 2,
@@ -46,6 +49,16 @@ if size(mm,1) == 2,
     set(0,'DefaultFigurePosition',[0.725*(mm(1,3)+mm(2,3)) 0.5*mm(2,4) 560 420]);
 end
 
+
 %% change to current working dir
-cd('/media/data/Work/eddyshelf/');
+if ~strcmpi(computer,'GLNXA64')
+   cd('E:\Work\eddyshelf\');
+else
+   mach = evalc('system hostname');
+   if strfind(mach,'poison')
+     cd('/home/poison/deepak/ROMS/runs/eddyshelf/scripts/');
+   else
+     cd('/media/data/Work/eddyshelf/');
+   end
+end
 

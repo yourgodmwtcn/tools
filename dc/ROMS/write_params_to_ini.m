@@ -57,6 +57,7 @@ function [] = write_params_to_ini(ininame, param, varname,ncid)
                 catch ME % variable defined?
                     varnum = netcdf.inqVarID(ncid,writename);
                 end
+
                 netcdf.endDef(ncid);
                 netcdf.putVar(ncid,varnum,field);
                 netcdf.reDef(ncid);

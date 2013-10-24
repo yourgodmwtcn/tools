@@ -61,7 +61,7 @@ if exist('stretching','file')~=2
 end
 
 nox = 0;
-  
+
 if isstruct(grd_file)
   % if the first input is already a grd structure
   % the intention is to add vertical coordinates below
@@ -312,6 +312,7 @@ if nargin > 1
   grd.s_w = s_w;
   grd.s_rho = s_rho;
   
+
   grd.Hz = diff(z_w,1,3);
   
   if nox
@@ -319,6 +320,7 @@ if nargin > 1
       grd.x_u = grd.lon_u; grd.y_u = grd.lat_u;
       grd.x_v = grd.lon_v; grd.y_v = grd.lat_v;
   end
+
   
   try
       grd.ocean_time = ncread(grd_file,'ocean_time');

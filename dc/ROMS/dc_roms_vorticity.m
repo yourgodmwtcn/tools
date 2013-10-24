@@ -33,6 +33,7 @@ if ~exist('tindices','var'), tindices = []; end
     
 %end
 
+<<<<<<< HEAD
 grid1.xv = repmat(grid.lon_v',[1 1 grid.N]);
 grid1.yv = repmat(grid.lat_v',[1 1 grid.N]);
 grid1.zv = permute(grid.z_v,[3 2 1]);
@@ -46,6 +47,15 @@ grid1.s_w = grid.s_w;
 grid1.s = grid.s_rho;
 
 grid1.zmat = avg1(permute(grid.z_r,[3 2 1]),2);
+=======
+grid1.xv = grid.lon_v(1,:)';
+grid1.yv = grid.lat_v(:,1);
+grid1.zv = grid.z_v;
+
+grid1.xu = grid.lon_u(1,:)';
+grid1.yu = grid.lat_u(:,1);
+grid1.zu = grid.z_u;
+>>>>>>> ecf0a1e05f3e4b6b97c373789eebcfc51daea9e7
 
 xname = 'xvor'; yname = 'yvor'; zname = 'zvor'; tname = 'ocean_time';
 
@@ -68,6 +78,7 @@ else
     ncwriteatt(outname,'vor','Description','Vorticity calculated from ROMS output');
     ncwriteatt(outname,'vor','coordinates','xvor yvor zvor ocean_time');
     ncwriteatt(outname,'vor','units','1/s');
+
     ncwriteatt(outname,xname,'units',ncreadatt(fname,'x_u','units'));
     ncwriteatt(outname,yname,'units',ncreadatt(fname,'x_u','units'));
     ncwriteatt(outname,zname,'units','m');
@@ -78,16 +89,17 @@ end
 %% loop and calculate
 for i=0:iend-1
     [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
+
     %tstart = read_start(end);
     %tend   = read_start(end) + read_count(end) -1;
-    
+
     u      = ncread(fname,'u',read_start,read_count,stride);
     v      = ncread(fname,'v',read_start,read_count,stride);
     
     toUTM =  strfind(ncreadatt(fname,'x_u','units'),'degree');
     
     [vor,xvor,yvor,zvor] = vorticity_cgrid(grid1,u,v,toUTM);
-        
+
     if i == 0
         ncwrite(outname,xname,xvor);
         ncwrite(outname,yname,yvor);
