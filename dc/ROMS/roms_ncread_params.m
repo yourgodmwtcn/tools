@@ -2,8 +2,9 @@ function [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,d
 
     read_start = ones(1,dim);
     read_count = Inf(1,dim);
-
+   
     if i == (iend-1)
+        if isinf(slab), slab = 0; end
         read_count(end) = floor((tindices(2)-slab*(i))/dt);
     else
         read_count(end) = floor(slab/dt);%ceil(slab*(i+1)/dt);
