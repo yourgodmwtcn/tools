@@ -68,6 +68,7 @@ function [] = beautify(fontSizes)
      
      % Line Width 2
      set(findobj('Type','line'),'LineWidth',2)
+
      
      % find contours / images and then set box on + renderer = zbuffer
      if ~isempty(findall(gcf,'type','contourgroup','visible','on')) || ...

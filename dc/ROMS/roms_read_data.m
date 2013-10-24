@@ -24,6 +24,7 @@ function [out] = roms_read_data(folder,varname,start,count,stride)
             vinfo  = ncinfo(fname,varname);
             dim = length(vinfo.Size);
             
+
             if ~exist('start','var') || isempty(start), start = ones([1 dim]); end
             if ~exist('count','var') || isempty(count), count = inf([1 dim]); end
             if ~exist('stride','var') || isempty(stride), stride = ones([1 dim]); end
@@ -52,4 +53,3 @@ function [out] = roms_read_data(folder,varname,start,count,stride)
         end
     end 
     toc;
-    

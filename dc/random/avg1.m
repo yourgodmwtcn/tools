@@ -26,4 +26,3 @@ function [A] = avg1(X,index)
 
          A = convn(X,cnv./2,'valid');
      end
-    

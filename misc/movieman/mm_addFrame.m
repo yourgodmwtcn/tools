@@ -1,10 +1,11 @@
-function ok = mm_addFrame(mm,f,n)
+function ok = ff_addFrame(mm,f,n)
 % MM_ADDFRAME Add a frame to your movieman movie.
-%   mm_ADDFRAME(MM,FIGNUM)
+%   FF_ADDFRAME(MM,FIGNUM)
 %    MM is a movieman struct (created using MM_SETUP).
 %    FIGNUM is a figure handle.
 %
-%   mmx_ADDFRAME(MM,FIGNUM,N)
+%   FF_ADDFRAME(MM,FIGNUM,N)
+>>>>>>> ecf0a1e05f3e4b6b97c373789eebcfc51daea9e7
 %    The optional argument N prints the frame N times.
 %
 %   For more info see help for mm_setup and mm_render.
@@ -49,7 +50,7 @@ for i=1:n
     %print(dpispec,'-zbuffer','-dppmraw', [mm.frameDir '/' filename '.ppm']);
     % for PNG
     %print(dpispec,'-zbuffer','-dpng', [mm.frameDir '/' filename '.png']);
-    export_fig(dpispec,'-nocrop -q1',[mm.frameDir '/' filename '.png']);
+    export_fig(dpispec,'-nocrop',[mm.frameDir '/' filename '.png']);
     fprintf('Just added frame %6d\n',N+i);
 end
 
