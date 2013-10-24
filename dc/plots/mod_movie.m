@@ -118,6 +118,7 @@ else
         varname(1) = lower(varname(1));
     end
     % set up grid for first time instant
+
     try
         grd = roms_get_grid(fname,fname,0,1);
     catch ME
@@ -262,6 +263,7 @@ for i=0:iend-1
         dv = double(squeeze(ncread(fname,varname,read_start,read_count,stride)));  
     else
 
+
         grids.xax = xax;
         grids.yax = yax;
         grids.zax = zax;
@@ -282,6 +284,10 @@ for i=0:iend-1
         % pause since this takes a long time and I might go do something
         % else
         commands = [commands; 'pause'];
+            [dv(:,:,mmm),~,~] = roms_zslice_var(permute(data,[3 2 1]),NaN,index,grd);
+        end
+        dv = permute(dv,[2 1 3]);
+        warning on
     end
     
     % take care of walls for mitgcm - NEEDS TO BE CHECKED
@@ -328,12 +334,13 @@ for i=0:iend-1
     end
 
     % send to animate
-
     torepeat = 1;
     while torepeat
         [labels.mm_instance,h_plot] = animate(plotx,ploty,dv,labels,commands,3);
         torepeat = input('Repeat? (1/0): ');
     end
+
+    [labels.mm_instance,h_plot] = animate(plotx,ploty,dv,labels,commands,3);
     
     % for movie
     if ~isempty(labels.mm_instance), mm_render(labels.mm_instance); end

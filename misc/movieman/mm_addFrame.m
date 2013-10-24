@@ -5,8 +5,6 @@ function ok = mm_addFrame(mm,f,n)
 %    FIGNUM is a figure handle.
 %
 %   MM_ADDFRAME(MM,FIGNUM,N)
->>>>>>> ecf0a1e05f3e4b6b97c373789eebcfc51daea9e7
-%    The optional argument N prints the frame N times.
 %
 %   For more info see help for mm_setup and mm_render.
 %

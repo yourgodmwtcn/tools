@@ -33,7 +33,6 @@ if ~exist('tindices','var'), tindices = []; end
     
 %end
 
-
 grid1.xv = repmat(grid.lon_v',[1 1 grid.N]);
 grid1.yv = repmat(grid.lat_v',[1 1 grid.N]);
 grid1.zv = permute(grid.z_v,[3 2 1]);
@@ -47,6 +46,7 @@ grid1.s_w = grid.s_w;
 grid1.s = grid.s_rho;
 
 grid1.zmat = avg1(permute(grid.z_r,[3 2 1]),2);
+
 
 xname = 'xvor'; yname = 'yvor'; zname = 'zvor'; tname = 'ocean_time';
 
