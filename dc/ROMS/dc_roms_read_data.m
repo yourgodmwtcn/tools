@@ -67,7 +67,7 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume)
             tindices(1) = 1;
         end
         % Case 3 : requested data finishes in current file
-        if tnew(2) <= nt
+        if tnew(2) <= nt && ~isinf(tindices(2))
             quitflag = 1;
         end
         [start,count] = roms_ncread_params(dim,0,1,slab,tnew,dt,vol);
