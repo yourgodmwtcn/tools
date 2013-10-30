@@ -91,7 +91,7 @@ else
     end
   end
   
-  varlist = {'x_rho','y_rho','x_u','y_u','x_v','y_v','x_psi','y_psi'};
+  varlist = {'x_rho','y_rho','x_u','y_u','x_v','y_v'};%'x_psi','y_psi'};
   if nc_isvar(grd_file,'x_rho')
     for v = varlist
       vname = char(v);
@@ -107,7 +107,7 @@ else
   end
   
   varlist = ...
-    { 'lon_rho','lat_rho','lon_psi','lat_psi',...
+    { 'lon_rho','lat_rho',... % 'lon_psi','lat_psi'
     'lon_v','lat_v','lon_u','lat_u'};
   for v = varlist
     vname = char(v);
