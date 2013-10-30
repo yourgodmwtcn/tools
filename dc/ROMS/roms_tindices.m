@@ -14,7 +14,7 @@ function [iend,tindices,dt,nt,stride] = roms_tindices(tindices,slab,tend)
             case 3
                 dt = tindices(2);
                 tindices(2) = tindices(3);
-                tindices(3) = NaN;
+                tindices(3) = [];
         end
     end
 

@@ -14,8 +14,8 @@ function [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume,tindex)
     [xax,yax,zax,~,~] = dc_roms_var_grid(fname,varname,tindex);
     
     % Assuming cartesian grid
-    xaxis = xax(:,1,end);
-    yaxis = yax(1,:,end)';
+    xaxis = xax(:,1,end,end);
+    yaxis = yax(1,:,end,end)';
     
     vol = [1 Inf; 1 Inf; 1 Inf]; % default - choose all data
     
@@ -30,7 +30,8 @@ function [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume,tindex)
                 if ischar(volume{i,2}), volume{i,2} = find_approx(xaxis,str2double(volume{i,2}),1); end
                 if ischar(volume{i,3}), volume{i,3} = find_approx(xaxis,str2double(volume{i,3}),1); end
                 
-                if isinf(volume{i,3}), volume{i,3} = length(xax); end
+                if isinf(volume{i,3}), volume{i,3} = length(xaxis); end
+                if isinf(volume{i,2}), volume{i,2} = length(xaxis); end
                 
                 xax = xax(volume{i,2}:volume{i,3},:,:);
                 yax = yax(volume{i,2}:volume{i,3},:,:);
@@ -45,7 +46,8 @@ function [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume,tindex)
                 if ischar(volume{i,2}), volume{i,2} = find_approx(yaxis,str2double(volume{i,2}),1); end
                 if ischar(volume{i,3}), volume{i,3} = find_approx(yaxis,str2double(volume{i,3}),1); end
                 
-                if isinf(volume{i,3}), volume{i,3} = length(yax); end
+                if isinf(volume{i,3}), volume{i,3} = length(yaxis); end
+                if isinf(volume{i,2}), volume{i,2} = length(yaxis); end
                 
                 xax = xax(:,volume{i,2}:volume{i,3},:);
                 yax = yax(:,volume{i,2}:volume{i,3},:);
@@ -60,7 +62,8 @@ function [xax,yax,zax,vol] = dc_roms_extract(fname,varname,volume,tindex)
                 if ischar(volume{i,2}), volume{i,2} = find_approx(zax,str2double(volume{i,2}),1); end
                 if ischar(volume{i,3}), volume{i,3} = find_approx(zax,str2double(volume{i,3}),1); end
                 
-                if isinf(volume{i,3}), volume{i,3} = length(zax); end
+                if isinf(volume{i,3}), volume{i,3} = size(zax,3); end
+                if isinf(volume{i,2}), volume{i,2} = size(zax,3); end
                 
                 if volume{i,3} < volume{i,2}
                     temp = volume{i,3};

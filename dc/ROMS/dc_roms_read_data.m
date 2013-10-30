@@ -1,4 +1,4 @@
-function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume)
+function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume,stride)
     
     disp(['Reading ' varname]);
     
@@ -53,7 +53,8 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume)
             %[~,~,~,time,xunits,yunits] = dc_roms_var_grid(grd,varname);
         end
         % process tindices (input) according to file
-        [~,tnew,dt,~,stride] = roms_tindices(tindices,slab,nt);
+        [~,tnew,dt,~,tstride] = roms_tindices(tindices,slab,nt);
+        stride(4) = tstride(end);
         % Case 1 : if requested data not in this file, skip to next
         if tnew(1) > vinfo.Size(end)
             tindices = tindices - nt;
@@ -67,7 +68,7 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume)
             tindices(1) = 1;
         end
         % Case 3 : requested data finishes in current file
-        if tnew(2) <= nt && ~isinf(tindices(2))
+        if tnew(2) <= nt && ~isinf(tindices(end))
             quitflag = 1;
         end
         [start,count] = roms_ncread_params(dim,0,1,slab,tnew,dt,vol);
