@@ -51,14 +51,14 @@ if exist(outname,'file')
     if in == 1, delete(outname); end
 end
 try
-    nccreate(outname,'pv','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3)-1 tname length(tpv)});
+    nccreate(outname,'pv','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3) tname length(tpv)});
     nccreate(outname,xname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
     nccreate(outname,yname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
     nccreate(outname,zname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
     nccreate(outname,tname,'Dimensions',{tname length(tpv)});
     
     ncwriteatt(outname,'pv','Description','Ertel PV calculated from ROMS output');
-    ncwriteatt(outname,'pv','coordinates',[xname ' ' yname ' ' zname ' ' ocean_time]);
+    ncwriteatt(outname,'pv','coordinates',[xname ' ' yname ' ' zname ' ' 'ocean_time']);
     ncwriteatt(outname,'pv','units','N/A');
     ncwriteatt(outname,xname,'units',ncreadatt(fname,'x_u','units'));
     ncwriteatt(outname,yname,'units',ncreadatt(fname,'y_u','units'));
@@ -69,11 +69,18 @@ catch ME
     fprintf('\n Appending to existing file.\n');
 end
 
+% write grid
+ncwrite(outname,xname,xpv);
+ncwrite(outname,yname,ypv);
+ncwrite(outname,zname,zpv);
+ncwrite(outname,'ocean_time',tpv);
+
 %% calculate pv
 
 misc = roms_load_misc(fname);
-
+tic;
 for i=0:iend-1
+    disp(['i = ' num2str(i) '/' num2str(iend-1)]);
     [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
     tstart = read_start(end);
     tend   = read_start(end) + read_count(end) -1;
@@ -87,22 +94,13 @@ for i=0:iend-1
         %fprintf('\n Assuming T0 = 14c\n');
     end
     
-    [pv,xpv,ypv,zpv] = pv_cgrid(grid,u,v,rho,f,rho0);
+    [pv,xpv,ypv,zpv] = pv_cgrid(grid1,u,v,rho,f,rho0);
 
     ncwrite(outname,'pv',pv,read_start); 
     
-    % write now so that file is still usable in case of crash
-    if i == 0
-        ncwrite(outname,xname,xpv);
-        ncwrite(outname,yname,ypv);
-        ncwrite(outname,zname,zpv);
-        ncwrite(outname,'ocean_time',tpv);
-    end
-    
-    intPV(tstart:tend) = domain_integrate(pv,xpv,ypv,zpv);
-    
+    intPV(tstart:tend) = domain_integrate(pv,xpv,ypv,zpv); 
 end
-
+toc;
 save pv.mat pv xpv ypv zpv tpv intPV
 fprintf('\n Wrote file : %s \n\n',outname);
 
