@@ -1,4 +1,4 @@
-% Calculate PV on C-grid. Result at interior W points
+% Calculate PV on C-grid. Result at interior RHO points
 %        [pv,xpv,ypv,zpv] = pv_cgrid(rgrid,u,v,rho,f,rho0)
 % supply rgrid structure with 
 %       xu,yu,zu & xv,yv,zv & xr,yr,zr (all matrices) 
