@@ -39,5 +39,7 @@ function [handles] = dcline(ax,x,label,color)
                     'Rotation',0,'VerticalAlignment','Bottom','FontSize',10,'Color',color);%,'FontWeight','Bold');
             end
         end
-        set(hAxis,tickstr,sort(unique([tick x(i)])));
     end
+    
+    % add extra axis ticks
+    set(hAxis,tickstr,str2num(sprintf('%.2f ', sort(unique([tick x])))));
