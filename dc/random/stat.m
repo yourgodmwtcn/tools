@@ -82,12 +82,17 @@ function [] = stat(var1)
 
     if n < size_limit
         med = nanmedian(var1(:));
-        comp = abs(med);
-        if comp == 0, comp = nanmax(abs(var1(:))); end
+        mean1 = nanmean(var1(:));
     else
-        comp = abs(nanmin(var1(:)));
         med = NaN;
+        mean1 = NaN;
     end
+    %    comp = abs(med);
+    %    if comp == 0, comp = nanmax(abs(var1(:))); end
+    %else
+    %    comp = abs(nanmin(var1(:)));
+    %    med = NaN;
+    %end
     
     % Now print standard statistics
 %     if (comp > 0.005 || comp == 0) && (comp < 500000)
@@ -96,19 +101,14 @@ function [] = stat(var1)
 %                 'Median', med);
 %     else
         fprintf(' \n\t %15s: % 1.3e \n\t %15s: % 1.3e \n\t %15s: % 1.3e \n\t %15s: % 1.3e ', ...% ...
-                'Max',nanmax(var1(:)), 'Min',nanmin(var1(:)), 'Mean',nanmean(var1(:)), ...
+                'Max',nanmax(var1(:)), 'Min',nanmin(var1(:)), 'Mean',mean1, ...
                 'Median',med);
 %     end
     
     mcount = 0;
     ind = nan(s(2));
        
-    miss = find(isnan(var1));
-    if ~isempty(miss)
-        miss = length(miss);
-    else
-        miss = 0;
-    end
+    miss = sum(isnan(var1(:)));
        
     % Rank, Var & Std don't work for dim > 2 arrays    
     % Skipping missing columns because that doesnt seem to make much sense for ND arrays
@@ -118,20 +118,20 @@ function [] = stat(var1)
         if n > size_limit, warning('Terminating because array is too large.'); return; end
 
         % Ouput var, std   
-        if comp > 0.005 && (comp < 500000)
-            fprintf('\n\t %15s: % 6.2f \n\t %15s: % 6.2f', 'Variance', nanvar(var1(:)), 'Std', nanstd(var1(:)));
-        else
+%        if comp > 0.005 && (comp < 500000)
+%            fprintf('\n\t %15s: % 6.2f \n\t %15s: % 6.2f', 'Variance', nanvar(var1(:)), 'Std', nanstd(var1(:)));
+%        else
             fprintf('\n\t %15s: % 1.3e \n\t %15s: % 1.3e', 'Variance', nanvar(var1(:)), 'Std', nanstd(var1(:)));
-        end
+%        end
         
         % Output missing data information
-        if (comp > 0.005 || comp == 0) && (comp < 500000)
+ %       if (comp > 0.005 || comp == 0) && (comp < 500000)
             fprintf(' \n\t %15s:  %d/%d (%.2f %%) | Difference = %d', ...% ...
                     'Missing', miss, n, miss/(n)*100, n-miss);
-        else
-            fprintf(' \n\t %15s:  %d/%d (%.2f %%) | Difference = %d', ...% ...
-                    'Missing',miss, n, miss/n*100, n-miss);
-        end    
+  %      else
+  %          fprintf(' \n\t %15s:  %d/%d (%.2f %%) | Difference = %d', ...% ...
+  %                  'Missing',miss, n, miss/n*100, n-miss);
+  %      end    
 
         % If NaN's in multi-column array check whether entire column is NaN
         if s(2)~=1 && miss ~= 0
@@ -163,13 +163,13 @@ function [] = stat(var1)
     
     else
         % Output missing data information
-        if (comp > 0.005 || comp == 0)  && (comp < 500000)
-            fprintf(' \n\t %15s:  %d/%d (%.2f %%) | Difference = %d', ...% ...
-                    'Missing', miss, n, miss/(n)*100, n-miss);
-        else
+        %if (comp > 0.005 || comp == 0)  && (comp < 500000)
+        %    fprintf(' \n\t %15s:  %d/%d (%.2f %%) | Difference = %d', ...% ...
+        %            'Missing', miss, n, miss/(n)*100, n-miss);
+        %else
             fprintf(' \n\t %15s:  %d/%d (%.2f %%) | Difference = %d', ...% ...
                     'Missing',miss, n, miss/n*100, n-miss);
-        end
+        %end
         
         fprintf('\n\n');
         return; 
