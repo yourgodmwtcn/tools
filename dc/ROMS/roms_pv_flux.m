@@ -20,10 +20,20 @@ function [pvflux] = roms_pv_flux(hisname,pvname,tindices,axis,ind,plot_flag)
     vx = vx(ax);
     avgind = avgind{ax};
     
-    [gridv{1},gridv{2},gridv{3},tv,~,~] = roms_var_grid(hisname,vx);
-    [gridpv{1},gridpv{2},gridpv{3},tpv,~,~] = roms_var_grid(pvname,'pv');
+    [gridv{1},gridv{2},gridv{3},tv,~,~] = dc_roms_var_grid(hisname,vx);
+    [gridpv{1},gridpv{2},gridpv{3},tpv,~,~] = dc_roms_var_grid(pvname,'pv');
     
     sliceax = gridpv{ax};
+    gridpv{1} = gridpv{1}(:,1,1);
+    gridpv{2} = gridpv{2}(1,:,1)';
+    gridpv{3} = permute(gridpv{3}(1,1,:),[3 2 1]);
+    warning('assuming uniform z-grid!!!');
+    switch ax
+        case 1
+            sliceax = sliceax(:,1,1);
+        case 2
+            sliceax = sliceax(1,:,1)';
+    end
     if strcmp(ind,'mid'), ind = num2str((sliceax(1)+sliceax(end))/2); end
     if ischar(ind), ind = find_approx(sliceax,str2double(ind),1); end  
     
@@ -67,9 +77,9 @@ function [pvflux] = roms_pv_flux(hisname,pvname,tindices,axis,ind,plot_flag)
         % obtain vel on pv grid
         switch vx
             case 'u'
-                vel = avg1(vel(:,2:end-1,:,:),3);
+                vel = vel(:,2:end-1,:,:);
             case 'v'
-                vel = avg1(vel(2:end-1,:,:,:),3);
+                vel = vel(2:end-1,:,:,:);
             case 'w'
                 vel = vel(2:end-1,2:end-1,:,:);
         end
