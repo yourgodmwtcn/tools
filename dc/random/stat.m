@@ -32,6 +32,7 @@ function [] = stat(var1)
 
     name = inputname(1);
 
+    size_limit = 10^4;
     if ischar(var1)
        name = var1;
        %cmd = ['stat(' var1 ');'];
@@ -79,7 +80,7 @@ function [] = stat(var1)
         return
     end
 
-    if n < 10^6
+    if n < size_limit
         med = nanmedian(var1(:));
         comp = abs(med);
         if comp == 0, comp = nanmax(abs(var1(:))); end
@@ -114,7 +115,7 @@ function [] = stat(var1)
     % None of the rest is valid for logical arrays either
     if ~(length(s) > 2)    
     
-        if n > 10^6, warning('Terminating because array is too large.'); return; end
+        if n > size_limit, warning('Terminating because array is too large.'); return; end
 
         % Ouput var, std   
         if comp > 0.005 && (comp < 500000)
