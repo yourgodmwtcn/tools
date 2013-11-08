@@ -202,7 +202,30 @@ if bsxfun(@minus,zax,zax(1,1,:)) == zeros(size(zax))
 else
     flags.notopo = 0;
 end
+
+% given location instead of index
+if axis == 'z' && flags.notopo == 0
+    if ischar(index),index = abs(str2double(index)); end
+else
+    if strcmpi(index,'end') || strcmpi(index,'inf'),  index = vinfo.Size(axind); end
+    if strcmpi(index,'mid'), index = num2str((sliceax(1)+sliceax(end))/2); end
+    if ischar(index), index = find_approx(sliceax,str2double(index),1); end
+end
             
+% fix axes
+if dim == 3, index = 1; end
+switch axind
+    case 1
+        plotx = squeeze(plotx(index,:,:,:));
+        ploty = squeeze(ploty(index,:,:,:));
+
+    case 2
+        plotx = squeeze(plotx(:,index,:,:));
+        ploty = squeeze(ploty(:,index,:,:));    
+    case 3
+        plotx = squeeze(plotx(:,:,1,:));
+        ploty = squeeze(ploty(:,:,1,:));
+end
 
 %% Plot according to options
 
@@ -219,15 +242,6 @@ end
 
 % overwrite current figure if loading multiple files from directory
 % if ~isDir, figure; end
-
-% given location instead of index
-if axis == 'z' && flags.notopo == 0
-    if ischar(index),index = abs(str2double(index)); end
-else
-    if strcmpi(index,'end') || strcmpi(index,'inf'),  index = vinfo.Size(axind); end
-    if strcmpi(index,'mid'), index = num2str((sliceax(1)+sliceax(end))/2); end
-    if ischar(index), index = find_approx(sliceax,str2double(index),1); end
-end
 
 %if ~isempty(strfind(labels.yax,'degree')) || ~isempty(strfind(labels.xax,'degree'))
 %    labels.dar = 1; 
@@ -300,56 +314,40 @@ for i=0:iend-1
         end
     end
     warning on
-end
 
-% take care of walls for mitgcm - NEEDS TO BE CHECKED
-if gcm
-    s = size(dv);
-    s(3) = size(dv,3); % correct for single timestep snapshots - in that case s is a 2 element row
-    if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:) = NaN; end;
-    if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
+    % take care of walls for mitgcm - NEEDS TO BE CHECKED
+    if gcm
+        s = size(dv);
+        s(3) = size(dv,3); % correct for single timestep snapshots - in that case s is a 2 element row
+        if repnan(dv(1,:,:),0)   == zeros([1 s(2) s(3)]), dv(1,:,:) = NaN; end;
+        if repnan(dv(end,:,:),0) == zeros([1 s(2) s(3)]), dv(end,:,:) = NaN; end;
 
-    if axind == 3
-        if repnan(dv(:,1,:),0)   == zeros([s(1) 1 s(3)]), dv(:,1,:)   = NaN; end;
-        if repnan(dv(:,end,:),0) == zeros([s(1) 1 s(3)]), dv(:,end,:) = NaN; end;
+        if axind == 3
+            if repnan(dv(:,1,:),0)   == zeros([s(1) 1 s(3)]), dv(:,1,:)   = NaN; end;
+            if repnan(dv(:,end,:),0) == zeros([s(1) 1 s(3)]), dv(:,end,:) = NaN; end;
+        end
     end
-end
 
-s = size(dv);            
-if s(1) == 1 || s(2) == 1
-    close(gcf);
-    error('2D simulation?');
-end
+    s = size(dv);            
+    if s(1) == 1 || s(2) == 1
+        close(gcf);
+        error('2D simulation?');
+    end
 
-if max(plotx(:)) > 1000
-    plotx = plotx/1000;
-    labels.xax = [labels.xax ' x 10^3'];
-end
-if max(ploty(:)) > 1000
-    ploty = ploty/1000;
-    labels.yax = [labels.yax ' x 10^3'];
-end
-
-% fix axes
-if dim == 3, index = 1; end
-switch axind
-    case 1
-        plotx = squeeze(plotx(index,:,:,:));
-        ploty = squeeze(ploty(index,:,:,:));
-
-    case 2
-        plotx = squeeze(plotx(:,index,:,:));
-        ploty = squeeze(ploty(:,index,:,:));    
-    case 3
-        plotx = squeeze(plotx(:,:,1,:));
-        ploty = squeeze(ploty(:,:,1,:));
-end
-
-% send to animate
-torepeat = 1;
-while torepeat == 1,
-    [labels.mm_instance,h_plot] = animate(plotx,ploty,dv,labels,commands,3);
-    torepeat = input('Repeat? (1/0): ');
+    if max(plotx(:)) > 1000
+        plotx = plotx/1000;
+        labels.xax = [labels.xax ' x 10^3'];
+    end
+    if max(ploty(:)) > 1000
+        ploty = ploty/1000;
+        labels.yax = [labels.yax ' x 10^3'];
+    end
+    % send to animate
+    %torepeat = 1;
+    %while torepeat == 1,
+        [labels.mm_instance,h_plot] = animate(plotx,ploty,dv,labels,commands,3);
+    %    torepeat = input('Repeat? (1/0): ');
+    %end
 end
 
 % for movie
