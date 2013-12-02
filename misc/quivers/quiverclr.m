@@ -1,4 +1,4 @@
-% function h = quiverclr(x,y,u,v,z,zlim)
+% function h = quiverclr(x,y,u,v,scale,z,zlim)
 % plots the values of u and v, with z colour coded
 % at the positions specified by x and y.
 % A colourbar is added on the right side of the figure.
@@ -12,10 +12,10 @@
 %
 % Stephanie Contardo, August 2009, CSIRO
 
-function h = quiverclr(x,y,u,v,z,zlim)
+function h = quiverclr(x,y,u,v,scale,z,zlim)
 
 map=colormap;
-if nargin >5
+if nargin >6
     miz = zlim(1) ;
     maz = zlim(2) ;
 else
@@ -29,7 +29,7 @@ for nc=1:size(map,1)
     iz = find(z>miz+(nc-1)*clrstep & z<=miz+nc*clrstep...
     & ~isnan(u) & ~isnan(v)) ;
     if ~isempty(iz)
-        quiver(x(iz),y(iz),u(iz),v(iz),0,'color',map(nc,:)) ;
+        quiver(x(iz),y(iz),u(iz),v(iz),scale,'color',map(nc,:)) ;
     end
 end
 hold off
