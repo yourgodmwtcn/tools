@@ -29,13 +29,13 @@ function [handles] = dcline(ax,x,label,color)
         if ax == 'x'
             handles(i) = plot([x(i) x(i)],yax,'--','LineWidth',2,'Color',color);
             if ~isempty(label)
-                text(double(x(i)),double(yax(end)-(length(label))/2),label, ...
+                text(double(x(i)),double(yax(end)-(length(label))/2),label(i,:), ...
                     'Rotation',0,'VerticalAlignment','Bottom','FontSize',10,'Color',color);%,'FontWeight','Bold');
             end
         else
             handles(i) = plot(xax,[x(i) x(i)],'--','LineWidth',2,'Color',color);
             if ~isempty(label)
-                text(double(xax(end)-(length(label)))/2,double(x(i)),label, ...
+                text(double(xax(end)-(length(label)))/2,double(x(i)),label(i,:), ...
                     'Rotation',0,'VerticalAlignment','Bottom','FontSize',10,'Color',color);%,'FontWeight','Bold');
             end
         end
