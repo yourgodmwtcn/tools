@@ -155,7 +155,7 @@ if (sigma ~= -1)
    % Use seawater state equation to return specific volume
    % anomaly SV (m^3/kg*1e-8) and the density anomaly SG (kg/m^3) 
 
-   [SV,SG]=swstate(ones(size(Tg))*Sg,Tg*ones(size(Sg)),P(1));
+   [~,SG]=swstate(ones(size(Tg))*Sg,Tg*ones(size(Sg)),P(1));
 
    %
 
@@ -164,7 +164,7 @@ if (sigma ~= -1)
 
    % plot isopycnal contours
 
-   [CS,H]=contour(Sg,Tg,SG,sigma,':g');
+   [CS,H]=contour(Sg,Tg,SG,sigma,'k');
    % attach labels to contours
    
    % new style Matlab contour labelling ... I don't like it in this case so

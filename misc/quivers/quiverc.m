@@ -1,10 +1,6 @@
  function hh = quiverc(varargin)
 % Modified version of Quiver to plots velocity vectors as arrows 
 % with components (u,v) at the points (x,y) using the current colormap 
-
-% Bertrand Dano 3-3-03
-% Copyright 1984-2002 The MathWorks, Inc. 
-
 %QUIVERC Quiver color plot.
 %   QUIVERC(X,Y,U,V) plots velocity vectors as arrows with components (u,v)
 %   at the points (x,y).  The matrices X,Y,U,V must all be the same size
@@ -39,6 +35,9 @@
 %   Copyright 1984-2002 The MathWorks, Inc. 
 %   $Revision: 5.21 $  $Date: 2002/06/05 20:05:16 $ 
 %-------------------------------------------------------------
+
+% Bertrand Dano 3-3-03
+% Copyright 1984-2002 The MathWorks, Inc. 
 
 set(gca, 'color', 'blue');
 % Arrow head parameters
