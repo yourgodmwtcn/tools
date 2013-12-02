@@ -58,7 +58,8 @@ else
    if strfind(mach,'poison')
      cd('/home/poison/deepak/ROMS/runs/eddyshelf/scripts/');
    else
-     cd('/media/data/Work/eddyshelf/');
+     %cd('/media/data/Work/eddyshelf/');
+     cd /Volumes/scienceparty_share/RR1317sharedata/software/
    end
 end
 
