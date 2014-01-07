@@ -15,7 +15,7 @@ function [A] = avg1(X,index)
      dim = length(size(X));
      if size(X,index) == 1
          if isvector(X) && ~isscalar(X)
-             A = avg1(X',index);
+             A = avg1(X',index)';
          else
             A = X; 
          end

@@ -13,8 +13,8 @@
 function [der] = diff_cgrid(grid,var,ax1)
 
 % dfdz = 1./Hz .* dfds
-dfdz = dz_cgrid(grid,var);
-% dfdz = bsxfun(@rdivide,diff(var,1,3),diff(grid.zmat,1,3));
+%dfdz = dz_cgrid(grid,var);
+dfdz = bsxfun(@rdivide,diff(var,1,3),diff(grid.zmat,1,3));
 
 if ax1 == 3 % d/dz only
     der = dfdz;
@@ -38,7 +38,11 @@ dzdx_s = diff(grid.zmat,1,ax1)./diff(axmat,1,ax1);
 dfdx_s = bsxfun(@rdivide,diff(var,1,ax1),diff(axmat,1,ax1));
 
 % chain rule power!
-der = dfdx_s - bsxfun(@times,dzdx_s, dfdz);
+if size(dfdx_s,3) ~= size(dfdz,3) % for w
+    der = avg1(dfdx_s,3) - bsxfun(@times,avg1(dzdx_s,3),dfdz);
+else
+    der = dfdx_s - bsxfun(@times,dzdx_s, dfdz);
+end
 
 debug = 0;
 

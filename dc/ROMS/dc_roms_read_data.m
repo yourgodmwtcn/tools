@@ -10,6 +10,7 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume,st
     % set inputs
     if ~exist('tindices','var') || isempty(tindices), tindices = []; end
     if ~exist('volume','var') || isempty(volume), volume = {}; end
+    if ~exist('stride','var'), stride = [1 1 1 1]; end
     
     if isobject(folder)
         run = folder;
