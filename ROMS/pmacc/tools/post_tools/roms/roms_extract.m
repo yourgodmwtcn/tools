@@ -5,14 +5,15 @@ function [data,coords] = roms_extract(varargin)
 %
 % [data,coords] = roms_extract(series, 4Dvarname, t, 'full');
 %                                               ..., 'surface');
+%                                               ..., 'bottom');
 %                                               ..., 'zslice', z);
-%												..., 'depthslice', depth);
+%                                               ..., 'depthslice', depth);
 %                                               ..., 'depthaverage', [mindepth maxdepth]);
 %                                               ..., 'depthintegral', [mindepth maxdepth]);
 %                                               ..., 'profile', y, x);
 %                                               ..., 'point', z, y, x);
 %
-%              ... = roms_extract(filename, varname, ...
+%           ... = roms_extract(filename, varname, ...
 %
 % general routine for extracting data from a ROMS netcdf file series or a
 % single file (e.g., ocean_his_*.nc) in data units.

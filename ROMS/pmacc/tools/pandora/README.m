@@ -1,8 +1,8 @@
-% READme.m 8/6/2011 Parker MacCready
+% README.m 8/20/2013 Parker MacCready
 %
-% about the files and folders in "pandora_code"
+% about the files and folders in "pandora"
 %
-% This code is meant for postprocessing and plotting of ROMS history files,
+% This code is meant for plotting of ROMS history files,
 % and was developed mainly for the RISE, MoSSea, and PNWTOX runs.  However
 % I hope that many of the tools are more general, or are easily adapted to
 % other regions.
@@ -15,16 +15,11 @@
 % filtering in time, can be slow.  Our current default is one save per
 % hour.
 %
-% 2. You need various toolboxes:
-%    tools/shared/Z_functions (used to simplify plotting code)
-%    mexnc (to enable reading NetCDF)
-%    snctools (the toolbox of NetCDF commands, like "nc_varget"
-%    psvs (Neil Banas' toolbox of ROMS routines, very useful)
-%    seawater (equation of state for seawater, e.g. sw_dens.m)
-%    t_tide (Rich Pawlowicz' tidal analysis toolbox)
+% 2. You need various toolboxes and paths, all defined by alpha/toolstart
+% (called by pan_start.m).
 %
 % 3. Generally the code should work on raw history files (in OUT/) or on
-% tidally-averaged files (in OUT_lp).
+% things of similar structure.
 %
 % ** pan_plot.m **
 % This is a driver for the plotting code.  It allows you to interactively
@@ -38,18 +33,6 @@
 % If you chose a sequence of files then it
 % automatically creates a directory inside ../pandora_data/Salish_movies
 % and saves a sequence of numbered jpeg images there).
-%
-% ** mooring_extractor.m **
-% This a a preprocessing tool.  It extracts a mooring-like record (e.g.
-% u(z,t), salt(z,t), etc.) at a user-specified lat-lon location.  It
-% extracts only the values in a little square around the mooring before
-% doing the x,y interpolation, and this makes it relatively fast.  But it
-% still takes about a second per save for a MoSSea run (salish_2006_3, from
-% Sutherlad et al. 2011, JPO), and so it takes over 3 hours for a full
-% year.  It has an internal switch allowing it to be run in
-% interactive/hardwired mode - and hardwired is the way to do it on a
-% remote linix machine).  You have to have at least one extracted mooring
-% file in order for the plotting code "basic_mooring.m" to run.
 %
 % ** zslice_preprocess.m **
 % This needs to be run before you can use the plotting code
@@ -80,9 +63,5 @@
 % 3. basic_mooring.m
 % Makes some maps and then panels of time series (uses the results of
 % mooring_extractor.m).
-%
-% 4. basicPS_Fb_a.m
-% Makes maps of depth-integrated buoyancy flux per unit horizontal area,
-% over the whole domain and in Puget Sound (hence the prefix "basicPS")
 % 
-% 5. ...anything alse you make will be available...
+% 4. ...anything else you make will be available...

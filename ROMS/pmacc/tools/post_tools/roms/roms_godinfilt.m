@@ -1,6 +1,6 @@
 function Sout = roms_godinfilt(Sin, outputTimebase, suffix,outdir,istart)
 
-% seriesDefOut = roms_godinfilt(seriesDefIn, outputTimebase, suffix);
+% seriesDefOut = roms_godinfilt(seriesDefIn, outputTimebase, suffix, outdir, istart);
 % seriesDefOut = roms_godinfilt(seriesDefIn, suffix);
 %
 % filters all the variables in a file series using a 24-24-25 hr window and saves
@@ -17,7 +17,7 @@ function Sout = roms_godinfilt(Sin, outputTimebase, suffix,outdir,istart)
 % Sin.nctime
 % SNG 4/17/2012 checked the output from this code with a low pass godin
 % filter on ssh at an individual mooring and they check out perfectly
-%-------------------------------------------------------------------------
+%------------------------------------------------------------------------
 
 if nargin<3
 	suffix = outputTimebase;

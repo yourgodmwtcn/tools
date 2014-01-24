@@ -19,8 +19,8 @@ Fb10 = double(Fb10); %needed for the PNWTOX output
 % Full domain
 subplot(121)
 pcolor(G.lon_rho,G.lat_rho,Fb10);
-shading flat
-cvec = [-3 0]; caxis(cvec);
+shading interp
+cvec = [-3 -1.3]; caxis(cvec);
 Z_dar;
 xlabel('Longitude (deg)')
 ylabel('Latitude (deg)')
@@ -30,7 +30,7 @@ Z_addcoast('regional',Tdir.coast);
 subplot(122)
 pcolor(G.lon_rho,G.lat_rho,Fb10);
 axis([-123.8 -122 47 48.9]);
-shading flat
+shading interp
 caxis(cvec);
 colorbar('Eastoutside');
 Z_dar;

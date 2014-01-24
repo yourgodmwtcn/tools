@@ -1,4 +1,4 @@
-function [] = Z_velvec_generic(lon,lat,u,v,poschar)
+function [] = Z_velvec_generic(lon,lat,u,v,poschar,utyp)
 % 11/30/2011 Parker MacCready
 %
 % This adds surface velocity vectors to an existing plot.  It takes care to
@@ -11,16 +11,19 @@ function [] = Z_velvec_generic(lon,lat,u,v,poschar)
 % poschar is the location of the SCALE ARROWS
 %   'ul','ur','ll','lr' for the corners, or
 %   'none' for none
+%
+% utyp = typical velocity
 
 hold on
 
 aa = axis; Dlat = aa(4)-aa(3); Dlon = aa(2)-aa(1);
 darscale = 1/cos(pi*mean(aa(3:4))/180);
-ufact = Dlat/30; % automatic scaling of arrow size;
+if nargin==5; utyp = 1; end;
+ufact = Dlat/(30*utyp); % automatic scaling of arrow size;
 quiver(lon,lat,ufact*u*darscale,ufact*v,0,'k');
 
 % add veocity scale arrows
-uscale = 1; % the velocity of the scale arrows
+uscale = utyp; % the velocity of the scale arrows
 switch poschar
     case 'none'
         % do nothing

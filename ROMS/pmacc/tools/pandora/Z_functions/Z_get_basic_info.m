@@ -1,5 +1,5 @@
 function [G,S,T] = Z_get_basic_info(infile)
-% 3/2/2011  Parker MacCready
+% 12/19/2012  Parker MacCready
 % written to use SNCTOOLS
 %
 % 'infile' is a ROMS history file
@@ -11,6 +11,8 @@ function [G,S,T] = Z_get_basic_info(infile)
 %
 % fields are packed as (t,k,j,i) with k increasing upwards
 % and we are assuming that there is only one time level per file
+%
+% added S.Vtransform 12/19/2012
 
 % get grid and bathymetry
 G.h = nc_varget(infile,'h');             % depth (m) of bathymetry (positive down)
@@ -31,6 +33,7 @@ S.hc = nc_varget(infile,'hc');			% s-coordinate critical depth (m)
 S.Cs_r = nc_varget(infile,'Cs_r');       % s=coordinate structure function (rho)
 S.Cs_w = nc_varget(infile,'Cs_w');       % s=coordinate structure function (w)
 S.N = length(S.s_rho);        % number of vertical s-levels
+S.Vtransform = nc_varget(infile,'Vtransform'); % Vtransform (e.g. 1 or 2)
 
 % time info
 T.ocean_time = nc_varget(infile,'ocean_time'); % time in seconds

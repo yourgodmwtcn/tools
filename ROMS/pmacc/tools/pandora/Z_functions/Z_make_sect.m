@@ -49,7 +49,7 @@ if 1
     z_rho = roms_z(h,zeta,S.Cs_r);
     z_w = roms_z(h,zeta,S.Cs_w);
 else
-    [z_rho,z_w] = Z_s2z_mat(h,zeta,S);
+    [z_rho,z_w] = Z_s2z(h,zeta,S);
 end
 zzbot(1,:,:) = zbot;
 zzeta(1,:,:) = zeta;
@@ -69,7 +69,14 @@ ang_rad = [ang_rad ang_rad(end)];
 % interpolate on the section for different classes of variables
 switch var
     case {'salt','temp','rho'}
-        c = nc_varget(infile,var);
+        switch var
+            case {'salt','temp'}
+                c = nc_varget(infile,var);
+            case 'rho'
+                s = nc_varget(infile,'salt');
+                t = nc_varget(infile,'temp');
+                c = Z_fast_potdens(s,t);
+        end
         for ii = 1:S.N
             this_c = squeeze(c(ii,:,:));
             this_c(~G.mask_rho) = NaN;
@@ -129,7 +136,7 @@ switch var
         % first get the density
         salt =  nc_varget(infile,'salt');
         temp =  nc_varget(infile,'temp');
-        [rho] = Z_make_potdens(salt,temp); % use potential density
+        [rho] = Z_fast_potdens(salt,temp); % use potential density
         % note that "temp" actually is theta already 2/11/2012
         for ii = 1:S.N
             this_rho = squeeze(rho(ii,:,:));

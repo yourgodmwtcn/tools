@@ -1,7 +1,0 @@
-
-* correspondingly,
-    the files in the master data archive should all be given a string variable
-    or attribute called "contact" that gives an agency/program and a person
-    (someone who can answer methodology questions and either give permission 
-    to use the data in a paper, or forward a request to someone who can)
-    

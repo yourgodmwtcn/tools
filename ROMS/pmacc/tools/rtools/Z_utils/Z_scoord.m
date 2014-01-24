@@ -2,7 +2,7 @@ function S = Z_scoord(theta_s,theta_b,tcline,hmin,N,Vtransform,Vstretching)
 % Z_scoord.m  5/21/2007  Parker MacCready
 %
 % this creates the structure S, which would be used for example by
-% Z_s2z_mat.m, given basic grid parameters
+% Z_s2z.m, given basic grid parameters
 %
 % IMPORTANT: note that this is the Song & Haidvogel 1994 stretching
 % function, ROMS Vstretching = 1. If one chooses a different stretching
@@ -51,7 +51,8 @@ elseif Vstretching == 2
         Cs_r = sc_r;
         Cs_w = sc_w;
     end
-elseif Vstretching == 3 %Geyer function for high bbl resolution in shallow applications
+elseif Vstretching == 3
+    %Geyer function for high bbl resolution in shallow applications
     gamma = 3;
     Csur = -(log(cosh(gamma.*abs(sc_r).^theta_s)))./log(cosh(gamma));
     Cbot = ((log(cosh(gamma.*(sc_r+1).^theta_b)))./log(cosh(gamma)))-1;
@@ -61,7 +62,9 @@ elseif Vstretching == 3 %Geyer function for high bbl resolution in shallow appli
     Cbot_w = ((log(cosh(gamma.*(sc_w+1).^theta_b)))./log(cosh(gamma)))-1;
     mu_w = 0.5*(1-tanh(gamma*(sc_w+0.5)));
     Cs_w = mu_w.*Cbot_w+(1-mu_w).*Csur_w;    
-elseif Vstretching == 4 %newest ROMS default as of March 2011 (theta_s between 0 and 10, theta_b between 0 and 4)
+elseif Vstretching == 4
+    %newest ROMS default as of March 2011 (theta_s between 0 and 10,
+    % theta_b between 0 and 4)
     if theta_s>0
         Cs_r = (1-cosh(theta_s.*sc_r))./(cosh(theta_s)-1);
         Cs_w = (1-cosh(theta_s.*sc_w))./(cosh(theta_s)-1);

@@ -15,6 +15,12 @@ end
 
 G.lon = nc_varget(fname, 'lon_rho');
 G.lat = nc_varget(fname, 'lat_rho');
+% PM additions 3/7/2012
+pm = nc_varget(fname, 'pm');
+pn = nc_varget(fname, 'pn');
+G.DX = 1./pm;
+G.DY = 1./pn;
+% end PM edit
 G.lonu = nc_varget(fname, 'lon_u');
 G.latu = nc_varget(fname, 'lat_u');
 G.lonv = nc_varget(fname, 'lon_v');

@@ -7,6 +7,11 @@ cast(3) ...etc...
 %}
 %C. Bassin and N. Banas Jan 2010
 
+if length(EX.t)==0
+	Casts = [];
+	return;
+end
+
 if exist('EX.cast')~=1
     EX.cast = obs_identifyCasts(EX);
 end

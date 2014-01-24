@@ -11,9 +11,9 @@ Tdir = pan_start;
 % choose files to plot
 disp('********* zslice_proprocess.m ********************************')
 disp(' ')
-indir = 'E:\Work\CattlePass\runs\';
+indir = '/Users/PM/Documents/Salish/runs/';
 
-slicedir = [Tdir.pan_results,'zslice\'];
+slicedir = [Tdir.pan_results,'zslice/'];
 if ~exist(slicedir,'dir'); mkdir(slicedir); end;
 
 % choose which run to use, and set the basename
@@ -22,14 +22,14 @@ if ~exist(slicedir,'dir'); mkdir(slicedir); end;
 % assume that "pth" is something like:
 % /Users/PM/Documents/Salish/runs/ptx_med_2005_1/OUT/
 % then this finds the string right before "OUT"
-ind = strfind(pth,'\');
+ind = strfind(pth,'/');
 basename = pth(ind(end-2)+1:ind(end-1)-1);
 disp(' '); disp(['basename = ',basename]); disp(' ')
 
 infile = [pth,fn];
 
 % make the interpolation matrices, if needed
-zlev_vec = [-30 -50 -100];
+zlev_vec = [-30 -50 -250];
 whichgrid_vec = {'rho';'u';'v'};
 for gg = 1:length(whichgrid_vec)
     whichgrid = whichgrid_vec{gg};

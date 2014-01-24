@@ -13,14 +13,14 @@ function [Tdir] = toolstart
 % copyright Parker MacCready 2011, released under the BSD license
 
 % &&&&&&&&& USER EDIT THIS IF NEEDED &&&&&&&&&&&&&&&&
-% note that this is designed so that it should not have to
+% This is designed so that it should not have to
 % be changed at all when moving to different systems, as long
 % as the suggested directory structure is maintained
-this_dir = pwd; t_ind = strfind(this_dir,'\tools\pandora');
+this_dir = pwd; t_ind = strfind(this_dir,'/tools');
 Tdir.tools_parent = this_dir(1:t_ind);
-Tdir.tools_parent = 'E:\Work\tools\ROMS\pmacc\';
+cd('~'); Tdir.home = [pwd,'/']; cd(this_dir);
 % NOTE 6/1/2012 The code as written above should work from anywhere within
-% the directories tools, tools_data, tools_output, and anywhere alse whose
+% the directories tools, tools_data, tools_output, and anywhere else whose
 % name starts with tools - as long as it is at the same level.
 % &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
@@ -28,9 +28,9 @@ Tdir.tools_parent = 'E:\Work\tools\ROMS\pmacc\';
 % tools directory structure
 %
 % upper level places:
-Tdir.tools = [Tdir.tools_parent,'tools\'];
-Tdir.data = [Tdir.tools_parent,'tools_data\'];
-Tdir.output = [Tdir.tools_parent,'tools_output\'];
+Tdir.tools = [Tdir.tools_parent,'tools/'];
+Tdir.data = [Tdir.tools_parent,'tools_data/'];
+Tdir.output = [Tdir.tools_parent,'tools_output/'];
 % make sure that the output directory exists
 if ~exist(Tdir.output,'dir'); mkdir(Tdir.output); end;
 
@@ -46,9 +46,10 @@ Tdir.ocn = [Tdir.data,'mossea_forcing_data/ocn/'];
 
 % paths to shared code assumed to be available by many programs
 addpath([Tdir.rtools,'Z_utils']);
-%addpath([Tdir.tools,'shared/mexcdf/mexnc']);
-%addpath([Tdir.tools,'shared/mexcdf/snctools']);
-%addpath([Tdir.tools,'shared/seawater']);
+addpath([Tdir.tools,'shared/mexcdf/mexnc']);
+addpath([Tdir.tools,'shared/mexcdf/snctools']);
+addpath([Tdir.tools,'shared/seawater']);
+addpath([Tdir.tools,'shared/t_tide_v1']);
 addpath([Tdir.tools,'pandora/Z_functions']);
 addpath([Tdir.tools,'post_tools/obs']);
 addpath([Tdir.tools,'post_tools/roms']);

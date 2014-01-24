@@ -1,5 +1,3 @@
-
-
 function [data, filenames] = obs_extract(files, vars, timeRange, varargin)
 %------------------------------------------------------------
 % [data, filenames] = obs_extract(filename, vars, timeRange
@@ -36,6 +34,7 @@ function [data, filenames] = obs_extract(files, vars, timeRange, varargin)
 
 %------------------------------------------------------------
 
+debug = 0;
 
 [netcdfpaths,files]=dirwalker(files);
 
@@ -48,7 +47,9 @@ for i=1:length(netcdfpaths);
         new_netcdfpaths{x}=netcdfpaths{i};
         x=x+1;
     else
-        disp(['skipping ' netcdfpaths{i} ' due to incorrect dimension size'])
+        if debug
+        	disp(['skipping ' netcdfpaths{i} ' due to incorrect dimension size'])
+        end
     end
 
 end
@@ -63,7 +64,7 @@ dataC=cell(N,1);
 
 
 for j=1:N;
-  disp(['reading data from ' new_netcdfpaths{j}])
+  if debug, disp(['reading data from ' new_netcdfpaths{j}]); end
 
   dataC{j,1}= obs_extractFromFile(new_netcdfpaths{j}, vars, timeRange, varargin{:});
     dataC{j,1}.fileid=ones(size(dataC{j,1}.z))*j;  % puts a fileid in extracted data
