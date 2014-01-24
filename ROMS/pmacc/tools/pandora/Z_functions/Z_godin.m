@@ -12,7 +12,7 @@ function [smooth] = Z_godin(data)
 %
 % ** use ONLY with hourly data! **
     
-% This is the shape given in emery and Thomson (1997) Eqn. (5.10.37)
+% This is the shape given in Emery and Thomson (1997) Eqn. (5.10.37)
 k = [0:11];
 filter = NaN * ones(71,1);
 filter(36:47) = (0.5/(24*24*25))*(1200-(12-k).*(13-k)-(12+k).*(13+k));

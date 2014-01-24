@@ -40,7 +40,7 @@ rx0 = max(max(rx(:)),max(ry(:)));
 %---------------------------------------------------------
 if(do_rx1)
 %next, calculate rx1
-[z_rho,z_w] = Z_s2z_mat(h,0.*h,S);
+[z_rho,z_w] = Z_s2z(h,0.*h,S);
 rxx1 = 0; ryy1 = 0; 
 for k = 2:S.N+1
     zz0 = squeeze(z_w(k-1,:,:));

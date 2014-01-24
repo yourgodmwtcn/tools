@@ -3,6 +3,9 @@ function [coast_handle] = Z_addcoast(whichfile,coastdir)
 %
 % [coast_handle] = Z_addcoast(whichfile,coastdir)
 %
+% Standard call: Z_addcoast('combined',Tdir.coast);
+%
+%
 % This adds a coastline to an existing plot, also does river tracks as of
 % 5/12/2011 (need a better data file for this!)
 %
@@ -21,6 +24,6 @@ switch whichfile
     case 'rivers'
         load([coastdir,'pnw_rivers.mat']);
 end
-coast_handle = plot(lon,lat,'-k','LineWidth',1.5);
+coast_handle = plot(lon,lat,'-k');
 hold off
 

@@ -24,9 +24,6 @@ if ischar(poschar) & length(poschar)==2
    case 'ur'
       xt = aa(2) - 0.05 * (aa(2)-aa(1));
       yt = aa(4) - 0.10 * (aa(4)-aa(3));
-   case 'mr'
-      xt = aa(2) - 0 * (aa(2)-aa(1));
-      yt = aa(4) - 0.45 * (aa(4)-aa(3));
    end
 else
    disp('Need to input a a different poschar')

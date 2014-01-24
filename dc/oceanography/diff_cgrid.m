@@ -31,15 +31,15 @@ switch ax1
         axmat = grid.ymat;
 end
 
-% (dz/dx)_?
+% (dz/dx)_s
 dzdx_s = diff(grid.zmat,1,ax1)./diff(axmat,1,ax1);
 
-% (df/dx)_?; x = ax1
+% (df/dx)_s; x = ax1
 dfdx_s = bsxfun(@rdivide,diff(var,1,ax1),diff(axmat,1,ax1));
 
 % chain rule power!
 if size(dfdx_s,3) ~= size(dfdz,3) % for w
-    der = avg1(dfdx_s,3) - bsxfun(@times,avg1(dzdx_s,3),dfdz);
+   der = avg1(dfdx_s,3) - bsxfun(@times,avg1(dzdx_s,3),dfdz);
 else
     der = dfdx_s - bsxfun(@times,dzdx_s, dfdz);
 end

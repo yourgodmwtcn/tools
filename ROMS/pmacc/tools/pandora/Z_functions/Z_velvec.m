@@ -17,7 +17,7 @@ u = nc_varget(infile,'u',[0 S.N-1 0 0],[1 1 -1 -1]);
 v = nc_varget(infile,'v',[0 S.N-1 0 0],[1 1 -1 -1]);
 aa = axis; Dlat = aa(4)-aa(3); Dlon = aa(2)-aa(1);
 % this code makes an evenly spaced grid, with 100 points in the y-direction
-dlat = Dlat/20; % lat spacing of regular grid
+dlat = Dlat/100; % lat spacing of regular grid
 darscale = 1/cos(pi*mean(aa(3:4))/180);
 [LON,LAT] = meshgrid([aa(1):dlat*darscale:aa(2)],[aa(3):dlat:aa(4)]);
 uu = interp2(G.lon_u,G.lat_u,u,LON,LAT);
@@ -52,11 +52,6 @@ switch poschar
         quiver(xt+deltax,yt+deltay,ufact*0*darscale,ufact*uscale,0,'k');
         text(xt+deltax,yt,[num2str(uscale),' m s^{-1}'],'color','k');
     case {'lr'}
-        deltax = -Dlon/4; deltay = Dlat/20;
-        quiver(xt+deltax,yt+deltay,ufact*uscale*darscale,ufact*0,0,'k');
-        quiver(xt+deltax,yt+deltay,ufact*0*darscale,ufact*uscale,0,'k');
-        text(xt+deltax,yt,[num2str(uscale),' m s^{-1}'],'color','k');
-    case {'mr'}
         deltax = -Dlon/4; deltay = Dlat/20;
         quiver(xt+deltax,yt+deltay,ufact*uscale*darscale,ufact*0,0,'k');
         quiver(xt+deltax,yt+deltay,ufact*0*darscale,ufact*uscale,0,'k');

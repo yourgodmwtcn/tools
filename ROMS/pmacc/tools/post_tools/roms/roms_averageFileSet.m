@@ -1,4 +1,4 @@
-function roms_averageFileSet(seriesIn, ncn, filename, weights, outdir)
+function roms_averageFileSet_native(seriesIn, ncn, filename, weights, outdir)
 
 % roms_averageFileSet(seriesIn, frameNums, outputFilename);
 %                                                    ...,weights);
@@ -22,6 +22,10 @@ function roms_averageFileSet(seriesIn, ncn, filename, weights, outdir)
 % updated 10/6/2011 SNG to include biological variables NO3, phytoplankton,
 % zooplankton, detritus, and oxygen
 % updated 1/24/2012 SNG to include dye variables
+% SNG 18 April 2012 incorporated native matlab netcdf calls rather than
+% snctools. The speed up was only about 5% though so not much. Otherwise,
+% this code is identical to roms_averageFileSet.m and I checked the output
+% results and they are identical
 
 if nargin < 4
 	weights = ones(size(frameNums)) ./ length(frameNums);
@@ -50,6 +54,14 @@ disp(['averaging ' seriesIn.dirname seriesIn.basename ' #' num2str(ncn(1)) ' to 
 tmp = [outdir 'temp.nc'];
 system(['cp ' inNames{end} ' ' tmp]);
 
+% %I tested the below, opening all files first and there was no difference in
+% %speed! SNG 19 April 2012
+% %open all netcdf files to be filtered
+% ncid = zeros(1,lenght(ncn));
+% for ni = 1:length(ncn)
+%     ncid(ni) = netcdf.open(inNames{ni},'NC_NOWRITE');
+% end
+
 % loop through variables inside
 info = nc_info(tmp);
 vars = info.Dataset;
@@ -57,9 +69,19 @@ for vi=1:length(vars)
 	if length(vars(vi).Size) >= 2, disp(['    ' vars(vi).Name]); end
 	if vars(vi).Nctype ~= nc_char
 		% loop through files and make a weighted average of that variable
-		A = weights(1) * nc_varget(inNames{1}, vars(vi).Name);
+		ncid = netcdf.open(inNames{1},'NC_NOWRITE');
+        var_id = netcdf.inqVarID(ncid,vars(vi).Name);
+        A = weights(1) * netcdf.getVar(ncid,var_id,'double');
+        netcdf.close(ncid);
         for ni = 2:length(ncn)
-            A = A + (weights(ni) * nc_varget(inNames{ni}, vars(vi).Name));
+            ncid = netcdf.open(inNames{ni},'NC_NOWRITE');
+            var_id = netcdf.inqVarID(ncid,vars(vi).Name);
+            A = A + (weights(ni) * netcdf.getVar(ncid,var_id,'double'));
+            netcdf.close(ncid);
+            % if all files are opened ahead of time, use below 2 lines
+            % rather than above 4, this is related to my time test
+            %var_id = netcdf.inqVarID(ncid(ni),vars(vi).Name);
+            %A = A + (weights(ni) * netcdf.getVar(ncid(ni),var_id,'double'));
         end
         % PM 3/24/2011 I had to add the reshape statement below in order to
         % get the nc_varput call to work on my macbook.  Without it the
@@ -72,9 +94,19 @@ for vi=1:length(vars)
             %disp([vars(vi).Name,': size of A = ',num2str(size(A))]);
         end
         % write the average into the output file
-		nc_varput(tmp, vars(vi).Name, A);
+        ncid = netcdf.open(tmp,'NC_WRITE');
+        var_id = netcdf.inqVarID(ncid,vars(vi).Name);
+        netcdf.putVar(ncid,var_id,A);
+        netcdf.close(ncid);
 	end
 end
+
+% %also related to my test, if they were all opened at once, they all need to
+% %be closed
+% %close all netcdf files
+% for ni = 1:length(ncn)
+%     netcdf.close(ncid(ni));
+% end
 
 % if the output filename is a relative path, prepend the series' dirname
 % commented out by PM 3/24/2011

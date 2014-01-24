@@ -1,0 +1,6 @@
+function NewBathy=GRID_LinearProgrammingSmoothing_rx0_volume(...
+    MSK, Hobs, rx0max, AreaMatrix)
+[eta_rho, xi_rho]=size(MSK);
+rx0matrix=rx0max*ones(eta_rho, xi_rho);
+NewBathy=GRID_LinearProgrammingSmoothing_rx0var_volume(...
+    MSK, Hobs, rx0matrix, AreaMatrix);

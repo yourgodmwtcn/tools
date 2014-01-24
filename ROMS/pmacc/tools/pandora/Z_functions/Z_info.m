@@ -22,10 +22,10 @@ end
 
 % put the text on the figure
 text(xt,yt + (voff+3)*dy,[datestr(T.time_datenum,1),' '], ...
-    'horizontalalignment',hal,'fontsize',10,'fontweight','normal');
+    'horizontalalignment',hal);
 text(xt,yt + (voff+2)*dy,[datestr(T.time_datenum,15),' GMT '], ...
-    'horizontalalignment',hal,'fontsize',10,'fontweight','normal');
+    'horizontalalignment',hal);
 text(xt,yt + (voff+1)*dy,[strrep(basename,'_',' '),' '], ...
-    'horizontalalignment',hal,'fontsize',10,'fontweight','normal');
+    'horizontalalignment',hal);
 text(xt,yt + (voff+0)*dy,['save ',num2str(tt),' '], ...
-    'horizontalalignment',hal,'fontsize',10,'fontweight','normal');
+    'horizontalalignment',hal);

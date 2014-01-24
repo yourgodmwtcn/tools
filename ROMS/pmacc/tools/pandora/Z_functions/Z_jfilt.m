@@ -8,14 +8,17 @@ function [smooth] = Z_jfilt(data,n)%filter,bnan)
 % OUTPUT:
 %  smooth is the same size as data, filtered along columns, and
 %     padded with NaN's at the ends
+%  if n=1 it just returns matrix you gave it.
 %
 % by default it uses a Hanning window
 
 if n == 1; smooth = data; return; end; % just do nothing
 
-filter = hanning(n); % Hanning from the signal processing toolbox
+%filter = hanning(n); % Hanning from the signal processing toolbox
 % filter=ones(n,1); % Boxcar
-% filter = 1 + cos(linspace(-pi,pi,n)); % Hanning from scratch
+ff = cos(linspace(-pi,pi,n+2));
+ff = ff(2:end-1);
+filter = (1 + ff)/2; % Hanning from scratch
 filter=filter./sum(filter);
 smooth=zeros(size(data));
 a=round(n/2);

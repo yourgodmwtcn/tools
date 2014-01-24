@@ -1,16 +1,16 @@
-% pan_plot.m  12/7/2011  Parker MacCready
+% pan_plot.m  10/4/2012  Parker MacCready
 %
 % a general tool for selecting a ROMS history file (or group of files) and
 % plotting it using a veriety of different plotting codes
 %
-% if more than one history file is chosen then a sqeuence of plots is saved
+% if more than one history file is chosen then a sequence of plots is saved
 % in a new directory, and these may be combined into a movie using other
 % software
 %
 % it assumes that there is one history file per time step
 
 clear
-%close all
+% close all
 
 % set paths, get Tdir structure of directories, and
 % create output directories if needed
@@ -20,28 +20,24 @@ Tdir = pan_start;
 % choose file or files to plot
 disp('********* pan_plot.m ********************************')
 disp(' ')
-indir = 'E:\Work\archive\CattlePass\runs\';
+indir = '~/Documents/roms/output/';
 
 % choose which run to use, and set the basename
-% [fn,pth]=uigetfile([indir,'*.nc'],'Select NetCDF file or files...','multiselect','on');
-    pth = 'E:\Work\archive\CattlePass\runs\final\';
-    files = ls(pth); %files = files(83-15:end,:);
-    files_flood1 = files((83-15):(83+19),:);
-    indi = strmatch('ocean_his_2280.nc',files);
-    indf = strmatch('ocean_his_2310.nc',files);
-    files_flood2 = files(indi:indf,:);
-    %files = 'ocean_his_2195.nc';
-    files = files_flood2;
-    fn = cellstr(files)';
+[fn,pth]=uigetfile([indir,'*.nc'], ...
+    'Select NetCDF file or files...','multiselect','on');
 % ASSUMES that "pth" is something like:
 % /Users/PM/Documents/Salish/runs/ptx_med_2005_1/OUT/
 % then the lines below find the string right before "OUT", which is the
 % basename, the main identifier of the run
-ind = strfind(pth,'\');
-basename = pth(ind(end-2)+1:ind(end-1)-1);
+ind = strfind(pth,'/');
+basename = pth(ind(end-1)+1:ind(end)-1);
+if strcmp(basename,'OUT')
+    basename = pth(ind(end-2)+1:ind(end-1)-1);
+end
 disp(' '); disp(['basename = ',basename]); disp(' ')
 % also figure out if we are plotting low-passed files
-if isempty(strfind(fn,'lp')) % NOTE the assumed naming convention
+if iscell(fn); fn1 = fn{1}; else fn1 = fn; end;
+if isempty(strfind(fn1,'lp')) % NOTE the assumed naming convention
     time_flag = '';
 else
     time_flag = '_lp';
@@ -54,16 +50,16 @@ make_movie = 0;
 if iscell(fn); make_movie = 1; end
 
 % choose which plotting code to use
-[fn_p,pth_p] = uigetfile('E:\Work\tools\ROMS\pmacc\tools\pandora\Salish_plot_code\*.m','Select Plotting code...');
+[fn_p,pth_p] = uigetfile('Salish_plot_code/*.m','Select Plotting code...');
 addpath(pth_p);
 plot_file = strrep(fn_p,'.m',''); % used in an "eval" call below
 
 % default initialization of plot properties
-%Z_fig(10); 
-figure;
-set(gcf,'position',[0 0 1600 900]);
+Z_fig(10); figure;
+set(gcf,'position',[100 100 1000 600]);
+
 % determine how many files to plot
-if make_movie; ntt = size(fn,2); else ntt = 1; end;
+if make_movie; ntt = size(fn,2); else; ntt = 1; end;
 
 for ii = 1:ntt % MOVIE loop start (or just make single plot)
     if make_movie;
@@ -76,10 +72,8 @@ for ii = 1:ntt % MOVIE loop start (or just make single plot)
     
     % make the plot
     switch plot_file
-        % *** EDITED TO NEW STANDARDS *********** 
         case 'basic_mooring'
-            % requires that you have created mooring files, and that you
-            % have river files
+            % requires mooring and river files
             if ii==1;
                 % get the river file
                 T = Z_get_time_info(infile);
@@ -96,8 +90,7 @@ for ii = 1:ntt % MOVIE loop start (or just make single plot)
             end;
             eval([plot_file,'(Tdir,infile,basename,tt,riv,mod_moor);']);
         otherwise
-            % this is the default plotting call, using the plot_file that
-            % you selected
+            % the default plotting call, using selected plot_file
             eval([plot_file,'(Tdir,infile,basename,tt);']);
     end
     
@@ -110,29 +103,30 @@ for ii = 1:ntt % MOVIE loop start (or just make single plot)
     % size by a factor 5/3 over what is on the sceen (as determined by
     % pixel count).
     %
-    set(gcf,'PaperPositionMode','auto');
     if make_movie == 0
-        % choose to save a copy of the plot
-        plotit = input('Save a plot? [1 = save, RETURN = do not save]');
-        if isempty(plotit); plotit = 0; end;
-        if plotit
-            set(gcf,'PaperPositionMode','auto');
-            export_fig([Tdir.pan_fig,plot_file,'_',basename, ...
-                time_flag,'_',num2str(tt),'.tif']);
+        if 1
+            % do nothing
+        else
+            % ask to save a copy of the plot
+            plotit = input('Save a plot? [1 = save, RETURN = do not save]');
+            if isempty(plotit); plotit = 0; end;
+            if plotit
+                set(gcf,'PaperPositionMode','auto');
+                print('-djpeg100',[Tdir.pan_fig,plot_file,'_',basename, ...
+                    time_flag,'_',num2str(tt),'.jpg']);
+            end
         end
     else % make a folder of jpegs for a movie
-        outdir = [Tdir.pan_mov,plot_file,'_',basename,time_flag];
         if ii==1
             outdir = [Tdir.pan_mov,plot_file,'_',basename,time_flag];
             if exist(outdir)==7; rmdir(outdir,'s'); end;
             mkdir(outdir);
-        end        
-        export_fig('-q90','-zbuffer',sprintf([strrep(outdir,'\','\\'),'\\%04d.png'],ii));
+        end
+        set(gcf,'PaperPositionMode','auto');
+        print('-djpeg100',[outdir,'/',num2str(tt),'.jpg']);
         if ii<length(fn); clf; end;
     end
     
 end % MOVIE loop end
-
 disp('DONE');
-if make_movie, disp(['output images in ' outdir]); end
 

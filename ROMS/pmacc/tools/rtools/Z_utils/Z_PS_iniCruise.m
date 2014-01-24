@@ -22,7 +22,7 @@ h = nc_varget(gfile,'h'); % get grid data
 mask_rho = nc_varget(gfile,'mask_rho');
 lat_rho = nc_varget(gfile,'lat_rho');
 lon_rho = nc_varget(gfile,'lon_rho');
-[z_rho,z_w] = Z_s2z_mat(h,0*h,S);
+[z_rho,z_w] = Z_s2z(h,0*h,S);
 zz = reshape(z_rho,S.N,M*L); zz = -zz; %makes positive down
 % read in initial condition
 salt_roms = nc_varget(outfile,'salt'); salt_old = salt_roms; %for debugging plot below
