@@ -11,6 +11,11 @@ function [Sint,Savg] = roms_depthIntegrate(S, cs, csw, H, zeta, depthRange);
 % returns both the depth integral and the depth average.
 %
 % neil banas mar 2009
+% deepak - modified to take [x y z] and return [x y] - oct 2013
+
+S = permute(S,[3 2 1 4]);
+zeta = zeta';
+H = H';
 
 S = squeeze(S);
 K = size(S,1);
