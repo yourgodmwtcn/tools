@@ -1,5 +1,5 @@
 function [thedata,thegrid,han] = roms_addvect(file,var,time,depth,grd,vec_d,uscale,varargin)
-% $Id: roms_addvect.m 358 2008-04-07 14:15:03Z zhang $
+% $Id: roms_addvect.m 420 2013-07-31 18:29:13Z wilkin $
 % Adds vectors from a ROMS file to the current axes
 % [thedata,thegrid,han] = roms_addvect(file,var,time,depth,grd,...
 %                         vec_d,uscale,varargin)
@@ -23,7 +23,6 @@ function [thedata,thegrid,han] = roms_addvect(file,var,time,depth,grd,vec_d,usca
 %
 % This needs a little work to generalize the distinction between
 % plotting data from s levels or z depths
-
 if nargin < 5
   grd = [];
 end
@@ -33,7 +32,11 @@ if vec_d
     case { 'sustr','svstr','stress','windstress'}
       [u,x,y,t,grd] = roms_2dslice(file,'sustr',time,grd);
       v = roms_2dslice(file,'svstr',time,grd);
+    case { 'bustr','bvstr','botstress','bstress','drag'}
+      [u,x,y,t,grd] = roms_2dslice(file,'bustr',time,grd);
+      v = roms_2dslice(file,'bvstr',time,grd);
     case { 'uwind','vwind','wind','winds'}
+      wanring('the logic for winds might be wrong w.r.t. rotation - need to check')
       [u,x,y,t,grd] = roms_2dslice(file,'Uwind',time,grd);
       v = roms_2dslice(file,'Vwind',time,grd);
     case { 'ubar','vbar'}
@@ -63,6 +66,8 @@ if vec_d
         v = roms_zslice(file,[ 'v' var(2:end)],time,depth,grd);
       end
   end
+  u = squeeze(u);
+  v = squeeze(v);
   hanq = roms_quivergrd(u,v,grd,vec_d,uscale,varargin{:});
 end
 

@@ -17,9 +17,9 @@ function [S] = read_contact(ncname)
 %    S           Nested grids Contact Points structure (struct array)
 %
 
-% svn $Id: read_contact.m 660 2013-04-18 23:34:36Z arango $
+% svn $Id: read_contact.m 711 2014-01-23 20:36:13Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%

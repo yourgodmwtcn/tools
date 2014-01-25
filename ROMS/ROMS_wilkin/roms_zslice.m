@@ -1,5 +1,5 @@
 function [data,x,y,t,grd] = roms_zslice(file,var,time,depth,grd)
-% $Id: roms_zslice.m 386 2009-10-14 13:30:22Z wilkin $
+% $Id: roms_zslice.m 422 2014-01-13 17:13:14Z wilkin $
 % Get a constant-z slice out of a ROMS history, averages or restart file
 % [data,x,y] = roms_zslice(file,var,time,depth,grd)
 %
@@ -28,10 +28,13 @@ if ~nc_isvar(file,var)
 end
 
 % get the time
-time_variable = nc_attget(file,var,'time');
-if isempty(time_variable)
-  time_variable = 'scrum_time'; % doubt this is really of any use any more 
-end
+
+% this change (2013-05-23) to accommodate Forecast Model Run 
+% Collection (FMRC) which changes the time coordinate to be named
+% "time" but leaves the attribute of the variable pointed to ocean_time
+info = nc_vinfo(file,var);
+time_variable = info.Dimensions(end).Name;
+% time_variable = nc_attget(file,var,'time');
 
 if nc_varsize(file,time_variable)<time
   disp(['Requested time index ' int2str(time) ' not available'])
@@ -61,6 +64,11 @@ end
 %data = nc_varget(file,var,[time-1 0 0 0],[1 -1 -1 -1]);
 data = ncread(file,var,[1 1 1 time],[Inf Inf Inf 1]);
 data = permute(data,[3 2 1]);
+
+% THIS STEP TO ACCOMMODATE NC_VARGET RETURNING A TIME LEVEL WITH
+% LEADING SINGLETON DIMENSION - BEHAVIOR THAT DIFFERS BETWEEN JAVA AND
+% MATLAB OPENDAP INTERFACES - 11 Dec, 2012
+data = squeeze(data);
 
 % slice at requested depth
 [data,x,y] = roms_zslice_var(data,1,depth,grd);

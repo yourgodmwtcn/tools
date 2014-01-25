@@ -31,9 +31,9 @@ function editmask(grid_file, coast_file)
 %           BUTTON, RADIOBOX, TEXTBOX, AXISSCROLL,
 %
 
-% svn $Id: editmask.m 663 2013-05-16 20:06:58Z arango $
+% svn $Id: editmask.m 711 2014-01-23 20:36:13Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                            A. Shcherbina        %
 %=========================================================================%

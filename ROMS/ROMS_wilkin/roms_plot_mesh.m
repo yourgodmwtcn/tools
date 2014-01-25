@@ -1,5 +1,5 @@
 function h = roms_plot_mesh(g,n,c,cgrid)
-% $Id: roms_plot_mesh.m 358 2008-04-07 14:15:03Z zhang $
+% $Id: roms_plot_mesh.m 418 2013-05-23 14:21:53Z wilkin $
 % han = roms_plot_mesh(grd,decimation_factor,color,cgridposition)
 %
 % Plot a mesh showing a ROMS grid over an existing plot
@@ -21,14 +21,17 @@ if nargin < 4
   cgrid = 'psi';
 end
 
+m = ones(size(g.lon_psi));
+% m = av2(av2(g.mask_rho)')'; m(m<0.5) = NaN; m(~isnan(m)) = 1;
+
 switch cgrid(1)
   case 'r'
     han1=plot(g.lon_rho(1:n:end,1:n:end),g.lat_rho(1:n:end,1:n:end),'w-');
     han2=plot(g.lon_rho(1:n:end,1:n:end)',g.lat_rho(1:n:end,1:n:end)','w-');
     han = [han1; han2];
   case 'p'
-    han1=plot(g.lon_psi(1:n:end,1:n:end),g.lat_psi(1:n:end,1:n:end),'w-');
-    han2=plot(g.lon_psi(1:n:end,1:n:end)',g.lat_psi(1:n:end,1:n:end)','w-');
+    han1=plot(m.*g.lon_psi(1:n:end,1:n:end),m.*g.lat_psi(1:n:end,1:n:end),'w-');
+    han2=plot((m.*g.lon_psi(1:n:end,1:n:end))',(m.*g.lat_psi(1:n:end,1:n:end))','w-');
     han = [han1; han2];
   otherwise
     han1=plot(g.lon_psi(1:end,1),g.lat_psi(1:end,1),'w-');

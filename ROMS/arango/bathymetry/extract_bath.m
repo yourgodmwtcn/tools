@@ -5,9 +5,9 @@
 %  at the specified coordinates.
 %
 
-% svn $Id: extract_bath.m 647 2013-01-22 23:40:00Z arango $
+% svn $Id: extract_bath.m 711 2014-01-23 20:36:13Z arango $
 %===========================================================================%
-%  Copyright (c) 2002-2013 The ROMS/TOMS Group                              %
+%  Copyright (c) 2002-2014 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
 %    See License_ROMS.txt                           Hernan G. Arango        %
 %===========================================================================%
@@ -15,7 +15,7 @@
 %job='seagrid';          %  prepare bathymetry for seagrid
  job='netcdf';           %  Extract a bathymetry NetCDF file
 
-database='etopo5';
+database='etopo';
 
 switch job,
   case 'seagrid'
@@ -26,7 +26,7 @@ switch job,
 end,
 
 switch database,
-  case 'etopo5'
+  case 'etopo'
     Bname='etopo5.nc';
 end,
 
@@ -40,8 +40,8 @@ Tlat=49.0;                % Top    corner latitude
 %-----------------------------------------------------------------------
 
 switch database,
-  case 'etopo5'
-    [lon,lat,h]=x_etopo5(Llon,Rlon,Blat,Tlat,Bname);
+  case 'etopo'
+    [lon,lat,h]=x_etopo(Llon,Rlon,Blat,Tlat,Bname);
 end,
 
 %-----------------------------------------------------------------------

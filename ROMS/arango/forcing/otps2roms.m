@@ -62,9 +62,9 @@ function Tide = otps2roms(gfile,base_date,pred_date,ofile,model_file)
 % Revised by Hernan Arango 08/02/2012
 %
   
-% svn $Id: otps2roms.m 647 2013-01-22 23:40:00Z arango $
+% svn $Id: otps2roms.m 711 2014-01-23 20:36:13Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%
@@ -79,17 +79,20 @@ harmonics_prefix='otps_harmonics_';
 
 % Build grid file.
 
-llfile='./ll.dat';
+llfile='ll.dat';
 roms2ll(gfile,llfile);
-disp(['Gridfile ' gfile ' lat/lon written to ' llfile])
+disp(blanks(1));
+disp(['Gridfile ' gfile ' lat/lon written to ' llfile]);
 
 if ~(exist(model_file,'file'))
-  error(['No Such model file: ' model_file])  
+  error(['No Such model file: ' model_file]);
 end
 
-disp(['Mode parameter file used: ' model_file])
+disp(blanks(1));
+disp(['Mode parameter file used: ' model_file]);
 
 for i=1:length(vars)
+  disp(blanks(1));
   disp(['Generating parameter file for ' vars(i)])
   fid=fopen('otps_input','w');
   fprintf(fid,'%s\n',model_file);
@@ -104,11 +107,11 @@ for i=1:length(vars)
   
   disp(['Extracting ' vars(i) ' Harmonics'])
   
-  [s,w]=unix('./extract_HC < otps_input');
+  [s,w]=unix('~/bin/extract_HC < otps_input');
   disp([' '])
-  disp(['*******************************************'])
+% disp(['*******************************************'])
   disp(w)
-  disp(['*******************************************'])
+% disp(['*******************************************'])
 end  
 
 mask_rho = nc_varget ( gfile, 'mask_rho' );

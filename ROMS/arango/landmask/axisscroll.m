@@ -20,9 +20,9 @@ function h=axisscroll(type);
 %   axisscroll
 %
 
-% svn $Id: axisscroll.m 647 2013-01-22 23:40:00Z arango $
+% svn $Id: axisscroll.m 711 2014-01-23 20:36:13Z arango $
 %===========================================================================%
-%  Copyright (c) 2002-2013 The ROMS/TOMS Group                              %
+%  Copyright (c) 2002-2014 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
 %    See License_ROMS.txt                            A. Shcherbina          %
 %===========================================================================%

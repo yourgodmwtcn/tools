@@ -1,5 +1,5 @@
 function [thedata,thegrid,han] = roms_sview(file,var,time,k,grd,vec_d,uscale,varargin)
-% $Id: roms_sview.m 402 2011-08-24 14:27:46Z wilkin $
+% $Id: roms_sview.m 423 2014-01-13 17:13:38Z wilkin $
 % [theData,theGrid,theHan] = roms_sview(file,var,time,k,grd,vec_d,uscale,varargin)
 % 
 % Inputs:
@@ -53,19 +53,23 @@ end
 if ~isstruct(file)
   % check only if input TIME is in datestr format, and if so find the 
   % time index in FILE that is the closest
-  if isstr(time)
+  if ischar(time)      
     fdnums = roms_get_date(file,-1);
-    dnum = datenum(time);
-    if dnum >= fdnums(1) & dnum <= fdnums(end)
-      [tmp,time] = min(abs(dnum-fdnums));
-      time = time(1);
+    if strcmp(time,'latest')
+      time = length(fdnums);
     else
-      warning(' ')
-      disp(['Requested date ' time ' is not between the dates in '])
-      disp([file ' which are ' datestr(fdnums(1),0) ' to ' ])
-      disp(datestr(fdnums(end),0))
-      thedata = -1;
-      return
+      dnum = datenum(time);
+      if dnum >= fdnums(1) && dnum <= fdnums(end)
+        [~,time] = min(abs(dnum-fdnums));
+        time = time(1);
+      else
+        warning(' ')
+        disp(['Requested date ' time ' is not between the dates in '])
+        disp([file ' which are ' datestr(fdnums(1),0) ' to ' ])
+        disp(datestr(fdnums(end),0))
+        thedata = -1;
+        return
+      end
     end
   end
 else
@@ -103,36 +107,36 @@ if strcmp(var,'Chlorophyll')
 end
 
 % check that we don't have an empty netcdf file. If so, return an error
-% code rather than crash - so this can be trapped within a loop over manyu
+% code rather than crash - so this can be trapped within a loop over many
 % files (all this to catch the case that sometimes an average file is
 % created but not written because of a bad restart).
-try 
-  ocean_time = nc_varget(file,'ocean_time');
-  if length(ocean_time) == 0
-    warning(['ocean_time has no data ... exiting'])
-    thedata = -1;
-    return
-  end
-catch
-  try
-    tname = nc_attget(file,var,'time');
-    ocean_time = nc_varget(file,tname);
-  catch
-    thedata = -1;
-    warning(['No ocean_time variable in ' file])
-    return
-  end
-end
+% try 
+%   ocean_time = nc_varget(file,'ocean_time');
+%   if length(ocean_time) == 0
+%     warning(['ocean_time has no data ... exiting'])
+%     thedata = -1;
+%     return
+%   end
+% catch
+%   try
+%     tname = nc_attget(file,var,'time');
+%     ocean_time = nc_varget(file,tname);
+%   catch
+%     thedata = -1;
+%     warning(['No ocean_time variable in ' file])
+%     return
+%   end
+% end
 
 % pcolor plot of the variable
 switch var
   % two-dimensional variables
   % there must be a better way to do this test!
   case { 'ubarmag','vbarmag'}
-    datau = nc_varget(file,'ubar',[time-1 0 0],[1 -1 -1]);
+    datau = squeeze(nc_varget(file,'ubar',[time-1 0 0],[1 -1 -1]));
     datau = datau(:,[1 1:end end]);
     datau = av2(datau')';
-    datav = nc_varget(file,'vbar',[time-1 0 0],[1 -1 -1]);
+    datav = squeeze(nc_varget(file,'vbar',[time-1 0 0],[1 -1 -1]));
     datav = datav([1 1:end end],:);
     datav = av2(datav);
     data = abs(datau+sqrt(-1)*datav);
@@ -140,26 +144,26 @@ switch var
     var = 'ubar'; % for time handling
   case 'stress'
     warning('option not debugged yet')
-    datau = nc_varget(file,'sustr',[time-1 0 0],[1 -1 -1]);
+    datau = squeeze(nc_varget(file,'sustr',[time-1 0 0],[1 -1 -1]));
     datau = datau(:,[1 1:end end]);
     datau = av2(datau')';
-    datau = nc_varget(file,'svstr',[time-1 0 0],[1 -1 -1]);
+    datav = squeeze(nc_varget(file,'svstr',[time-1 0 0],[1 -1 -1]));
     datav = datav([1 1:end end],:);
     datav = av2(datav);
     data = abs(datau+sqrt(-1)*datav);
     depstr = [ ' at surface '];
     var = 'sustr'; % for time handling
   case 'wind'
-    datau = nc_varget(file,'Uwind',[time-1 0 0],[1 -1 -1]);
-    datav = nc_varget(file,'Vwind',[time-1 0 0],[1 -1 -1]);
+    datau = squeeze(nc_varget(file,'Uwind',[time-1 0 0],[1 -1 -1]));
+    datav = squeeze(nc_varget(file,'Vwind',[time-1 0 0],[1 -1 -1]));
     data = abs(datau+sqrt(-1)*datav);
     depstr = [ ' 10 m above surface '];
     var = 'Uwind'; % for time handling
   case 'umag'
-    datau = nc_varget(file,'u',[time-1 k-1 0 0],[1 1 -1 -1]);
+    datau = squeeze(nc_varget(file,'u',[time-1 k-1 0 0],[1 1 -1 -1]));
     datau = datau(:,[1 1:end end]);
     datau = av2(datau')';
-    datav = nc_varget(file,'v',[time-1 k-1 0 0],[1 1 -1 -1]);
+    datav = squeeze(nc_varget(file,'v',[time-1 k-1 0 0],[1 1 -1 -1]));
     datav = datav([1 1:end end],:);
     datav = av2(datav);
     data = abs(datau+sqrt(-1)*datav);
@@ -168,11 +172,11 @@ switch var
   otherwise
     % no special handling but need to decide if this is a 2D or 3D variable
     try
-      data = nc_varget(file,var,[time-1 k-1 0 0],[1 1 -1 -1]);
+      data = squeeze(nc_varget(file,var,[time-1 k-1 0 0],[1 1 -1 -1]));
       depstr = [ ' Level ' int2str(k) ' '];
     catch
       % must be 2D
-      data = nc_varget(file,var,[time-1 0 0],[1 -1 -1]);
+      data = squeeze(nc_varget(file,var,[time-1 0 0],[1 -1 -1]));
       depstr = [ ' depth average'];
     end
 end
@@ -236,6 +240,10 @@ if nargin > 5
     if nargin < 7
       uscale = 1;
     end
+    u = squeeze(u);
+    v = squeeze(v);
+    u(isnan(u)==1) = 0;
+    v(isnan(v)==1) = 0;
     hanquiver = roms_quivergrd(u,v,grd,vec_d,uscale,varargin{:});
   end
 end

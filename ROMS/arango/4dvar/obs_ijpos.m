@@ -41,9 +41,9 @@ function [Xgrid, Ygrid]=obs_ijpos(GRDname, obs_lon, obs_lat, ...
 %          Xgrid and Ygrid.
 %
   
-% svn $Id: obs_ijpos.m 647 2013-01-22 23:40:00Z arango $
+% svn $Id: obs_ijpos.m 711 2014-01-23 20:36:13Z arango $
 %===========================================================================%
-%  Copyright (c) 2002-2013 The ROMS/TOMS Group                              %
+%  Copyright (c) 2002-2014 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
 %    See License_ROMS.txt                           Hernan G. Arango        %
 %===========================================================================%
@@ -288,7 +288,7 @@ function [X,Y] = correction(rlon, rlat, angle, obs_lon, obs_lat, bounded, X, Y);
 %
 
 %===========================================================================%
-%  Copyright (c) 2002-2013 The ROMS/TOMS Group                              %
+%  Copyright (c) 2002-2014 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
 %    See License_ROMS.txt                           Hernan G. Arango        %
 %===========================================================================%

@@ -32,9 +32,9 @@ function S = grid_extract(Ginp,Gout,Imin,Imax,Jmin,Jmax)
 %    S          Smaller Grid structure
 %
 
-% svn $Id: grid_extract.m 647 2013-01-22 23:40:00Z arango $
+% svn $Id: grid_extract.m 711 2014-01-23 20:36:13Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%
@@ -214,7 +214,15 @@ for value = 1:length(grd_vars)-1,
     status = nc_write (Gout, field, S.(field));
     if (status ~= 0), return, end
   end  
-end,
+end
+
+%--------------------------------------------------------------------------
+% Add coastline data if available.
+%--------------------------------------------------------------------------
+
+if (isfield(L, 'lon_coast') && isfield(L, 'lat_coast')),
+  add_coastline (Gout, L.lon_coast, L.lat_coast);
+end
 
 %--------------------------------------------------------------------------
 % Get full extracted grid structure.

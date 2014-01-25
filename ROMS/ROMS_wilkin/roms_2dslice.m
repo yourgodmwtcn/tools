@@ -51,6 +51,7 @@ else
   data = nc_varget(file,var);
   t = [];
 end
+data = squeeze(data);
 
 % check the grid information
 if nargin<4 | (nargin==4 & isempty(grd))

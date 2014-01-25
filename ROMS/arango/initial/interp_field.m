@@ -31,7 +31,7 @@ function V = interp_field(I,varargin)
 %    I             Interpolation data (struct array):
 %
 %                    I.Vname     field variable name
-%                    I.nnvdims    number of variable dimensions
+%                    I.nvdims    number of variable dimensions
 %
 %                    I.VD        Donor Grid variable data (2D/3D array)
 %
@@ -74,9 +74,9 @@ function V = interp_field(I,varargin)
 %    V             Interpolated 2D/3D field
 %
 
-% svn $Id: interp_field.m 647 2013-01-22 23:40:00Z arango $
+% svn $Id: interp_field.m 711 2014-01-23 20:36:13Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license           Hernan G. Arango      %
 %    See License_ROMS.txt                           John Wilkin           %
 %=========================================================================%  

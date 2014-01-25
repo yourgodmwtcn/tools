@@ -1,5 +1,5 @@
 function [Dnum,Dstr] = roms_get_date(file,tindex,dateformat,timevarname)
-% $Id: roms_get_date.m 358 2008-04-07 14:15:03Z zhang $
+% $Id: roms_get_date.m 423 2014-01-13 17:13:38Z wilkin $
 % [dnum,dstr] = roms_get_date(file,tindex,dateformat,timevarname)
 %
 % Read ocean_time value from FILE for time index TINDEX and try to parse
@@ -20,10 +20,19 @@ end
 
 if nargin < 3
   dateformat = 0;
+  basedate = NaN;
 end
 
 if nargin < 4
-  timevarname = 'ocean_time';
+  if nc_isvar(file,'ocean_time')
+    % for most roms output
+    timevarname = 'ocean_time';
+  elseif nc_isvar(file,'time')
+    % might be a fmrc
+    timevarname = 'time';
+  else
+    error('Can''t determine what time variable to use for date')
+  end
 end
 
 if tindex == -1
@@ -32,7 +41,6 @@ if tindex == -1
 else
   ocean_time  = nc_varget(file,timevarname,0,-1);
   ocean_time  = ocean_time(tindex);
-  % ocean_time  = nc_varget(file,timevarname,tindex-1,1);
 end
 tunits = nc_attget(file,timevarname,'units');
 
@@ -44,9 +52,9 @@ switch tunits(1:3)
   case 'sec'
     fac = 1/86400;
   otherwise
-    warning('Not sure what time units are. Cannot interpret tunits:')
+    warning('Cannot interpret tunits string:')
     disp(tunits)
-    disp('Making no time units assumption. Returning ocean_time from file')
+    disp('Making no time units assumption - returning ocean_time from file')
     fac = 0;
 end
 
@@ -57,25 +65,50 @@ if fac == 0
     dstr = [num2str(ocean_time) ' ' tunits];
   end
 else
-  try 
-    % in case can't parse tunits string
-    dnum = datenum(parsetnc(tunits)) + ocean_time*fac;
-    if dateformat < 0
-      for i=1:length(dnum)
-        dstr(i,:) = ['day ' num2str(fac*ocean_time(i),'%8.2f')];
-      end
-    else
-      dstr = datestr(dnum,dateformat);
-    end
+  % try to parse the time units string
+  try
+    basedate = datenum(parsetnc(tunits));
   catch
-    warning('Problem parsing tunits string to get base date')
-    dnum = ocean_time*fac;
-      dstr = ['Day ' num2str(dnum)];
+    try
+      tunits = tunits((strfind(tunits,'since')+6):end);
+      basedate = datenum(tunits);
+    catch
+      try
+        % this for FMRC
+        tunits = strrep(tunits,'T',' ');
+        basedate = datenum(tunits,'yyyy-mm-dd HH:MM:SS');
+      catch
+        % can't determine the basedate
+        basedate = NaN;
+      end
+    end
+  end
+  if isnan(basedate)
+    dnum = fac*ocean_time;
+  else
+    dnum = basedate + fac*ocean_time;
   end
 end
+
+if nargout > 1
+  if dateformat < 0 || isnan(basedate)
+    % not a date format
+    for i=1:length(dnum)
+      dstr(i,:) = ['day ' num2str(dnum(i),'%8.2f')];
+    end
+  else
+    for i=1:length(dnum)
+      dstr(i,:) =  datestr(dnum(i),dateformat);
+    end
+  end
+end   
+
 if nargout == 0
   disp(dstr)
-else
+end
+if nargout > 0
   Dnum = dnum;
+end
+if nargout > 1
   Dstr = dstr;
 end

@@ -18,9 +18,9 @@ function plot_contact(G, S)
 %                 [S, G] = contact (Gnames, Cname, ...)
 %
 
-% svn $Id: plot_contact.m 647 2013-01-22 23:40:00Z arango $
+% svn $Id: plot_contact.m 711 2014-01-23 20:36:13Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%
@@ -189,7 +189,7 @@ for cr=1:S.Ncontact,
     set(ph7,'MarkerEdgeColor','none','MarkerFaceColor','m',             ...
             'MarkerSize',8);
 
-    title(['CCContact Points:  ',                                         ...
+    title(['Contact Points:  ',                                         ...
            'Contact Region = ',num2str(cr),',  ',                       ...
            'Donor Grid = ',num2str(dg),',  (red),  ',                   ...
            'Receiver Grid = ',num2str(rg),'  (blue),  '                 ...

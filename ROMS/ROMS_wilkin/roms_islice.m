@@ -1,5 +1,5 @@
 function [data,z,lon,lat,t] = roms_islice(file,var,time,iindex,grd)
-% $Id: roms_islice.m 386 2009-10-14 13:30:22Z wilkin $
+% $Id: roms_islice.m 423 2014-01-13 17:13:38Z wilkin $
 % Get a constant-i slice out of a ROMS history, averages or restart file
 % [data,z,lon,lat,t] = roms_islice(file,var,time,iindex,grd)
 %
@@ -21,7 +21,18 @@ function [data,z,lon,lat,t] = roms_islice(file,var,time,iindex,grd)
 
 % get the data
 data = nc_varget(file,var,[time-1 0 0 iindex-1],[1 -1 -1 1]);
-t = nc_varget(file,'ocean_time',time-1,1);
+
+% THIS STEP TO ACCOMMODATE NC_VARGET RETURNING A TIME LEVEL WITH
+% LEADING SINGLETON DIMENSION - BEHAVIOR THAT DIFFERS BETWEEN JAVA AND
+% MATLAB OPENDAP INTERFACES - 11 Dec, 2012
+data = squeeze(data);
+
+% this change (2013-05-23) to accommodate Forecast Model Run 
+% Collection (FMRC) which changes the time coordinate to be named
+% "time" but leaves the attribute of the variable pointed to ocean_time
+info = nc_vinfo(file,var);
+time_variable = info.Dimensions(end).Name;
+t = nc_varget(file,time_variable,time-1,1);
 
 % determine where on the C-grid these values lie 
 varcoords = nc_attget(file,var,'coordinates');

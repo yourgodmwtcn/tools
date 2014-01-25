@@ -1,5 +1,5 @@
 function [gregorian_base, rescale_serial_rel, serial_base_jd, serial_base] = parsetnc(time_units_str)
-% $Id: parsetnc.m 383 2009-10-08 15:04:46Z wilkin $
+% $Id: parsetnc.m 423 2014-01-13 17:13:38Z wilkin $
 % PARSETNC: parses the COARDS string that specifies time units
 %
 %function [gregorian_base, rescale_serial_rel, serial_base_jd, ...
@@ -114,7 +114,7 @@ end
 day_base = str2num(str);
 [str, remainder] = strtok(remainder);
 if isempty(str)
-  disp('The base time has no string for the hour, assume hour = min = sec = 0')
+  % disp('The base time has no string for the hour, assume hour = min = sec = 0')
   hour_base = 0;
   minute_base = 0;
   second_base = 0;
@@ -122,14 +122,14 @@ else
   hour_base = str2num(str);
   [str, remainder] = strtok(remainder);
   if isempty(str)
-    disp('The base time has no string for the minute, assume min = sec = 0')
+    % disp('The base time has no string for the minute, assume min = sec = 0')
     minute_base = 0;
     second_base = 0;
   else
     minute_base = str2num(str);
     [str, remainder] = strtok(remainder);
     if isempty(str)
-      disp('The base time has no string for the second, assume sec = 0')
+      % disp('The base time has no string for the second, assume sec = 0')
       second_base = 0;
     else
       second_base = str2num(str);

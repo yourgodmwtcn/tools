@@ -91,9 +91,9 @@ function [status]=c_observations(S,file)
 %       '11: CTD salinity from GLOBEC'];
 %
   
-% svn $Id: c_observations.m 647 2013-01-22 23:40:00Z arango $
+% svn $Id: c_observations.m 711 2014-01-23 20:36:13Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%
@@ -106,7 +106,7 @@ if (nargin < 2),
   if (isfield(S,'ncfile')),
     ncfile=S.ncfile;
   else
-    error(['C_OBSERVATIONS - Cannot find file name field: ncname, ',    ...
+    error(['C_OBSERVATIONS - Cannot find file name field: ncfile, ',    ...
           'in structure array S']);
   end
 else
@@ -158,7 +158,8 @@ disp(['*** Creating observations file:  ', ncfile]);
 if (status ~= 0),
   disp('  ');
   disp(mexnc('strerror',status));
-  error([ 'C_OBSERVATIONS: CREATE - unable to create file: ', ncname]);
+  error(['C_OBSERVATIONS: CREATE - unable to create file: ', ncfile,    ...
+	 sprintf('\n'), blanks(16), 'In current directory: ', pwd]);
 end
 
 %--------------------------------------------------------------------------

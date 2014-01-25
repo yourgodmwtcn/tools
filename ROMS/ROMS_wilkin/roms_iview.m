@@ -1,5 +1,5 @@
 function [Data,han] = roms_iview(file,var,time,iindex,grd,dateformat)
-% $Id: roms_iview.m 406 2012-02-16 15:42:35Z wilkin $
+% $Id: roms_iview.m 423 2014-01-13 17:13:38Z wilkin $
 % [data,han] = roms_iview(file,var,time,iindex,grd,dateformat)
 %
 % file   = roms his/avg/rst etc nc file
@@ -29,19 +29,23 @@ end
 if ~isstruct(file)
   % check only if input TIME is in datestr format, and if so find the 
   % time index in FILE that is the closest
-  if isstr(time)
+  if ischar(time)
     fdnums = roms_get_date(file,-1);
-    dnum = datenum(time);
-    if dnum >= fdnums(1) & dnum <= fdnums(end)
-      [tmp,time] = min(abs(dnum-fdnums));
-      time = time(1);
+    if strcmp(time,'latest')
+      time = length(fdnums);
     else
-      warning(' ')
-      disp(['Requested date ' time ' is not between the dates in '])
-      disp([file ' which are ' datestr(fdnums(1),0) ' to ' ])
-      disp(datestr(fdnums(end),0))
-      thedata = -1;
-      return
+      dnum = datenum(time);
+      if dnum >= fdnums(1) && dnum <= fdnums(end)
+        [~,time] = min(abs(dnum-fdnums));
+        time = time(1);
+      else
+        warning(' ')
+        disp(['Requested date ' time ' is not between the dates in '])
+        disp([file ' which are ' datestr(fdnums(1),0) ' to ' ])
+        disp(datestr(fdnums(end),0))
+        thedata = -1;
+        return
+      end
     end
   end
 else

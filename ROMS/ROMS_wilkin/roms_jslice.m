@@ -1,5 +1,5 @@
 function [data,z,lon,lat,t] = roms_jslice(file,var,time,jindex,grd)
-% $Id: roms_jslice.m 386 2009-10-14 13:30:22Z wilkin $
+% $Id: roms_jslice.m 423 2014-01-13 17:13:38Z wilkin $
 % Get a constant-j slice out of a ROMS history, averages or restart file
 % [data,z,lon,lat,t] = roms_jslice(file,var,time,jindex,grd)
 %
@@ -21,7 +21,18 @@ function [data,z,lon,lat,t] = roms_jslice(file,var,time,jindex,grd)
 
 % get the data
 data = nc_varget(file,var,[time-1 0 jindex-1 0],[1 -1 1 -1]);
-t = nc_varget(file,'ocean_time',time-1,1);
+
+% THIS STEP TO ACCOMMODATE NC_VARGET RETURNING A TIME LEVEL WITH
+% LEADING SINGLETON DIMENSION - BEHAVIOR THAT DIFFERS BETWEEN JAVA AND
+% MATLAB OPENDAP INTERFACES - 11 Dec, 2012
+data = squeeze(data);
+
+% this change (2013-05-23) to accommodate Forecast Model Run 
+% Collection (FMRC) which changes the time coordinate to be named
+% "time" but leaves the attribute of the variable pointed to ocean_time
+info = nc_vinfo(file,var);
+time_variable = info.Dimensions(end).Name;
+t = nc_varget(file,time_variable,time-1,1);
 
 % determine where on the C-grid these values lie 
 varcoords = nc_attget(file,var,'coordinates');
@@ -36,7 +47,7 @@ else
 end
 
 % check the grid information
-if nargin<5 | (nargin==5 & isempty(grd))
+if nargin<5 || (nargin==5 && isempty(grd))
   % no grd input given so try to get grd_file name from the file
   grd = roms_get_grid(file,file);
 else
@@ -46,7 +57,7 @@ else
     % input was a grd structure but check that it includes the z values    
     if ~isfield(grd,'z_r')
       try 
-        grd = roms_get_grid(grd,file,0,1)
+        grd = roms_get_grid(grd,file,0,1);
       catch
         error('grd does not contain z values');
       end

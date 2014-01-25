@@ -58,9 +58,9 @@ function [pm, pn, dndx, dmde] = grid_metrics(G, GreatCircle)
 %    G.x_v           V-points   Y-location (meters)
 
   
-% svn $Id: grid_metrics.m 647 2013-01-22 23:40:00Z arango $
+% svn $Id: grid_metrics.m 711 2014-01-23 20:36:13Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%
@@ -152,7 +152,9 @@ pn = 1.0./dy;
 dndx = zeros(size(Xr));
 dmde = zeros(size(Xr));
 
-dndx(2:L,2:M) = 0.5.*(1.0./pn(3:Lp,2:M ) - 1.0./pn(1:Lm,2:M ));
-dmde(2:L,2:M) = 0.5.*(1.0./pm(2:L ,3:Mp) - 1.0./pm(2:L ,1:Mm));
+if (~G.uniform),
+  dndx(2:L,2:M) = 0.5.*(1.0./pn(3:Lp,2:M ) - 1.0./pn(1:Lm,2:M ));
+  dmde(2:L,2:M) = 0.5.*(1.0./pm(2:L ,3:Mp) - 1.0./pm(2:L ,1:Mm));
+end
 
 return

@@ -19,9 +19,9 @@ function write_contact(ncname, S, varargin)
 %                                                    default true)
 %
 
-% svn $Id: write_contact.m 660 2013-04-18 23:34:36Z arango $
+% svn $Id: write_contact.m 711 2014-01-23 20:36:13Z arango $
 %=========================================================================%
-%  Copyright (c) 2002-2013 The ROMS/TOMS Group                            %
+%  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
 %    See License_ROMS.txt                           Hernan G. Arango      %
 %=========================================================================%
@@ -93,6 +93,8 @@ ncwrite(ncname, 'refinement', int32([S.contact.refinement] > 0));
 ncwrite(ncname, 'refine_factor', int32([S.grid.refine_factor]));
 
 % Contact Points vertical interpolation switch.
+
+ncwrite(ncname, 'interpolate', int32(ones([1 Ncontact])));
 
 % Contact region donor and receiver grid.
 
@@ -282,7 +284,7 @@ for i=1:Ndatum,
     for ib=1:4,
       xb = S.grid(rg).boundary(ib).Xuv;
       yb = S.grid(rg).boundary(ib).Yuv;
-      ind = (xb == X(i) & yb == Y(i));
+      ind = (abs(xb-X(i)) < 4*eps & abs(yb-Y(i)) < 4*eps);
       if (any(ind)),
         on_boundary(i) = ib;
         break;

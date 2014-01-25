@@ -1,5 +1,5 @@
 function [Data,han] = roms_bview(file,varname,time,bndy,grd,xcoord)
-% $Id: roms_bview.m 411 2012-08-02 17:29:21Z wilkin $
+% $Id: roms_bview.m 418 2013-05-23 14:21:53Z wilkin $
 % [data,han] = roms_bview(file,var,time,bndy,grd,xcoord)
 %
 % file   = roms his/avg/rst etc nc file
@@ -93,6 +93,7 @@ lat = repmat(lat',[size(z,1) 1]);
 m = repmat(m',[size(z,1) 1]);
 
 data = nc_varget(file,varname,[time-1 0 0],[1 -1 -1]);
+data = squeeze(data);
 
 % time information
 dateformat = 1;
