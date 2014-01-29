@@ -100,6 +100,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
         labels.stride = 0;
         labels.dt = 1;     
         labels.dar = 0;
+        labels.isDir = 0;
     end
     
     if ~isfield(labels,'tmax'), labels.tmax = labels.time(end); end
