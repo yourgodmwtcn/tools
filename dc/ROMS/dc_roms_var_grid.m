@@ -23,7 +23,13 @@ function [xax,yax,zax,tax,xunits,yunits] = dc_roms_var_grid(fname,varname,tindex
 
         % from John Wilkin's roms_islice.m
         % determine where on the C-grid these values lie 
-        varcoords = nc_attget(fname,varname,'coordinates');
+        try
+            varcoords = nc_attget(fname,varname,'coordinates');
+        catch ME
+            if strcmpi(varname,'rho')
+                varcoords = '_rho';
+            end
+        end
         if ~isempty(strfind(varcoords,'_u'))
           pos = 'u';
         elseif ~isempty(strfind(varcoords,'_v'))

@@ -1,7 +1,7 @@
 function [data] = dc_roms_zslice_var(data,depth,grd)
 % $Id: roms_zslice_var.m 358 2008-04-07 14:15:03Z zhang $
 % Get a constant-z slice out of a 4-D ROMS variable 
-% [data,x,y] = roms_zslice_var(data,time,depth,grd)
+% [data,x,y] = roms_zslice_var(data,depth,grd)
 % grd has grd.xax, grd.yax, grd.zax
 % these and data are (x,y,z,t)
 %
