@@ -8,7 +8,7 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume,st
     objflag = 0;
     
     % set inputs
-    if ~exist('tindices','var') || isempty(tindices), tindices = []; end
+    if ~exist('tindices','var') || isempty(tindices), tindices = [1 Inf]; end
     if ~exist('volume','var') || isempty(volume), volume = {}; end
     if ~exist('stride','var'), stride = [1 1 1 1]; end
     
@@ -86,8 +86,8 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume,st
         else        
             switch ndims(temp)
                 case 2
-                    out(:,k:k+length(temp)-1) = temp;
-                    k = k+length(temp);
+                    out(:,k:k+size(temp,2)-1) = temp;
+                    k = k+size(temp,2);
                 case 3
                     out(:,:,k:k+size(temp,3)-1) = temp;
                     k = k+size(temp,3);
