@@ -32,7 +32,7 @@ function [] = stat(var1)
 
     name = inputname(1);
 
-    size_limit = 10^4;
+    size_limit = 4*10^4;
     if ischar(var1)
        name = var1;
        %cmd = ['stat(' var1 ');'];
