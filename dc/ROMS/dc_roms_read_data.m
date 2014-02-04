@@ -67,6 +67,7 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume,st
             tnew(2) = Inf;
             % set next read to start from beginning of new file
             tindices(1) = 1;
+            tindices(2) = tindices(2)-nt;
         end
         % Case 3 : requested data finishes in current file
         if tnew(2) <= nt && ~isinf(tindices(end))
@@ -94,6 +95,7 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume,st
                 case 4
                     out(:,:,:,k:k+size(temp,4)-1) = temp;
                     k = k+size(temp,4);
+                    clear temp
             end  
         end
         if quitflag, break; end
