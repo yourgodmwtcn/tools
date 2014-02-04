@@ -1,4 +1,5 @@
-% MATGEOM-POLYGONS
+% POLYGONS Manipulation of planar polygons and polylines
+% Version 1.6 21-Mar-2011 .
 %
 %   The 'polygons' module contains functions operating on shapes composed
 %   of a vertex list, like polygons or polylines.
@@ -47,12 +48,6 @@
 %   figure;drawPolygon(P2); axis([0 50 0 50]);
 %
 %
-% Point Sets
-%   pointSetsAverage          - Compute the average of several point sets
-%   minimumCaliperDiameter    - Minimum caliper diameter of a set of points
-%   findPoint                 - Find index of a point in an set from its coordinates
-%   convexHull                - Convex hull of a set of points
-%
 % Polylines
 %   polylinePoint             - Extract a point from a polyline
 %   polylineLength            - Return length of a polyline given as a list of points
@@ -67,6 +62,7 @@
 %   intersectPolylines        - Find the common points between 2 polylines
 %   polylineSelfIntersections - Find self-intersection points of a polyline
 %   simplifyPolyline          - Douglas-Peucker simplification of a polyline
+%   removeMultipleVertices    - Remove multiple vertices of a polygon or polyline
 %
 % Polygon basic manipulation
 %   polygonPoint              - Extract a point from a polygon
@@ -75,6 +71,7 @@
 %   projPointOnPolygon        - Compute position of a point projected on a polygon
 %   splitPolygons             - Convert a NaN separated polygon list to a cell array of polygons
 %   polygonLoops              - Divide a possibly self-intersecting polygon into a set of simple loops
+%   simplifyPolygon           - Douglas-Peucker simplification of a polygon
 %
 % Polygon clipping and intersections
 %   intersectLinePolygon      - Intersection points between a line and a polygon
@@ -84,6 +81,12 @@
 %   clipPolygon               - Clip a polygon with a rectangular box
 %   clipPolygonHP             - Clip a polygon with a Half-plane defined by a directed line
 %
+% Point Sets
+%   pointSetsAverage          - Compute the average of several point sets
+%   minimumCaliperDiameter    - Minimum caliper diameter of a set of points
+%   findPoint                 - Find index of a point in an set from its coordinates
+%   convexHull                - Convex hull of a set of points
+%
 % Measures on Polygons
 %   isPointInPolygon          - Test if a point is located inside a polygon
 %   polygonContains           - Test if a point is contained in a multiply connected polygon
@@ -92,8 +95,9 @@
 %   polygonLength             - Perimeter of a polygon
 %   polygonNormalAngle        - Compute the normal angle at a vertex of the polygon
 %   polygonBounds             - Compute the bounding box of a polygon
-%   distancePointPolygon      - Compute shortest distance between a point and a polygon
+%   distancePointPolygon      - Shortest distance between a point and a polygon
 %   distancePolygons          - Compute the shortest distance between 2 polygons
+%   polygonSignature          - Polar signature of a polygon (polar distance to origin)
 %
 % More complex operations on polygons
 %   resamplePolygon           - Distribute N points equally spaced on a polygon
@@ -118,10 +122,12 @@
 %   convexification           - Compute the convexification of a polygon
 %
 % Input, Output and conversions
-%   readPolygon               - Read a polygon stored in a file
 %   polygonToRow              - Convert polygon coordinates to a row vector
 %   rowToPolygon              - Create a polygon from a row vector
+%   contourMatrixToPolylines  - Converts a contour matrix array into a polyline set
 %   rectAsPolygon             - Convert a (centered) rectangle into a series of points
+%   readPolygonSet            - Read a set of simple polygons stored in a file
+%   writePolygonSet           - Write a set of simple polygons into a file
 %
 % Drawing functions
 %   drawPolyline              - Draw a polyline specified by a list of points

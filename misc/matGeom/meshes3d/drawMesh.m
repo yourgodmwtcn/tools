@@ -74,15 +74,17 @@ switch length(varargin)
         % use argument as color for faces
         varargin = {'facecolor', varargin{1}};
     otherwise
-        % otherwise keep varargin unchanged
+        % otherwise add default settings before new options
+        varargin = [{'facecolor', [1 0 0 ]} varargin];
+
 end
 
 % overwrites on current figure
 hold on;
 
 % if vertices are 2D points, add a z=0 coordinate
-if size(vertices, 2)==2
-    vertices(1,3)=0;
+if size(vertices, 2) == 2
+    vertices(1,3) = 0;
 end
 
 
@@ -96,13 +98,13 @@ elseif iscell(faces)
     % array FACES is a cell array
     h = zeros(length(faces(:)), 1);
 
-    for f=1:length(faces(:))
+    for f = 1:length(faces(:))
         % get vertices of the cell
         face = faces{f};
 
         % Special processing in case of multiple polygonal face:
         % each polygonal loop is separated by a NaN.
-        if sum(isnan(face))~=0
+        if sum(isnan(face)) ~= 0
             
             % find indices of loops breaks
             inds = find(isnan(face));
@@ -128,6 +130,6 @@ end
 %% Process output arguments
 
 % format output parameters
-if nargout>0
-    varargout{1}=h;
+if nargout > 0
+    varargout = {h};
 end

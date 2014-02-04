@@ -1,6 +1,8 @@
 function varargout = meshReduce(nodes, varargin)
 %MESHREDUCE Merge coplanar faces of a polyhedral mesh
 %
+%   Note: deprecated, should use "mergeCoplanarFaces" instead
+%
 %   [NODES FACES] = meshReduce(NODES, FACES)
 %   [NODES EDGES FACES] = meshReduce(NODES, EDGES, FACES)
 %   NODES is a set of 3D points (as a Nn-by-3 array), 
@@ -9,8 +11,8 @@ function varargout = meshReduce(nodes, varargin)
 %   face having the same number of vertices,
 %   - a Nf-by 1 cell array, each cell containing indices of a face.
 %   The function groups faces which are coplanar and contiguous, resulting
-%   in a "lighter" mesh. This can be useful to visualize binary 3D images
-%   for example.
+%   in a "lighter" mesh. This can be useful for visualizing binary 3D
+%   images for example.
 %
 %   FACES = meshReduce(..., PRECISION)
 %   Adjust the threshold for deciding if two faces are coplanar or
@@ -18,11 +20,12 @@ function varargout = meshReduce(nodes, varargin)
 %
 %   Example
 %   [n e f] = createCube;
-%   f2 = meshReduce(n);
-%   drawMesh(n, f);
+%   figure; drawMesh(n, f); view(3); axis equal;
+%   f2 = meshReduce(n, f);
+%   figure; drawMesh(n, f2); view(3); axis equal;
 %
 %   See also
-%   meshes3d, drawMesh, convhull, convhulln, minConvexHull
+%   meshes3d, mergeCoplanarFaces
 %
 %
 % ------
@@ -38,7 +41,11 @@ function varargout = meshReduce(nodes, varargin)
 % 14/08/2007 rename minConvexHull->meshReduce, and extend to non convex
 %   shapes 
 % 2011-01-14 code clean up
+% 2013-02-22 deprecate and rename to mergeCoplanarFaces
 
+
+warning('MatGeom:meshes3d:deprecated', ...
+    'Function ''meshReduce'' is deprecated, should use ''mergeCoplanarFaces'' instead');
 
 %% Process input arguments
 

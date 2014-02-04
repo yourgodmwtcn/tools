@@ -1,19 +1,19 @@
 function edges = computeMeshEdges(faces)
 %COMPUTEMESHEDGES Computes edges array from face array
 %
-%   EDGES = computeMeshEdges(FACES);
-%
-%   Example
-%   computeMeshEdges
+%   Deprecated, use 'meshEdges' instead.
 %
 %   See also
-%   meshes3d
+%   meshes3d, meshEdges
 %
 % ------
 % Author: David Legland
 % e-mail: david.legland@grignon.inra.fr
 % Created: 2011-06-28,    using Matlab 7.9.0.529 (R2009b)
 % Copyright 2011 INRA - Cepia Software Platform.
+
+warning('MatGeom:deprecated', ...
+    'function computeMeshEdges is obsolete, use meshEdges instead');
 
 if ~iscell(faces)
     % faces is given as numeric array, 
