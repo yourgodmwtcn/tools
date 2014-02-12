@@ -33,7 +33,6 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume,st
     %unused params
     slab = Inf;
     
-    
     for ii=1:length(files)
         if isdir(folder)
             fname = [folder '/' char(files(ii))];

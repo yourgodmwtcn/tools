@@ -8,7 +8,7 @@
 
 function [] = beautify(fontSizes)
     
-    if ~exist('fontSizes','var'), fontSizes = [12 12 14]; end
+    if ~exist('fontSizes','var'), fontSizes = [16 16 18]; end
     
     if strcmpi(computer,'GLNXA64')
         font_name = 'Helvetica';

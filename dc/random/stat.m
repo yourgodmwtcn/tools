@@ -46,6 +46,7 @@ function [] = stat(var1)
     n = numel(var1);
     fprintf('\n\t %15s: %s \n\t %15s: %s ','Name',name,'Data Type', class(var1));
     
+    % real v/s complex
     if isreal(var1)
         fprintf('\n\t %15s: Real ', 'IsReal');
     else % complex output
@@ -54,6 +55,13 @@ function [] = stat(var1)
         catch ME
             fprintf('\n\t %15s: Complex*** ', 'IsReal');
         end
+    end
+    
+    % sparse test
+    sparse_flag = 0;
+    if issparse(var1)
+        fprintf('\n\t %15s: Sparse', 'IsSparse');
+        sparse_flag = 1;
     end
     
     fprintf('\n\n\t %15s:  [','Size');
@@ -81,8 +89,8 @@ function [] = stat(var1)
     end
 
     if n < size_limit
-        med = nanmedian(var1(:));
-        mean1 = nanmean(var1(:));
+        med = full(nanmedian(var1(:)));
+        mean1 = full(nanmean(var1(:)));
     else
         med = NaN;
         mean1 = NaN;
@@ -101,19 +109,29 @@ function [] = stat(var1)
 %                 'Median', med);
 %     else
         fprintf(' \n\t %15s: % 1.3e \n\t %15s: % 1.3e \n\t %15s: % 1.3e \n\t %15s: % 1.3e ', ...% ...
-                'Max',nanmax(var1(:)), 'Min',nanmin(var1(:)), 'Mean',mean1, ...
+                'Max',full(nanmax(var1(:))), 'Min',full(nanmin(var1(:))), 'Mean',mean1, ...
                 'Median',med);
 %     end
     
     mcount = 0;
     ind = nan(s(2));
        
-    miss = sum(isnan(var1(:)));
+    if ~sparse_flag
+        miss = sum(isnan(var1(:)));
+    else
+        % more efficient than finding all zeros
+        miss = n-numel(find(var1(:) == 1));
+    end
        
     % Rank, Var & Std don't work for dim > 2 arrays    
     % Skipping missing columns because that doesnt seem to make much sense for ND arrays
     % None of the rest is valid for logical arrays either
     if ~(length(s) > 2)    
+        
+        % Output missing data information
+ %       if (comp > 0.005 || comp == 0) && (comp < 500000)
+            fprintf(' \n\t %15s:  %d/%d (%.2f %%) | Difference = %d', ...% ...
+                    'Missing', miss, n, miss/(n)*100, n-miss);
     
         if n > size_limit, warning('Terminating because array is too large.'); return; end
 
@@ -124,10 +142,6 @@ function [] = stat(var1)
             fprintf('\n\t %15s: % 1.3e \n\t %15s: % 1.3e', 'Variance', nanvar(var1(:)), 'Std', nanstd(var1(:)));
 %        end
         
-        % Output missing data information
- %       if (comp > 0.005 || comp == 0) && (comp < 500000)
-            fprintf(' \n\t %15s:  %d/%d (%.2f %%) | Difference = %d', ...% ...
-                    'Missing', miss, n, miss/(n)*100, n-miss);
   %      else
   %          fprintf(' \n\t %15s:  %d/%d (%.2f %%) | Difference = %d', ...% ...
   %                  'Missing',miss, n, miss/n*100, n-miss);

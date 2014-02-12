@@ -97,8 +97,20 @@ classdef LinePlotReducer < handle
 % However, frequent zooming and handling large data so frequently occur at
 % the same time that this class was included for convenience.
 %
-% Tucker McClure
-% Copyright 2013, The MathWorks, Inc.
+% --- Change Log ---
+%
+% 2014-01-15: Now allows input as combination of rows and columns, just 
+% like the regular plot functions. Changes copyright 2014 Tucker McClure.
+%
+% 2014-01-06: Fixed a bug when "taking over" a plot with only a single
+% line. Also fixed a bug with the final line spec being ignored. Changes 
+% copyright 2014 Tucker McClure.
+%
+% 2013-03-15: Original. Copyright 2013, The MathWorks, Inc.
+%
+% ---
+%
+% Copyright 2014, The MathWorks, Inc. and Tucker McClure
 
     properties
         
@@ -149,6 +161,18 @@ classdef LinePlotReducer < handle
                     o.y = get(o.h_plot, 'YData');
                     o.y_to_x_map = 1:size(o.y, 1);
                     
+                    % If there are multiple lines, o.x will be a cell
+                    % array, which is how we use it from here on. If 
+                    % there's only one line, we need to make it a cell
+                    % array.
+                    if ~iscell(o.x)
+                        o.x = {o.x};
+                    end
+                    if ~iscell(o.y)
+                        o.y = {o.y};
+                    end
+                    
+                    % Format the data as columns.
                     for k = 1:length(o.x)
                         o.x{k} = o.x{k}(:);
                         o.y{k} = o.y{k}(:);
@@ -229,11 +253,20 @@ classdef LinePlotReducer < handle
                         % Rename for simplicity.
                         ym = varargin{k};
                         xm = varargin{k-1};
+                        
+                        % We can accept data in rows or columns. If this is
+                        % 1-by-n -> 1 series from columns
+                        % m-by-n -> n series from columns
+                        % m-by-1 -> 1 series from rows (transpose)
+                        if size(xm, 1) == 1
+                            xm = xm.';
+                        end
+                        if size(ym, 1) == 1
+                            ym = ym.';
+                        end
 
                         % Transpose if necessary.
-                        if    size(xm, 1) == 1 ...
-                           && size(xm, 2) == size(ym, 2)
-                            xm = xm';
+                        if size(xm, 1) ~= size(ym, 1)
                             ym = ym';
                         end
 
@@ -264,6 +297,16 @@ classdef LinePlotReducer < handle
 
                         % Rename for simplicity.
                         ym = varargin{k-1};
+                        
+                        % We can accept data in rows or columns. If this is
+                        % 1-by-n -> 1 series from columns
+                        % m-by-n -> n series from columns
+                        % m-by-1 -> 1 series from rows (transpose)
+                        if size(ym, 1) == 1
+                            ym = ym.';
+                        end
+                        
+                        % Make the implied x explicit.
                         o.x{end+1} = (1:size(ym, 1))';
 
                         % Store y, x, and a map from y index to x
@@ -328,7 +371,7 @@ classdef LinePlotReducer < handle
                 for k = 1:length(o.y)
                     plot_args{end+1} = x_r{k}; %#ok<AGROW>
                     plot_args{end+1} = y_r{k}; %#ok<AGROW>
-                    if k < length(linespecs) && ~isempty(linespecs{k})
+                    if k <= length(linespecs) && ~isempty(linespecs{k})
                         plot_args{end+1} = linespecs{k}; %#ok<AGROW>
                     end
                 end

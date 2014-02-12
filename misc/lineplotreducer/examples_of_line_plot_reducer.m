@@ -57,7 +57,9 @@ lpr = LinePlotReducer(@plot, [t' t' t'], x');
 
 %% plot
 % See if it handles linespec values gracefully.
-lpr = LinePlotReducer(t', x(1, :)', 'b:', t', x(2, :)', t', x(3, :)', 'r--*');
+lpr = LinePlotReducer(t, x(1, :), 'b:', ...
+                      t, x(2, :), 'g', ...
+                      t, x(3, :), 'r--*');
 
 %% plot
 % What about a matrix with a linespec?
@@ -124,10 +126,25 @@ lpe.AttachCallback('WindowButtonDownFcn',   'disp(''down'');', ...
                    'WindowScrollWheelFcn',  @(~, ~) disp('scrolling'));
 
 %% Ok, but can we stop the LPE?
+% Note this doesn't stop the callbacks that we attached. It just stops the
+% scrolling-panning behavior.
 Stop(lpe);
+
+% Remove the callbacks we set.
+set(gcf(), 'WindowButtonDownFcn',   [], ...
+           'WindowButtonUpFcn',     [], ...
+           'WindowButtonMotionFcn', [], ...
+           'WindowScrollWheelFcn',  []);
+
 
 %% Takeover
 % A LPR can take over from an existing plot.
+clf();
+h = plot(t, x(1, :));
+lpe = LinePlotReducer(h);
+
+%% Takeover
+% A LPR can take over from multiple existing plots all at once.
 h = plot(t, x);
 lpe = LinePlotReducer(h);
 
@@ -142,5 +159,25 @@ h = plot([0 100], [0 0], 'r:', [0 100], [0 0], 'g:', [0 100], [0 0], 'b:');
 lpe = LinePlotReducer(h, t, x);
 
 %% Function interface
+% Not everyone wants to use an object for the interface, so here's a simple
+% function. It takes the same arguments as LinePlotReducer, but returns the
+% plot handles, just like a regular plot function would.
 h = reduce_plot(t, x);
 set(h, 'Color', 'r');
+
+%% Rows vs. columns
+% Let's make sure it works if we mix up rows and columns. Here, t is a row,
+% but x.' has data in columns.
+reduce_plot(t, x.');
+
+%%
+% If we have an implied x, can it figure out that this is a single series?
+reduce_plot(x(1, :));
+
+%%
+% If we have an implied x, can it figure this out too?
+reduce_plot(x(1, :).');
+
+%%
+% What if t is a column but x has data in rows?
+reduce_plot(t.', x);
