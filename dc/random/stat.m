@@ -133,7 +133,11 @@ function [] = stat(var1)
             fprintf(' \n\t %15s:  %d/%d (%.2f %%) | Difference = %d', ...% ...
                     'Missing', miss, n, miss/(n)*100, n-miss);
     
-        if n > size_limit, warning('Terminating because array is too large.'); return; end
+        if n > size_limit 
+            fprintf('\n');
+            warning('Terminating because array is too large.'); 
+            return; 
+        end
 
         % Ouput var, std   
 %        if comp > 0.005 && (comp < 500000)
