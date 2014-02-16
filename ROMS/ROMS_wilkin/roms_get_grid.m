@@ -1,4 +1,4 @@
-function grd = roms_get_grid(grd_file,scoord,tindex,calc_zuv)
+function grd = roms_get_grid(grd_file,scoord,tindex,~)
 % $Id: roms_get_grid.m 421 2014-01-03 18:29:06Z wilkin $
 % grd = roms_get_grid(grd_file)
 % grd = roms_get_grid(grd_file,scoord);
@@ -75,7 +75,7 @@ else
   for v = varlist
     vname = char(v);
     try
-      tmp = nc_varget(grd_file,vname);
+      tmp = ncread(grd_file,vname);
       grd.(vname) = tmp; % grd = setfield(grd,vname,tmp);
     catch
       warning('RomsGetGrid:NoVariable',['Variable not found: ' vname])
@@ -85,7 +85,7 @@ else
       if strcmp(vname,'h')
         warning('Using initial bath for h')
         grd.(vname) = squeeze(...
-          nc_varget(grd_file,'bath',[0 0 0],[1 -1 -1]));
+          ncread(grd_file,'bath',[0 0 0],[1 -1 -1]));
       end
     end
   end
@@ -95,7 +95,7 @@ else
     for v = varlist
       vname = char(v);
       try
-        tmp = nc_varget(grd_file,vname);
+        tmp = ncread(grd_file,vname);
         grd.(vname) = tmp; %replaces grd = setfield(grd,vname,tmp);
       catch
         warning('RomsGetGrid:NoVariable',['Variable not found: ' vname])
@@ -109,7 +109,7 @@ else
   for v = varlist
     vname = char(v);
     try
-      tmp = nc_varget(grd_file,vname);
+      tmp = ncread(grd_file,vname);
       grd.(vname) = tmp; %replaces grd = setfield(grd,vname,tmp);     
       grd.nolatlon = 0;
     catch
@@ -128,7 +128,7 @@ else
   for v = varlist
     vname = char(v);
     if nc_isvar(grd_file,vname)
-      tmp = nc_varget(grd_file,vname);
+      tmp = ncread(grd_file,vname);
       grd.(vname) = tmp;
     end
   end
@@ -151,11 +151,11 @@ else
   % If the grid file includes coastline data, such as a file being used
   % with the Rutgers version of editmask.m, load this too
   try
-    grd.lon_coast = nc_varget(grd_file,'lon_coast');
+    grd.lon_coast = ncread(grd_file,'lon_coast');
   catch
   end
   try
-    grd.lat_coast = nc_varget(grd_file,'lat_coast');
+    grd.lat_coast = ncread(grd_file,'lat_coast');
   catch
   end
   
@@ -192,18 +192,18 @@ if nargin > 1
     % input 'scoord' is a his/avg/rst file name or opendap url
     % attempt to get s-coord params from this file/url
     
-    theta_s = nc_varget(scoord,'theta_s');
-    theta_b = nc_varget(scoord,'theta_b');
-    Tcline  = nc_varget(scoord,'Tcline');
-    N       = length(nc_varget(scoord,'Cs_r'));
-    hc      = nc_varget(scoord,'hc');
+    theta_s = ncread(scoord,'theta_s');
+    theta_b = ncread(scoord,'theta_b');
+    Tcline  = ncread(scoord,'Tcline');
+    N       = length(ncread(scoord,'Cs_r'));
+    hc      = ncread(scoord,'hc');
     if nc_isvar(scoord,'Vtransform')
-      Vtransform = nc_varget(scoord,'Vtransform');
+      Vtransform = ncread(scoord,'Vtransform');
     else
       Vtransform = 1;
     end,
     if nc_isvar(scoord,'Vstretching')
-      Vstretching = nc_varget(scoord,'Vstretching');
+      Vstretching = ncread(scoord,'Vstretching');
     else
       Vstretching = 1;
     end
