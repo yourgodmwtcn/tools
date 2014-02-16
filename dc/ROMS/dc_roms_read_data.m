@@ -1,4 +1,5 @@
-function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume,stride)
+function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
+                        volume,stride,grd)
     
     disp(['Reading ' varname]);
     
@@ -10,7 +11,8 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume,st
     % set inputs
     if ~exist('tindices','var') || isempty(tindices), tindices = [1 Inf]; end
     if ~exist('volume','var') || isempty(volume), volume = {}; end
-    if ~exist('stride','var'), stride = [1 1 1 1]; end
+    if ~exist('stride','var') || isempty(stride), stride = [1 1 1 1]; end
+    if ~exist('grd','var'), grd = []; end
     
     if isobject(folder)
         run = folder;
@@ -41,20 +43,24 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume,st
         end
         % variable information
         vinfo  = ncinfo(fname,varname);
-        nt     = vinfo.Size(4);
+        nt     = vinfo.Size(end);
         if ii == 1
-            dim = length(vinfo.Size);  
-            if objflag
-                grd = run.rgrid;
-            else
-                grd = roms_get_grid(fname,fname,0,1);
+            ndim = length(vinfo.Size);  
+            if ndim == 3
+               stride(4) = [];
+            end
+            if isempty(grd)
+                if objflag
+                    grd = run.rgrid;
+                else
+                    grd = roms_get_grid(fname,fname,0,1);
+                end
             end
             [xax,yax,zax,vol] = dc_roms_extract(grd,varname,volume,1);
             %[~,~,~,time,xunits,yunits] = dc_roms_var_grid(grd,varname);
-        end
-        % process tindices (input) according to file
+        end        % process tindices (input) according to file
         [~,tnew,dt,~,tstride] = roms_tindices(tindices,slab,nt);
-        stride(4) = tstride(end);
+        stride(end) = tstride(end);
         % Case 1 : if requested data not in this file, skip to next
         if tnew(1) > vinfo.Size(end)
             tindices = tindices - nt;
@@ -72,7 +78,7 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume,st
         if tnew(2) <= nt && ~isinf(tindices(end))
             quitflag = 1;
         end
-        [start,count] = roms_ncread_params(dim,0,1,slab,tnew,dt,vol);
+        [start,count] = roms_ncread_params(ndim,0,1,slab,tnew,dt,vol);
         
         temp = squeeze(double(ncread(fname,varname,start,count,stride)));
         if count(end) == 1
@@ -84,6 +90,8 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices,volume,st
             out(k:k+length(temp)-1) = temp;
             k = k+length(temp);
         else        
+            % call ndims instead of using ndim because i could be 
+            % extracting a slice
             switch ndims(temp)
                 case 2
                     out(:,k:k+size(temp,2)-1) = temp;

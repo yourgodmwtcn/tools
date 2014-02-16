@@ -53,7 +53,7 @@ function grd = roms_get_grid(grd_file,scoord,tindex,calc_zuv)
 % available using svn from https://www.myroms.org/svn/src/matlab/utility
 % Made do calc_zuv the default
 
-if exist('stretching')~=2
+if ~exist('stretching','file')
   disp(['You need to add stretching.m and set_depth.m to your matlab ' ...
         'path'])
   error(['from e.g.  https://www.myroms.org/svn/src/matlab/' ...
