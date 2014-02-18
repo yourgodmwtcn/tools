@@ -75,7 +75,7 @@ else
   for v = varlist
     vname = char(v);
     try
-      tmp = ncread(grd_file,vname);
+      tmp = ncread(grd_file,vname)';
       grd.(vname) = tmp; % grd = setfield(grd,vname,tmp);
     catch
       warning('RomsGetGrid:NoVariable',['Variable not found: ' vname])
@@ -95,7 +95,7 @@ else
     for v = varlist
       vname = char(v);
       try
-        tmp = ncread(grd_file,vname);
+        tmp = ncread(grd_file,vname)';
         grd.(vname) = tmp; %replaces grd = setfield(grd,vname,tmp);
       catch
         warning('RomsGetGrid:NoVariable',['Variable not found: ' vname])
@@ -109,7 +109,7 @@ else
   for v = varlist
     vname = char(v);
     try
-      tmp = ncread(grd_file,vname);
+      tmp = ncread(grd_file,vname)';
       grd.(vname) = tmp; %replaces grd = setfield(grd,vname,tmp);     
       grd.nolatlon = 0;
     catch
@@ -128,7 +128,7 @@ else
   for v = varlist
     vname = char(v);
     if nc_isvar(grd_file,vname)
-      tmp = ncread(grd_file,vname);
+      tmp = ncread(grd_file,vname)';
       grd.(vname) = tmp;
     end
   end
@@ -151,11 +151,11 @@ else
   % If the grid file includes coastline data, such as a file being used
   % with the Rutgers version of editmask.m, load this too
   try
-    grd.lon_coast = ncread(grd_file,'lon_coast');
+    grd.lon_coast = ncread(grd_file,'lon_coast')';
   catch
   end
   try
-    grd.lat_coast = ncread(grd_file,'lat_coast');
+    grd.lat_coast = ncread(grd_file,'lat_coast')';
   catch
   end
   
