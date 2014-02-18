@@ -1,3 +1,6 @@
+% function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
+%                        volume,stride,grd)
+
 function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
                         volume,stride,grd)
     
@@ -46,9 +49,9 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
         nt     = vinfo.Size(end);
         if ii == 1
             ndim = length(vinfo.Size);  
-            if ndim == 3
-               stride(4) = [];
-            end
+            %            if ndim == 3
+            %   stride(4) = [];
+            %end
             if isempty(grd)
                 if objflag
                     grd = run.rgrid;
