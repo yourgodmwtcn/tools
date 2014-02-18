@@ -161,6 +161,11 @@ else
   
 end
 
+% pass empty array as shortcut to get scoord data from grd file
+if isempty(scoord)
+    scoord = grd_file; 
+end
+
 if nargin > 1
   
   h = grd.h;
