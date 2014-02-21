@@ -161,6 +161,10 @@ else
   
 end
 
+if isempty(scoord)
+    scoord = grd_file;
+end
+
 if nargin > 1
   
   h = grd.h;
@@ -275,7 +279,6 @@ if nargin > 1
     wgrid, h', zeta', 0);
   grd.z_w = permute(z_w,[3 2 1]);
   
-  if nargin > 3
     % if 1
     
     % compute the z depths on the velocity points as well
@@ -302,9 +305,7 @@ if nargin > 1
     z_vw= 0.5.*(z_w(1:Lp,1:M,:)+z_w(1:Lp,2:Mp,:));
     grd.z_vw = permute(z_vw,[3 2 1]);
     
-    clear z_u z_uw z_v z_vw
-    
-  end
+    %clear z_uw z_vw
   
   grd.Vtransform = Vtransform;
   grd.Vstretching = Vstretching;
