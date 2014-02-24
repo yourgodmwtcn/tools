@@ -81,9 +81,18 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
         [start,count] = roms_ncread_params(ndim,0,1,slab,tnew,dt,vol);
         
         temp = squeeze(double(ncread(fname,varname,start,count,stride)));
-        if count(end) == 1 && ii == 1 % first file has the single timestep
-            out = temp;
-            return;
+        if count(end) == 1 
+            if ii == 1 % first file has the single timestep
+                out = temp;
+                return;
+            end
+            % dimsave has total number of dimensions. This is is to make
+            % sure that I append single timestep 'temp' properly to
+            % multiple-timestep 'out'
+            dimsave = ndims(out);
+        else
+            % number of dimensions in 'out'
+            dimsave = ndims(temp);
         end
         
         if isvector(temp)
@@ -92,7 +101,7 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
         else        
             % call ndims instead of using ndim because i could be 
             % extracting a slice
-            switch ndims(temp)
+            switch dimsave
                 case 2
                     out(:,k:k+size(temp,2)-1) = temp;
                     k = k+size(temp,2);
