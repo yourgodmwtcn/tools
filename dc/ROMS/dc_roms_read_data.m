@@ -65,33 +65,33 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
         if tnew(1) > vinfo.Size(end)
             tindices = tindices - nt;
             continue;
-        end
-        % Case 2 : requested data spans 2 files
-        if tnew(1) < nt && tnew(2) > nt
-            % change ending for current read
-            tnew(2) = Inf;
-            % set next read to start from beginning of new file
-            tindices(1) = 1;
-            tindices(2) = tindices(2)-nt;
-        end
-        % Case 3 : requested data finishes in current file
-        if tnew(2) <= nt && ~isinf(tindices(end))
-            quitflag = 1;
+        else
+            % Case 2 : requested data spans 2 files
+            if tnew(1) <= nt && tnew(2) > nt
+                % change ending for current read
+                tnew(2) = nt;
+                % set next read to start from beginning of new file
+                tindices(1) = 1;
+                tindices(2) = tindices(2)-nt;
+            else
+                % Case 3 : requested data finishes in current file
+                if tnew(2) <= nt && ~isinf(tindices(end))
+                    quitflag = 1;
+                end
+            end
         end
         [start,count] = roms_ncread_params(ndim,0,1,slab,tnew,dt,vol);
         
         temp = squeeze(double(ncread(fname,varname,start,count,stride)));
-        if count(end) == 1 
-            if ii == 1 % first file has the single timestep
-                out = temp;
-                return;
-            end
-            % dimsave has total number of dimensions. This is is to make
-            % sure that I append single timestep 'temp' properly to
-            % multiple-timestep 'out'
-            dimsave = ndims(out);
-        else
-            % number of dimensions in 'out'
+        if count(end) == 1 && ii == 1 % first file has the single timestep
+            out = temp;
+            return;
+        end
+        
+        % make sure appending timestep always works
+        try
+            dimsave = max(ndims(temp),ndims(out));
+        catch ME
             dimsave = ndims(temp);
         end
         
@@ -104,15 +104,17 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
             switch dimsave
                 case 2
                     out(:,k:k+size(temp,2)-1) = temp;
-                    k = k+size(temp,2);
                 case 3
                     out(:,:,k:k+size(temp,3)-1) = temp;
-                    k = k+size(temp,3);
                 case 4
                     out(:,:,:,k:k+size(temp,4)-1) = temp;
-                    k = k+size(temp,4);
-                    clear temp
             end  
+            if count(end) ~= 1
+                k = k + size(temp,dimsave);
+            else
+                k = k + 1;
+            end
+            clear temp;
         end
         if quitflag, break; end
     end 
