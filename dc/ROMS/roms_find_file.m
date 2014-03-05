@@ -44,11 +44,25 @@ function [fname] = roms_find_file(dirin,type)
         fname = [grep_in([fname in],type)];
     end
     
-    if strcmpi(type,'his') || strcmpi(type,'avg')
+    if strcmpi(type,'his')
         fnames = dir([dirin '/*_his*.nc*']);
         if isempty(fnames)
             fnames = dir([dirin '/*_avg*.nc*']); 
-            if strcmpi(type,'his'), disp('Using avg files instead.'); end
+            disp('Using avg files instead.');
+        end
+        
+        % convert from struct to names
+        clear fname
+        for kk=1:size(fnames)
+            fname{kk}= fnames(kk,:).name;
+        end
+    end
+    
+    if strcmpi(type,'avg')
+        fnames = dir([dirin '/*_avg*.nc*']);
+        if isempty(fnames)
+            fnames = dir([dirin '/*_his*.nc*']); 
+            disp('Using his files instead.');
         end
         
         % convert from struct to names
