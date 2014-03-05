@@ -26,7 +26,7 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
     else
         % get all history files
         if isdir(folder)
-            files = roms_find_file(folder,'his');
+            files = roms_find_file(folder,'avg');
         else
             files = folder;
         end
@@ -49,14 +49,24 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
             if ndim == 3
                stride(4) = [];
             end
-            if isempty(grd)
-                if objflag
-                    grd = run.rgrid;
-                else
-                    grd = roms_get_grid(fname,fname,0,1);
+            if ndim ~= 1
+                if isempty(grd)
+                    if objflag
+                        grd = run.rgrid;
+                    else
+                        grd = roms_get_grid(fname,fname,0,1);
+                    end
                 end
+                [xax,yax,zax,vol] = dc_roms_extract(grd,varname,volume,1);
+            else
+                % for 1D time series data, none of this is applicable
+                vol = [];
+                xax = [];
+                yax = [];
+                zax = [];
+                
+                stride(2:end) = [];
             end
-            [xax,yax,zax,vol] = dc_roms_extract(grd,varname,volume,1);
             %[~,~,~,time,xunits,yunits] = dc_roms_var_grid(grd,varname);
         end        % process tindices (input) according to file
         [~,tnew,dt,~,tstride] = roms_tindices(tindices,slab,nt);
