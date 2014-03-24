@@ -37,10 +37,10 @@ function [pv,xpv,ypv,zpv] = pv_cgrid(rgrid,u,v,rho,f,rho0)
     
     % calculate gradients
     vx    = diff_cgrid(gridv,v,1); 
-    vy    = diff_cgrid(gridv,v,2); 
+    %vy    = diff_cgrid(gridv,v,2); 
     vz    = diff_cgrid(gridv,v,3);
 
-    ux    = diff_cgrid(gridu,u,1); 
+    %ux    = diff_cgrid(gridu,u,1); 
     uy    = diff_cgrid(gridu,u,2); 
     uz    = diff_cgrid(gridu,u,3);
 

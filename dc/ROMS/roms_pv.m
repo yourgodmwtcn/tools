@@ -5,6 +5,20 @@ function [pv,xpv,ypv,zpv] = roms_pv(fname,tindices,outname)
 
 % parameters
 %lam = 'rho';
+
+if isdir(fname)
+    dirname = fname;
+    fnames = roms_find_file(dirname,'avg');
+    fname = [dirname '/' fnames{1}];
+    tpv = dc_roms_read_data(dirname,'ocean_time');
+    dirflag = 1;
+else
+    % extract dirname
+    index = strfind(fname,'/');
+    dirname = fname(1:index(end));
+    tpv = dc_roms_read_data(fname,'ocean_time');
+    dirflag = 0;
+end
 vinfo = ncinfo(fname,'u');
 s     = vinfo.Size;
 dim   = length(s); 
@@ -20,8 +34,7 @@ if ~exist('tindices','var'), tindices = []; end
 [iend,tindices,dt,~,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 
 rho0  = ncread(fname,'R0');
-tpv = ncread(fname,'ocean_time');
-tpv = tpv([tindices(1):tindices(2)]);
+tpv = tpv(tindices(1):tindices(2));
 f   = ncread(fname,'f',[1 1],[Inf Inf]);
 
 xname = 'x_pv'; yname = 'y_pv'; zname = 'z_pv'; tname = 'ocean_time';
@@ -42,16 +55,20 @@ grid1.zw = grid.z_w;
 grid1.s_w = grid.s_w;
 grid1.s_rho = grid.s_rho;
 
+totvol = sum(grid.dV(:));
 %% setup netcdf file
 
 if ~exist('outname','var') || isempty(outname), outname = 'ocean_pv.nc'; end
+outname = [dirname '/' outname];
+
 if exist(outname,'file')
     %in = input('File exists. Do you want to overwrite (1/0)? ');
     in = 1;
     if in == 1, delete(outname); end
 end
 try
-    nccreate(outname,'pv','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3) tname length(tpv)});
+    nccreate(outname,'pv', 'Format','netcdf4', ...
+        'Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3) tname length(tpv)});
     nccreate(outname,xname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
     nccreate(outname,yname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
     nccreate(outname,zname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
@@ -69,39 +86,54 @@ catch ME
     fprintf('\n Appending to existing file.\n');
 end
 
-% write grid
-ncwrite(outname,xname,xpv);
-ncwrite(outname,yname,ypv);
-ncwrite(outname,zname,zpv);
-ncwrite(outname,'ocean_time',tpv);
 
 %% calculate pv
 
 misc = roms_load_misc(fname);
-tic;
+ticstart = tic;
 for i=0:iend-1
     disp(['i = ' num2str(i) '/' num2str(iend-1)]);
     [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
     tstart = read_start(end);
     tend   = read_start(end) + read_count(end) -1;
     
-    u      = ncread(fname,'u',read_start,read_count,stride);
-    v      = ncread(fname,'v',read_start,read_count,stride);
-    try
-        rho = ncread(fname,'rho',read_start,read_count,stride); % theta
-    catch ME
-        rho = -misc.Tcoef*ncread(fname,'temp',read_start,read_count,stride);
-        %fprintf('\n Assuming T0 = 14c\n');
+    if dirflag
+        u = dc_roms_read_data(dirname,'u',[tstart tend],{},[],grid);
+        v = dc_roms_read_data(dirname,'v',[tstart tend],{},[],grid);
+        try
+            rho = dc_roms_read_data(dirname,'rho',[tstart tend],{},[],grid);
+        catch ME
+            rho = -misc.Tcoef* ...
+                dc_roms_read_data(dirname,'temp',[tstart tend],{},[],grid);
+        end
+    else
+        u = ncread(fname,'u',read_start,read_count,stride);
+        v = ncread(fname,'v',read_start,read_count,stride);
+        try
+            rho = ncread(fname,'rho',read_start,read_count,stride); % theta
+        catch ME
+            rho = -misc.Tcoef*ncread(fname,'temp',read_start,read_count,stride);
+        end
     end
     
     [pv,xpv,ypv,zpv] = pv_cgrid(grid1,u,v,rho,f,rho0);
+    
+    if i == 0
+        % write grid
+        ncwrite(outname,xname,xpv);
+        ncwrite(outname,yname,ypv);
+        ncwrite(outname,zname,zpv);
+        ncwrite(outname,'ocean_time',tpv);
+    end
 
     ncwrite(outname,'pv',pv,read_start); 
     
-    intPV(tstart:tend) = domain_integrate(pv,xpv,ypv,zpv); 
+    pvdV = bsxfun(@times,pv,avg1(grid.dV(2:end-1,2:end-1,:),3));
+    
+    intPV(tstart:tend) = squeeze(nansum(nansum(nansum(pvdV,1),2),3))./totvol; 
 end
-toc;
-save pv.mat pv xpv ypv zpv tpv intPV
+toc(ticstart);
+%save pv.mat pv xpv ypv zpv tpv intPV
 fprintf('\n Wrote file : %s \n\n',outname);
 
     %% old code

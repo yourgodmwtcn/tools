@@ -49,20 +49,21 @@ debug = 0;
 if debug
     figure
     h(1) = subplot(141);
-    contourf(avg1(squeeze(grid.xmat(:,1,:)),ax1)/1000,avg1(squeeze(grid.zmat(:,1,:)),ax1), ...
-        squeeze(dfdx_s(:,1,:)));
+    contourf(avg1(squeeze(grid.xmat(1,:,:)),ax1)/1000,avg1(squeeze(grid.zmat(1,:,:)),ax1), ...
+        squeeze(dfdx_s(1,:,:)));
     title('(df/dx)_s'); colorbar; cx = caxis;
     h(2) = subplot(142);
-    contourf(avg1(squeeze(grid.xmat(:,1,:)),ax1)/1000,avg1(squeeze(grid.zmat(:,1,:)),ax1), ...
-        squeeze(dfdz(:,1,:)));
+    contourf(avg1(avg1(squeeze(grid.xmat(1,:,:)),ax1),2)/1000, ...
+        avg1(avg1(squeeze(grid.zmat(1,:,:)),ax1),2), ...
+        squeeze(dfdz(1,:,:)));
     title('df/dz'); colorbar; cx = caxis;
     h(3) = subplot(143);
-    contourf(avg1(squeeze(grid.xmat(:,1,:)),ax1)/1000,avg1(squeeze(grid.zmat(:,1,:)),ax1), ...
-        squeeze(dzdx_s(:,1,:)));
+    contourf(avg1(squeeze(grid.xmat(1,:,:)),ax1)/1000,avg1(squeeze(grid.zmat(1,:,:)),ax1), ...
+        squeeze(dzdx_s(1,:,:)));
     title('(dz/dx)_s'); colorbar; cx = caxis;
     h(4) = subplot(144);
-    contourf(avg1(squeeze(grid.xmat(:,1,:)),ax1)/1000,avg1(squeeze(grid.zmat(:,1,:)),ax1), ...
-        squeeze(der(:,1,:)));
+    contourf(avg1(squeeze(grid.xmat(1,:,:)),ax1)/1000,avg1(squeeze(grid.zmat(1,:,:)),ax1), ...
+        squeeze(der(1,:,:)));
     title('(df/dx)_z = (df/dx)_s - (dz/dx)_s * df/dz'); colorbar; cx = caxis;
     linkaxes(h,'xy');
 end
