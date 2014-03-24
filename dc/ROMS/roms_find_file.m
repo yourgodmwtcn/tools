@@ -8,6 +8,7 @@ function [fname] = roms_find_file(dirin,type)
     if ~isdir(dirin)
         if strcmpi(type,'his') || strcmpi(type,'avg')
             fname = dirin;
+            return;
         else
             index = strfind(dirin,'/');
             dirin = dirin(1:index(end));
