@@ -6,9 +6,9 @@
 
 function [pv,xpv,ypv,zpv] = pv_cgrid(rgrid,u,v,rho,f,rho0)
 
-    xpv = rgrid.xr(2:end-1,2:end-1,:);
-    ypv = rgrid.yr(2:end-1,2:end-1,:);
-    zpv = avgz(rgrid.zr(2:end-1,2:end-1,:));
+    xpv = avg1(rgrid.xr(2:end-1,2:end-1,:), 3);
+    ypv = avg1(rgrid.yr(2:end-1,2:end-1,:), 3);
+    zpv = avg1(rgrid.zr(2:end-1,2:end-1,:), 3);
     
     gridu.xmat = rgrid.xu; gridu.ymat = rgrid.yu; gridu.zmat = rgrid.zu;
     gridv.xmat = rgrid.xv; gridv.ymat = rgrid.yv; gridv.zmat = rgrid.zv;
@@ -49,16 +49,16 @@ function [pv,xpv,ypv,zpv] = pv_cgrid(rgrid,u,v,rho,f,rho0)
     tz    = diff_cgrid(gridr,rho,3);
     
     if size(tz,3) > size(vx,3)
-        tz = avgz(tz);
-        uz = avgz(uz);
-        vz = avgz(vz);
+        tz = avg1(tz,3);
+        uz = avg1(uz,3);
+        vz = avg1(vz,3);
     end
     
     % PV calculated at interior rho points
                                 % f + vx - uy                      (rho)_z
-    pv = -1* double((avgx(avgz(bsxfun(@plus,avg1(vx - uy,2),f)))  .*  tz(2:end-1,2:end-1,:,:) ...
-                   - avgy(vz(2:end-1,:,:,:)).*avgz(avgx(tx(:,2:end-1,:,:))) ... % vz * (rho)_x
-                   + avgx(uz(:,2:end-1,:,:)).*avgz(avgy(ty(2:end-1,:,:,:))))./rho0);%avgz(lambda(2:end-1,2:end-1,:,:))); % uz*(rho)_y
+    pv = -1* double((avg1(bsxfun(@plus,avg1(vx - uy,2),f), 1).*tz(2:end-1,2:end-1,:,:) ...
+                   - avg1(vz(2:end-1,:,:,:),2).*avg1(tx(:,2:end-1,:,:),1) ... % vz * (rho)_x
+                   + avg1(uz(:,2:end-1,:,:),1).*avg1(ty(2:end-1,:,:,:),2))./rho0);%avgz(lambda(2:end-1,2:end-1,:,:))); % uz*(rho)_y
                
     debug = 0;
     if debug
@@ -84,17 +84,7 @@ function [pv,xpv,ypv,zpv] = pv_cgrid(rgrid,u,v,rho,f,rho0)
         colormap(hsv);
         pause;
     end
-    
-
-function [um] = avgy(um)
-    um = (um(:,1:end-1,:,:)+um(:,2:end,:,:))/2;
-
-function [um] = avgx(um)
-    um = (um(1:end-1,:,:,:)+um(2:end,:,:,:))/2;
-
-function [um] = avgz(um)
-    %um = um;(um(:,:,1:end-1,:)+um(:,:,2:end,:))/2;
-    
+        
 % following for *flat bottom* only
 %     vx    = bsxfun(@rdivide,diff(v,1,1),diff(grid.xv)); %diff(v,1,1)./repmat(diff(grid.x_v',1,1),[1 1 s(3) s(4)]);
 %     vy    = bsxfun(@rdivide,diff(v,1,2),diff(grid.yv')); %diff(v,1,2)./repmat(diff(grid.y_v',1,2),[1 1 s(3) s(4)]);

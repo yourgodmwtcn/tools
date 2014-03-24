@@ -22,7 +22,7 @@ end
 vinfo = ncinfo(fname,'u');
 s     = vinfo.Size;
 dim   = length(s); 
-slab  = roms_slab(fname,0)-3;
+slab  = roms_slab(fname,0)-4;
 
 warning off
 grid = roms_get_grid(fname,fname,1,1);
@@ -68,11 +68,12 @@ if exist(outname,'file')
 end
 try
     nccreate(outname,'pv', 'Format','netcdf4', ...
-        'Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3) tname length(tpv)});
-    nccreate(outname,xname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
-    nccreate(outname,yname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
-    nccreate(outname,zname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
+        'Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3)-1 tname length(tpv)});
+    nccreate(outname,xname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)-1});
+    nccreate(outname,yname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)-1});
+    nccreate(outname,zname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)-1});
     nccreate(outname,tname,'Dimensions',{tname length(tpv)});
+    nccreate(outname,'intPV','Dimensiona',{tname length(tpv)});
     
     ncwriteatt(outname,'pv','Description','Ertel PV calculated from ROMS output');
     ncwriteatt(outname,'pv','coordinates',[xname ' ' yname ' ' zname ' ' 'ocean_time']);
@@ -81,6 +82,8 @@ try
     ncwriteatt(outname,yname,'units',ncreadatt(fname,'y_u','units'));
     ncwriteatt(outname,zname,'units','m');
     ncwriteatt(outname,tname,'units','s');
+    ncwriteatt(outname,'intPV','Description', ...
+        'time series of volume averaged PV over entire domain.');
     fprintf('\n Created file : %s\n', outname);
 catch ME
     fprintf('\n Appending to existing file.\n');
@@ -132,6 +135,7 @@ for i=0:iend-1
     
     intPV(tstart:tend) = squeeze(nansum(nansum(nansum(pvdV,1),2),3))./totvol; 
 end
+ncwrite(outname,'intPV',intPV);
 toc(ticstart);
 %save pv.mat pv xpv ypv zpv tpv intPV
 fprintf('\n Wrote file : %s \n\n',outname);
