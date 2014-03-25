@@ -4,7 +4,7 @@
 %       xu,yu,zu & xv,yv,zv & xr,yr,zr (all matrices) 
 %                   & zw & s_w(vectors), s_rho
 
-function [pv,xpv,ypv,zpv] = pv_cgrid(rgrid,u,v,rho,f,rho0)
+function [pv,xpv,ypv,zpv,rvor] = pv_cgrid(rgrid,u,v,rho,f,rho0)
 
     xpv = avg1(rgrid.xr(2:end-1,2:end-1,:), 3);
     ypv = avg1(rgrid.yr(2:end-1,2:end-1,:), 3);
@@ -54,9 +54,11 @@ function [pv,xpv,ypv,zpv] = pv_cgrid(rgrid,u,v,rho,f,rho0)
         vz = avg1(vz,3);
     end
     
+    rvor  = vx - uy;
+    
     % PV calculated at interior rho points
                                 % f + vx - uy                      (rho)_z
-    pv = -1* double((avg1(bsxfun(@plus,avg1(vx - uy,2),f), 1).*tz(2:end-1,2:end-1,:,:) ...
+    pv = -1* double((avg1(bsxfun(@plus,avg1(rvor,2),f), 1).*tz(2:end-1,2:end-1,:,:) ...
                    - avg1(vz(2:end-1,:,:,:),2).*avg1(tx(:,2:end-1,:,:),1) ... % vz * (rho)_x
                    + avg1(uz(:,2:end-1,:,:),1).*avg1(ty(2:end-1,:,:,:),2))./rho0);%avgz(lambda(2:end-1,2:end-1,:,:))); % uz*(rho)_y
                
