@@ -70,6 +70,10 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
             %[~,~,~,time,xunits,yunits] = dc_roms_var_grid(grd,varname);
         end        % process tindices (input) according to file
         [~,tnew,dt,~,tstride] = roms_tindices(tindices,slab,nt);
+        % if tindices(2) is Inf and there are multiple files the case 2
+        % does not execute since tnew is set by roms_tindices to be nt -
+        % which comes from 1 file only.
+        if isinf(tindices(2)), tnew(2) = Inf; end
         stride(end) = tstride(end);
         % Case 1 : if requested data not in this file, skip to next
         if tnew(1) > vinfo.Size(end)
