@@ -196,7 +196,7 @@ else
 end
 
 % check if there is topography
-if bsxfun(@minus,zax,zax(1,1,:)) == zeros(size(zax))
+if dim == 3 || bsxfun(@minus,zax,zax(1,1,:)) == zeros(size(zax))
     warning('no topography detected.');
     flags.notopo = 1;
 else

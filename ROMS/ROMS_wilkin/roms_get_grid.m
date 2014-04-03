@@ -311,6 +311,8 @@ if nargin > 1
     
   end
   
+  grd.dV = bsxfun(@times,diff(permute(grd.z_w,[3 2 1]),1,3),1./grd.pm'.*1./grd.pn');
+  
   grd.Vtransform = Vtransform;
   grd.Vstretching = Vstretching;
   grd.theta_s = theta_s;
