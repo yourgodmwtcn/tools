@@ -144,8 +144,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
     spaceplay = 1; % if 1, space pauses. if 0, space plays
     
     %% parse options
-    cmds = {'nocaxis','pcolor','imagesc','contour','pause', ...
-            'fancy_cmap','movieman','topresent','image'};
+    cmds = {'nocaxis','pcolor','imagesc','contour','pause','fancy_cmap','movieman','topresent','image'};
     flags = zeros(1,length(cmds));
     if ~isempty(commands),
         [flags, commands] = parse_commands(cmds,commands);

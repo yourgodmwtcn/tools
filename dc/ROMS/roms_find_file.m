@@ -8,7 +8,6 @@ function [fname] = roms_find_file(dirin,type)
     if ~isdir(dirin)
         if strcmpi(type,'his') || strcmpi(type,'avg')
             fname = dirin;
-            return;
         else
             index = strfind(dirin,'/');
             dirin = dirin(1:index(end));
@@ -25,8 +24,7 @@ function [fname] = roms_find_file(dirin,type)
         while size(in,1) > 1
             if strcmpi(in(ii,:).name,'floats.in') || ...
                     strcmpi(in(ii,:).name,'stations.in') || ...
-                    (strfind(in(ii,:).name,'rst') &&  ...
-                        strfind(in(ii,:).name,'.in'))
+                    strfind(in(ii,:).name,'rst_')
                in(ii,:) = [];
                continue
             end
@@ -46,25 +44,11 @@ function [fname] = roms_find_file(dirin,type)
         fname = [grep_in([fname in],type)];
     end
     
-    if strcmpi(type,'his')
+    if strcmpi(type,'his') || strcmpi(type,'avg')
         fnames = dir([dirin '/*_his*.nc*']);
         if isempty(fnames)
             fnames = dir([dirin '/*_avg*.nc*']); 
-            disp('Using avg files instead.');
-        end
-        
-        % convert from struct to names
-        clear fname
-        for kk=1:size(fnames)
-            fname{kk}= fnames(kk,:).name;
-        end
-    end
-    
-    if strcmpi(type,'avg')
-        fnames = dir([dirin '/*_avg*.nc*']);
-        if isempty(fnames)
-            fnames = dir([dirin '/*_his*.nc*']); 
-            disp('Using his files instead.');
+            if strcmpi(type,'his'), disp('Using avg files instead.'); end
         end
         
         % convert from struct to names

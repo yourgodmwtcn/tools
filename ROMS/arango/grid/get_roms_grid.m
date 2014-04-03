@@ -76,7 +76,7 @@ function Gout = get_roms_grid(Ginp, Sinp, Tindex)
 %           variables. That is, NO_WRITE_GRID option was not activated.
 %
 
-% svn $Id: get_roms_grid.m 722 2014-03-14 00:53:34Z arango $
+% svn $Id: get_roms_grid.m 711 2014-01-23 20:36:13Z arango $
 %=========================================================================%
 %  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
@@ -270,13 +270,13 @@ else
         Gout.(field) = nc_read(Ginp,field);
       case 'hc'
         Gout.(field) = nc_read(Ginp,field);
-      case {'s_rho', 'sc_r'}
+      case 's_rho'
         Gout.(field) = nc_read(Ginp,field);
         Gout.N = length(Gout.(field));
         got.N  = true;
       case 'Cs_r'
         Gout.(field) = nc_read(Ginp,field);
-      case {'s_w', 'sc_w'}
+      case 's_w'
         Gout.(field) = nc_read(Ginp,field);
       case 'Cs_w'
         Gout.(field) = nc_read(Ginp,field);
@@ -411,7 +411,7 @@ if (process.zeta),
         case 'hc'
           Gout.(field) = nc_read(Sinp,field);
           got.(field)  = true;
-        case {'s_rho', 'sc_r'}
+        case 's_rho'
           Gout.(field) = nc_read(Sinp,field);
           got.(field)  = true;
           Gout.N = length(Gout.(field));
@@ -419,7 +419,7 @@ if (process.zeta),
         case 'Cs_r'
           Gout.(field) = nc_read(Sinp,field);
           got.(field)  = true;
-        case {'s_w', 'sc_w'}
+        case 's_w'
           Gout.(field) = nc_read(Sinp,field);
           got.(field)  = true;
         case 'Cs_w'

@@ -3,23 +3,12 @@
 
 function [pv,xpv,ypv,zpv] = roms_pv(fname,tindices,outname)
 
-if isdir(fname)
-    dirname = fname;
-    fnames = roms_find_file(dirname,'avg');
-    fname = [dirname '/' fnames{1}];
-    tpv = dc_roms_read_data(dirname,'ocean_time');
-    dirflag = 1;
-else
-    % extract dirname
-    index = strfind(fname,'/');
-    dirname = fname(1:index(end));
-    tpv = dc_roms_read_data(fname,'ocean_time');
-    dirflag = 0;
-end
+% parameters
+%lam = 'rho';
 vinfo = ncinfo(fname,'u');
 s     = vinfo.Size;
 dim   = length(s); 
-slab  = roms_slab(fname,0)-4;
+slab  = roms_slab(fname,0)-3;
 
 warning off
 grid = roms_get_grid(fname,fname,1,1);
@@ -28,14 +17,14 @@ warning on
 % parse input
 if ~exist('tindices','var'), tindices = []; end
 
-[iend,tindices,dt,~,stride] = roms_tindices(tindices,slab,length(tpv));
+[iend,tindices,dt,~,stride] = roms_tindices(tindices,slab,vinfo.Size(end));
 
 rho0  = ncread(fname,'R0');
-tpv = tpv(tindices(1):tindices(2));
+tpv = ncread(fname,'ocean_time');
+tpv = tpv([tindices(1):tindices(2)]);
 f   = ncread(fname,'f',[1 1],[Inf Inf]);
 
 xname = 'x_pv'; yname = 'y_pv'; zname = 'z_pv'; tname = 'ocean_time';
-xrname = 'x_rv'; yrname = 'y_rv'; zrname = 'z_rv';
 
 grid1.xv = repmat(grid.x_v',[1 1 grid.N]);
 grid1.yv = repmat(grid.y_v',[1 1 grid.N]);
@@ -53,95 +42,66 @@ grid1.zw = grid.z_w;
 grid1.s_w = grid.s_w;
 grid1.s_rho = grid.s_rho;
 
-totvol = sum(grid.dV(:));
 %% setup netcdf file
 
-if ~exist('outname','var') || isempty(outname), outname = 'ocean_vor.nc'; end
-outname = [dirname '/' outname];
-
+if ~exist('outname','var') || isempty(outname), outname = 'ocean_pv.nc'; end
 if exist(outname,'file')
     %in = input('File exists. Do you want to overwrite (1/0)? ');
     in = 1;
     if in == 1, delete(outname); end
 end
+try
+    nccreate(outname,'pv','Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3) tname length(tpv)});
+    nccreate(outname,xname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
+    nccreate(outname,yname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
+    nccreate(outname,zname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)});
+    nccreate(outname,tname,'Dimensions',{tname length(tpv)});
+    
+    ncwriteatt(outname,'pv','Description','Ertel PV calculated from ROMS output');
+    ncwriteatt(outname,'pv','coordinates',[xname ' ' yname ' ' zname ' ' 'ocean_time']);
+    ncwriteatt(outname,'pv','units','N/A');
+    ncwriteatt(outname,xname,'units',ncreadatt(fname,'x_u','units'));
+    ncwriteatt(outname,yname,'units',ncreadatt(fname,'y_u','units'));
+    ncwriteatt(outname,zname,'units','m');
+    ncwriteatt(outname,tname,'units','s');
+    fprintf('\n Created file : %s\n', outname);
+catch ME
+    fprintf('\n Appending to existing file.\n');
+end
 
-nccreate(outname,'pv', 'Format','netcdf4', 'DeflateLevel',1,'Shuffle',true,...
-    'Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3)-1 tname length(tpv)});
-nccreate(outname,'rv', 'Format','netcdf4', 'DeflateLevel',1,'Shuffle',true,...
-    'Dimensions', {xrname s(1) yrname s(2)-1 zrname s(3)-1 tname length(tpv)});
-nccreate(outname,xname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)-1});
-nccreate(outname,yname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)-1});
-nccreate(outname,zname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)-1});
-nccreate(outname,xrname,'Dimensions',{xrname s(1)  yrname s(2)-1 zrname s(3)-1});
-nccreate(outname,yrname,'Dimensions',{xrname s(1)  yrname s(2)-1 zrname s(3)-1});
-nccreate(outname,zrname,'Dimensions',{xrname s(1)  yrname s(2)-1 zrname s(3)-1});
-nccreate(outname,tname,'Dimensions',{tname length(tpv)});
-nccreate(outname,'intPV','Dimensions',{tname length(tpv)});
-
-ncwriteatt(outname,'pv','Description','Ertel PV calculated from ROMS output');
-ncwriteatt(outname,'pv','coordinates',[xname ' ' yname ' ' zname ' ' 'ocean_time']);
-ncwriteatt(outname,'pv','units','N/A');
-ncwriteatt(outname,'rv','Description','Relative voritcity, vx-uy');
-ncwriteatt(outname,'pv','coordinates',['x_rv y_rv z_rv ocean_time']);
-ncwriteatt(outname,'rv','units','1/s');
-ncwriteatt(outname,xname,'units',ncreadatt(fname,'x_u','units'));
-ncwriteatt(outname,yname,'units',ncreadatt(fname,'y_u','units'));
-ncwriteatt(outname,zname,'units','m');
-ncwriteatt(outname,tname,'units','s');
-ncwriteatt(outname,'intPV','Description', ...
-    'time series of volume averaged PV over entire domain.');
-fprintf('\n Created file : %s\n', outname);
+% write grid
+ncwrite(outname,xname,xpv);
+ncwrite(outname,yname,ypv);
+ncwrite(outname,zname,zpv);
+ncwrite(outname,'ocean_time',tpv);
 
 %% calculate pv
 
 misc = roms_load_misc(fname);
-ticstart = tic;
+tic;
 for i=0:iend-1
     disp(['i = ' num2str(i) '/' num2str(iend-1)]);
     [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,dt);
     tstart = read_start(end);
     tend   = read_start(end) + read_count(end) -1;
     
-    if dirflag
-        u = dc_roms_read_data(dirname,'u',[tstart tend],{},[],grid);
-        v = dc_roms_read_data(dirname,'v',[tstart tend],{},[],grid);
-        
-        try
-            rho = dc_roms_read_data(dirname,'rho',[tstart tend],{},[],grid);
-        catch ME
-            rho = rho0 -rho0 * misc.Tcoef* ...
-                dc_roms_read_data(dirname,'temp',[tstart tend],{},[],grid);
-        end
-    else
-        u = ncread(fname,'u',read_start,read_count,stride);
-        v = ncread(fname,'v',read_start,read_count,stride);
-        try
-            rho = ncread(fname,'rho',read_start,read_count,stride); % theta
-        catch ME
-            rho = -misc.Tcoef*ncread(fname,'temp',read_start,read_count,stride);
-        end
+    u      = ncread(fname,'u',read_start,read_count,stride);
+    v      = ncread(fname,'v',read_start,read_count,stride);
+    try
+        rho = ncread(fname,'rho',read_start,read_count,stride); % theta
+    catch ME
+        rho = -misc.Tcoef*ncread(fname,'temp',read_start,read_count,stride);
+        %fprintf('\n Assuming T0 = 14c\n');
     end
     
-    [pv,xpv,ypv,zpv,rvor] = pv_cgrid(grid1,u,v,rho,f,rho0);
-    
-    if i == 0
-        % write grid
-        ncwrite(outname,xname,xpv);
-        ncwrite(outname,yname,ypv);
-        ncwrite(outname,zname,zpv);
-        ncwrite(outname,'ocean_time',tpv);
-    end
+    [pv,xpv,ypv,zpv] = pv_cgrid(grid1,u,v,rho,f,rho0);
 
-    ncwrite(outname,'pv',pv,read_start);
-    ncwrite(outname,'rv',rvor,read_start);
+    ncwrite(outname,'pv',pv,read_start); 
     
-    pvdV = bsxfun(@times,pv,avg1(grid.dV(2:end-1,2:end-1,:),3));
-    
-    intPV(tstart:tend) = squeeze(nansum(nansum(nansum(pvdV,1),2),3))./totvol; 
+    intPV(tstart:tend) = domain_integrate(pv,xpv,ypv,zpv); 
 end
-ncwrite(outname,'intPV',intPV);
-toc(ticstart);
-%save pv.mat pv xpv ypv zpv tpv intPV
+toc;
+save pv.mat pv xpv ypv zpv tpv intPV
 fprintf('\n Wrote file : %s \n\n',outname);
 
     %% old code

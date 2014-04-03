@@ -61,10 +61,10 @@ limx3=[limx1(1)   limx1(1) + 1.2*(limx1(2)-limx1(1))];
 %was contributed by Mariano Garcia (BorgWarner Morse TEC Inc)
 
 ax(3)=axes('Position',pos3,'box','off',...
-   'Color','none','XColor','k','YColor','k',...   
+   'Color','none','XColor','k','YColor','r',...   
    'xtick',[],'xlim',limx3,'yaxislocation','right');
 
-hlines(3) = line(x3,y3,'Color','k','Parent',ax(3));
+hlines(3) = line(x3,y3,'Color','r','Parent',ax(3));
 limy3=get(ax(3),'YLim');
 
 %Hide unwanted portion of the x-axis line that lies

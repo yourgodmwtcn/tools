@@ -19,7 +19,7 @@ function [read_start,read_count] = roms_ncread_params(dim,i,iend,slab,tindices,d
     if (iend-1) == 0, read_count(end) = floor((tindices(2)-tindices(1))/dt)+1; end 
     
     % parse vol
-    if exist('vol','var') && ~isempty(vol)
+    if exist('vol','var')
         read_start(1:end-1) = vol(1:dim-1,1)';
         read_count(1:end-1) = vol(1:dim-1,2)' - vol(1:dim-1,1)' + 1;
     end

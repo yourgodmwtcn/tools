@@ -29,7 +29,7 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
     else
         % get all history files
         if isdir(folder)
-            files = roms_find_file(folder,'avg');
+            files = roms_find_file(folder,'his');
         else
             files = folder;
         end
@@ -49,67 +49,44 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
         nt     = vinfo.Size(end);
         if ii == 1
             ndim = length(vinfo.Size);  
-            if ndim == 3
-               stride(4) = [];
-            end
-            if ndim ~= 1
-                if isempty(grd)
-                    if objflag
-                        grd = run.rgrid;
-                    else
-                        grd = roms_get_grid(fname,fname,0,1);
-                    end
+            %            if ndim == 3
+            %   stride(4) = [];
+            %end
+            if isempty(grd)
+                if objflag
+                    grd = run.rgrid;
+                else
+                    grd = roms_get_grid(fname,fname,0,1);
                 end
-                [xax,yax,zax,vol] = dc_roms_extract(grd,varname,volume,1);
-            else
-                % for 1D time series data, none of this is applicable
-                vol = [];
-                xax = [];
-                yax = [];
-                zax = [];
-                
-                stride(2:end) = [];
             end
+            [xax,yax,zax,vol] = dc_roms_extract(grd,varname,volume,1);
             %[~,~,~,time,xunits,yunits] = dc_roms_var_grid(grd,varname);
         end        % process tindices (input) according to file
         [~,tnew,dt,~,tstride] = roms_tindices(tindices,slab,nt);
-        % if tindices(2) is Inf and there are multiple files the case 2
-        % does not execute since tnew is set by roms_tindices to be nt -
-        % which comes from 1 file only.
-        if isinf(tindices(2)), tnew(2) = Inf; end
         stride(end) = tstride(end);
         % Case 1 : if requested data not in this file, skip to next
         if tnew(1) > vinfo.Size(end)
             tindices = tindices - nt;
             continue;
-        else
-            % Case 2 : requested data spans 2 files
-            if tnew(1) <= nt && tnew(2) > nt
-                % change ending for current read
-                tnew(2) = nt;
-                % set next read to start from beginning of new file
-                tindices(1) = 1;
-                tindices(2) = tindices(2)-nt;
-            else
-                % Case 3 : requested data finishes in current file
-                if tnew(2) <= nt && ~isinf(tindices(end))
-                    quitflag = 1;
-                end
-            end
+        end
+        % Case 2 : requested data spans 2 files
+        if tnew(1) < nt && tnew(2) > nt
+            % change ending for current read
+            tnew(2) = Inf;
+            % set next read to start from beginning of new file
+            tindices(1) = 1;
+            tindices(2) = tindices(2)-nt;
+        end
+        % Case 3 : requested data finishes in current file
+        if tnew(2) <= nt && ~isinf(tindices(end))
+            quitflag = 1;
         end
         [start,count] = roms_ncread_params(ndim,0,1,slab,tnew,dt,vol);
         
         temp = squeeze(double(ncread(fname,varname,start,count,stride)));
-        if count(end) == 1 && ii == 1 % first file has the single timestep
+        if count(end) == 1
             out = temp;
             return;
-        end
-        
-        % make sure appending timestep always works
-        try
-            dimsave = max(ndims(temp),ndims(out));
-        catch ME
-            dimsave = ndims(temp);
         end
         
         if isvector(temp)
@@ -118,20 +95,18 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
         else        
             % call ndims instead of using ndim because i could be 
             % extracting a slice
-            switch dimsave
+            switch ndims(temp)
                 case 2
                     out(:,k:k+size(temp,2)-1) = temp;
+                    k = k+size(temp,2);
                 case 3
                     out(:,:,k:k+size(temp,3)-1) = temp;
+                    k = k+size(temp,3);
                 case 4
                     out(:,:,:,k:k+size(temp,4)-1) = temp;
+                    k = k+size(temp,4);
+                    clear temp
             end  
-            if count(end) ~= 1
-                k = k + size(temp,dimsave);
-            else
-                k = k + 1;
-            end
-            clear temp;
         end
         if quitflag, break; end
     end 

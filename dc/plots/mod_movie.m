@@ -196,15 +196,11 @@ else
 end
 
 % check if there is topography
-if isempty (zax)
+if bsxfun(@minus,zax,zax(1,1,:)) == zeros(size(zax))
+    warning('no topography detected.');
     flags.notopo = 1;
 else
-    if bsxfun(@minus,zax,zax(1,1,:)) == zeros(size(zax))
-        warning('no topography detected.');
-        flags.notopo = 1;
-    else
-        flags.notopo = 0;
-    end
+    flags.notopo = 0;
 end
 
 % given location instead of index
