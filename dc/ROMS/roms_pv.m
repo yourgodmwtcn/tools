@@ -37,7 +37,7 @@ f   = ncread(fname,'f',[1 1],[Inf Inf]);
 xname = 'x_pv'; yname = 'y_pv'; zname = 'z_pv'; tname = 'ocean_time';
 xrname = 'x_rv'; yrname = 'y_rv'; zrname = 'z_rv';
 
-xdname = 'xpv'; ydname = 'ypv'; zdname = 'zpv';
+xdname = 'xpv'; ydname = 'ypv'; zdname = 'zpv'; tdname = 'tpv';
 xdrname = 'xrv'; ydrname = 'yrv'; zdrname = 'zrv';
 
 grid1.xv = repmat(grid.x_v',[1 1 grid.N]);
@@ -69,20 +69,20 @@ if exist(outname,'file')
 end
 
 nccreate(outname,'pv', 'Format','netcdf4', 'DeflateLevel',1,'Shuffle',true,...
-    'Dimensions', {xdname s(1)-1 ydname s(2)-2 zdname s(3)-1 tname length(tpv)});
+    'Dimensions', {xdname s(1)-1 ydname s(2)-2 zdname s(3)-1 tdname length(tpv)});
 nccreate(outname,'rv', 'Format','netcdf4', 'DeflateLevel',1,'Shuffle',true,...
-    'Dimensions', {xdrname s(1) ydrname s(2)-1 zdrname s(3)-1 tname length(tpv)});
+    'Dimensions', {xdrname s(1) ydrname s(2)-1 zdrname s(3)-1 tdname length(tpv)});
 nccreate(outname,xname,'Dimensions',{xdname s(1)-1 ydname s(2)-2 zdname s(3)-1});
 nccreate(outname,yname,'Dimensions',{xdname s(1)-1 ydname s(2)-2 zdname s(3)-1});
 nccreate(outname,zname,'Dimensions',{xdname s(1)-1 ydname s(2)-2 zdname s(3)-1});
 nccreate(outname,xrname,'Dimensions',{xdrname s(1)  ydrname s(2)-1 zdrname s(3)-1});
 nccreate(outname,yrname,'Dimensions',{xdrname s(1)  ydrname s(2)-1 zdrname s(3)-1});
 nccreate(outname,zrname,'Dimensions',{xdrname s(1)  ydrname s(2)-1 zdrname s(3)-1});
-nccreate(outname,tname,'Dimensions',{tname length(tpv)});
-nccreate(outname,'intPV','Dimensions',{tname length(tpv)});
+nccreate(outname,tname,'Dimensions',{tdname length(tpv)});
+nccreate(outname,'intPV','Dimensions',{tdname length(tpv)});
 
 ncwriteatt(outname,'pv','Description','Ertel PV calculated from ROMS output');
-ncwriteatt(outname,'pv','coordinates',[xname ' ' yname ' ' zname ' ' 'ocean_time']);
+ncwriteatt(outname,'pv','coordinates',[xname ' ' yname ' ' zname ' ' tname]);
 ncwriteatt(outname,'pv','units','N/A');
 ncwriteatt(outname,'rv','Description','Relative voritcity, vx-uy');
 ncwriteatt(outname,'pv','coordinates',['x_rv y_rv z_rv ocean_time']);
