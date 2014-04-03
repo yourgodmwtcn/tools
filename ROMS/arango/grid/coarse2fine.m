@@ -27,7 +27,7 @@ function F = coarse2fine(Ginp,Gout,Gfactor,varargin)
 %    F          Fine resolution Grid structure
 %
 
-% svn $Id: coarse2fine.m 711 2014-01-23 20:36:13Z arango $
+% svn $Id: coarse2fine.m 729 2014-04-03 16:59:08Z arango $
 %=========================================================================%
 %  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
@@ -101,6 +101,14 @@ if (spherical),
   F.spherical = 1;
 else
   F.spherical = 0;
+end
+
+% Set uniform grid switch.
+
+if isfield(C, 'uniform'),
+  F.uniform = C.uniform;
+else
+  F.uniform = 0;
 end
 
 % Set curvilinear switch.

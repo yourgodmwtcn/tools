@@ -37,7 +37,7 @@ function C = fine2coarse(Ginp,Gout,Gfactor,varargin)
 %    C          Coaser resolution Grid structure
 %
 
-% svn $Id: fine2coarse.m 711 2014-01-23 20:36:13Z arango $
+% svn $Id: fine2coarse.m 729 2014-04-03 16:59:08Z arango $
 %=========================================================================%
 %  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
@@ -227,6 +227,12 @@ C.grid_name = Gout;
 C.Lm = length(IpC)-1;
 C.Mm = length(JpC)-1;
 C.spherical = F.spherical;
+
+if isfield(F, 'uniform'),
+  C.uniform = F.uniform;
+else
+  C.uniform = 0;
+end
 
 % Extract grid variables.
 
