@@ -25,7 +25,8 @@ function [fname] = roms_find_file(dirin,type)
         while size(in,1) > 1
             if strcmpi(in(ii,:).name,'floats.in') || ...
                     strcmpi(in(ii,:).name,'stations.in') || ...
-                    strfind(in(ii,:).name,'rst_')
+                    (strfind(in(ii,:).name,'rst') &&  ...
+                        strfind(in(ii,:).name,'.in'))
                in(ii,:) = [];
                continue
             end
