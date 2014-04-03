@@ -254,7 +254,7 @@ function [S,G] = contact(Gnames, Cname, varargin)
 %          receiver_value(Irg,Jrg) = donor_value(Idg,Jdg)
 %
 
-% svn $Id: contact.m 711 2014-01-23 20:36:13Z arango $
+% svn $Id: contact.m 717 2014-02-11 02:52:14Z arango $
 %=========================================================================%
 %  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
@@ -516,6 +516,7 @@ JrF = [JpF(1)-half JpF+half];                               % RHO-points
 %--------------------------------------------------------------------------
 
 R.spherical = spherical;
+R.uniform   = G(dg).uniform;
 
 % Set (XI,ETA) coordinates for the receiver finer grid in terms of the
 % donor coarser grid.  This will be needed for more precise determination
@@ -2162,6 +2163,7 @@ if (dg > rg || S.grid(dg).refine_factor > 0),
 % Set intermediate refinement structure to empty.
 
   R.spherical = [];
+  R.uniform   = [];
 
   R.xi_rho  = [];
   R.eta_rho = [];

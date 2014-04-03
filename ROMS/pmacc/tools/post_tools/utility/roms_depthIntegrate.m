@@ -46,3 +46,6 @@ S(~isfinite(S)) = 0;
 Sint = squeeze(sum(S.*dz));
 Savg = Sint ./ squeeze(sum(dz));
 Savg(~isfinite(Savg)) = nan;
+
+Savg = Savg'; 
+Sint = Sint';

@@ -31,7 +31,7 @@ function editmask(grid_file, coast_file)
 %           BUTTON, RADIOBOX, TEXTBOX, AXISSCROLL,
 %
 
-% svn $Id: editmask.m 711 2014-01-23 20:36:13Z arango $
+% svn $Id: editmask.m 717 2014-02-11 02:52:14Z arango $
 %=========================================================================%
 %  Copyright (c) 2002-2014 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
@@ -307,29 +307,31 @@ switch lower(grid_file),
 % Read in coastline data. If appropriate, compute coastline (I,J)
 % grid indices.
 
-   if (got_Clon && got_Clat),
-     [C]=ijcoast(grid_file);
-     xcst=C.Icst;
-     ycst=C.Jcst;
-     clear C lat lon;
-   else
-     if (got_coast),
-       load(coast_file);
-       if (exist('C','var')),
-         xcst=C.Icst;
-         ycst=C.Jcst;
-         clear C;
-       elseif (exist('lon','var') && exist('lat','var')),
-         [C]=ijcoast(grid_file,coast_file);
-         xcst=C.Icst;
-         ycst=C.Jcst;
-         clear C lat lon;
-       else
-         error('Coast file should contain "lon" and "lat" vectors');
+   if (spherical),
+     if (got_Clon && got_Clat),
+       [C]=ijcoast(grid_file);
+       xcst=C.Icst;
+       ycst=C.Jcst;
+       clear C lat lon;
+     else
+       if (got_coast),
+         load(coast_file);
+         if (exist('C','var')),
+           xcst=C.Icst;
+           ycst=C.Jcst;
+           clear C;
+         elseif (exist('lon','var') && exist('lat','var')),
+           [C]=ijcoast(grid_file,coast_file);
+           xcst=C.Icst;
+           ycst=C.Jcst;
+           clear C lat lon;
+         else
+           error('Coast file should contain "lon" and "lat" vectors');
+         end
        end
      end
    end
-
+     
 % Initialize the window.
 
    fig=figure('NumberTitle','off',                                      ...
