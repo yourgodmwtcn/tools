@@ -37,6 +37,9 @@ f   = ncread(fname,'f',[1 1],[Inf Inf]);
 xname = 'x_pv'; yname = 'y_pv'; zname = 'z_pv'; tname = 'ocean_time';
 xrname = 'x_rv'; yrname = 'y_rv'; zrname = 'z_rv';
 
+xdname = 'xpv'; ydname = 'ypv'; zdname = 'zpv';
+xdrname = 'xrv'; ydrname = 'yrv'; zdrname = 'zrv';
+
 grid1.xv = repmat(grid.x_v',[1 1 grid.N]);
 grid1.yv = repmat(grid.y_v',[1 1 grid.N]);
 grid1.zv = permute(grid.z_v,[3 2 1]);
@@ -66,15 +69,15 @@ if exist(outname,'file')
 end
 
 nccreate(outname,'pv', 'Format','netcdf4', 'DeflateLevel',1,'Shuffle',true,...
-    'Dimensions', {xname s(1)-1 yname s(2)-2 zname s(3)-1 tname length(tpv)});
+    'Dimensions', {xdname s(1)-1 ydname s(2)-2 zdname s(3)-1 tname length(tpv)});
 nccreate(outname,'rv', 'Format','netcdf4', 'DeflateLevel',1,'Shuffle',true,...
-    'Dimensions', {xrname s(1) yrname s(2)-1 zrname s(3)-1 tname length(tpv)});
-nccreate(outname,xname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)-1});
-nccreate(outname,yname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)-1});
-nccreate(outname,zname,'Dimensions',{xname s(1)-1 yname s(2)-2 zname s(3)-1});
-nccreate(outname,xrname,'Dimensions',{xrname s(1)  yrname s(2)-1 zrname s(3)-1});
-nccreate(outname,yrname,'Dimensions',{xrname s(1)  yrname s(2)-1 zrname s(3)-1});
-nccreate(outname,zrname,'Dimensions',{xrname s(1)  yrname s(2)-1 zrname s(3)-1});
+    'Dimensions', {xdrname s(1) ydrname s(2)-1 zdrname s(3)-1 tname length(tpv)});
+nccreate(outname,xname,'Dimensions',{xdname s(1)-1 ydname s(2)-2 zdname s(3)-1});
+nccreate(outname,yname,'Dimensions',{xdname s(1)-1 ydname s(2)-2 zdname s(3)-1});
+nccreate(outname,zname,'Dimensions',{xdname s(1)-1 ydname s(2)-2 zdname s(3)-1});
+nccreate(outname,xrname,'Dimensions',{xdrname s(1)  ydrname s(2)-1 zdrname s(3)-1});
+nccreate(outname,yrname,'Dimensions',{xdrname s(1)  ydrname s(2)-1 zdrname s(3)-1});
+nccreate(outname,zrname,'Dimensions',{xdrname s(1)  ydrname s(2)-1 zdrname s(3)-1});
 nccreate(outname,tname,'Dimensions',{tname length(tpv)});
 nccreate(outname,'intPV','Dimensions',{tname length(tpv)});
 
