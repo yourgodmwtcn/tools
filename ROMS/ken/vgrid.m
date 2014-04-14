@@ -39,8 +39,10 @@ if round(vstretch) == 1
 elseif round(vstretch) ==2
     ths = param(1);
     thb = param(2);
-    alpha = param(3);
-    beta = param(4);
+    % alpha,beta are hardcoded in Utility/set_scoord.F as Afactor=1,
+    % Bfactor = 1
+    alpha = 1; %param(3);
+    beta = 1; %param(4);
     csur = (1-cosh(ths*s))/(cosh(ths)-1);
     cbot = -1 + sinh(thb*(s+1))/sinh(thb);             %  ????
     cw = ((s+1).^alpha).*(1 + (alpha/beta)*(1 - (s+1).^beta));

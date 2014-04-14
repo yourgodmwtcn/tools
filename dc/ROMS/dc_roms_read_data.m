@@ -78,6 +78,10 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
         % Case 1 : if requested data not in this file, skip to next
         if tnew(1) > vinfo.Size(end)
             tindices = tindices - nt;
+            % requested data was not in supplied file.
+            if ~isdir(folder)
+                error(['Data not in file: ' folder]);
+            end
             continue;
         else
             % Case 2 : requested data spans 2 files
