@@ -13,6 +13,10 @@ function [handles] = dcline(ax,x,label,color)
     if ~exist('label','var'), label = [];num2str(x'); end
     if ~exist('color','var'), color = 'k'; end
     
+    if length(x) ~= size(label,1)
+        label = repmat(label,[length(x) 1]);
+    end
+    
     if ax == 'x'
         yax  = get(hAxis,'YLim');
         tickstr = 'XTick';
