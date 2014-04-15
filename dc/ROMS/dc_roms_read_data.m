@@ -14,6 +14,8 @@ function [out,xax,yax,zax] = dc_roms_read_data(folder,varname,tindices, ...
     if ~exist('stride','var') || isempty(stride), stride = [1 1 1 1]; end
     if ~exist('grd','var'), grd = []; end
     
+    if length(tindices) == 1, tindices(2) = tindices(1); end
+    
     if isobject(folder)
         run = folder;
         folder = run.dir;
