@@ -63,7 +63,7 @@ if isdir(fname)
     files = roms_find_file(fname,'his');
     isDir = 1;
     for ii=1:size(files,1)
-        h_plot = mod_movie([fname '\' files(ii,:)],varname,tindices,volume,axis,index,commands,isDir);
+        h_plot = mod_movie([fname '/' files{ii}],varname,tindices,volume,axis,index,commands,isDir);
         if strcmp(get(gcf,'currentkey'),'escape'), return; end 
         if ii == 1 % allow uninterrupted playback
             % remove pause if it exists
