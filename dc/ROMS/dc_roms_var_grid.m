@@ -1,7 +1,7 @@
-%       [xax,yax,zax,tax,xunits,yunits] = roms_var_grid(fname,varname)
+%       [xax,yax,zax,tax,xunits,yunits,grd] = roms_var_grid(fname,varname)
 % returns grids as matrices of appropriate size for variable
 
-function [xax,yax,zax,tax,xunits,yunits] = dc_roms_var_grid(fname,varname,tindex)
+function [xax,yax,zax,tax,xunits,yunits,grd] = dc_roms_var_grid(fname,varname,tindex)
     
     warning off;
     
@@ -26,10 +26,12 @@ function [xax,yax,zax,tax,xunits,yunits] = dc_roms_var_grid(fname,varname,tindex
         try
             varcoords = nc_attget(fname,varname,'coordinates');
         catch ME
-            if strcmpi(varname,'rho')
+            if strcmpi(varname,'rho') || strcmpi(varname,'temp') || ...
+                    strmpi(varname,'salt')
                 varcoords = '_rho';
             end
         end
+        
         if ~isempty(strfind(varcoords,'_u'))
           pos = 'u';
         elseif ~isempty(strfind(varcoords,'_v'))
