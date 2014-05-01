@@ -62,7 +62,7 @@ if (~exist('ctype', 'var') | ~exist('cname', 'var') | ~exist('ncol', 'var'))
     z(:)     
          
     disp('Divergent tables:')
-    z={'BrBG', 'PiYG', 'PRGn', 'PuOr', 'RdBu', 'RdGy', 'RdYlBu', 'RdYlGn'};
+    z={'BrBG', 'PiYG', 'PRGn', 'PuOr', 'RdBu', 'RdGy', 'RdYlBu', 'RdYlGn', 'Spectral'};
     z(:) 
     
     disp(' ')
