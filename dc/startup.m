@@ -26,7 +26,7 @@ set(0,'DefaultTextFontSize',16);
 
 % line style and color cycling
 set(0,'DefaultAxesLineStyleOrder',{'-','--','-.'});
-set(0,'DefaultAxesColorOrder',distinguishable_colors(15));
+set(0,'DefaultAxesColorOrder',cbrewer('qual', 'Accent', 15));
 
 % axes
 set(0,'DefaultAxesFontName',fontName)
