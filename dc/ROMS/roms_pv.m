@@ -69,9 +69,11 @@ if exist(outname,'file')
 end
 
 nccreate(outname,'pv', 'Format','netcdf4', 'DeflateLevel',1,'Shuffle',true,...
-    'Dimensions', {xdname s(1)-1 ydname s(2)-2 zdname s(3)-1 tdname length(tpv)});
+    'Dimensions', {xdname s(1)-1 ydname s(2)-2 zdname s(3)-1 tdname length(tpv)}, ...
+    'ChunkSize',[ceil((s(1)-1)/2) ceil((s(2)-1)/2) ceil((s(3)-1)/2) 1]);
 nccreate(outname,'rv', 'Format','netcdf4', 'DeflateLevel',1,'Shuffle',true,...
-    'Dimensions', {xdrname s(1) ydrname s(2)-1 zdrname s(3)-1 tdname length(tpv)});
+    'Dimensions', {xdrname s(1) ydrname s(2)-1 zdrname s(3)-1 tdname length(tpv)}, ...
+    'ChunkSize',[ceil((s(1)-1)/2) ceil((s(2)-1)/2) ceil((s(3)-1)/2) 1]);
 nccreate(outname,xname,'Dimensions',{xdname s(1)-1 ydname s(2)-2 zdname s(3)-1});
 nccreate(outname,yname,'Dimensions',{xdname s(1)-1 ydname s(2)-2 zdname s(3)-1});
 nccreate(outname,zname,'Dimensions',{xdname s(1)-1 ydname s(2)-2 zdname s(3)-1});
@@ -124,9 +126,9 @@ for i=0:iend-1
             rho = -misc.Tcoef*ncread(fname,'temp',read_start,read_count,stride);
         end
     end
-    
+
     [pv,xpv,ypv,zpv,rvor] = pv_cgrid(grid1,u,v,rho,f,rho0);
-    
+        
     if i == 0
         % write grid
         ncwrite(outname,xname,xpv);
