@@ -154,7 +154,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
     plotflag = sum([2 3 4] .* flags(2:4));
     if flags(5) && stop ~= 1, spaceplay = 0; fprintf('\n Hit a key to advance frame. \n\n'); end
     
-    fancy_map = flipud(cbrewer('div', 'RdYlGn', 32));
+    %fancy_map = flipud(cbrewer('div', 'RdYlBu', 32));
     
     % make fonts bigger for presentation / movie plots
     if flags(8), fontSize = 20; else fontSize = 12; end
@@ -270,7 +270,7 @@ function [mm_instance,handles] = animate(xax,yax,data,labels,commands,index)
         end
         
         if firstplot
-            colormap(fancy_map);
+            if exist('fancy_map', 'var'), colormap(fancy_map); end
             
             % maximize window
             jframe = get(gcf,'JavaFrame');
