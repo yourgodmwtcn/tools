@@ -53,26 +53,25 @@ def vertmode(N2, Z, n, make_plot):
     for i in range(F.shape[1]):
         F[:, i] = (c[i]**2/9.81)*(np.diff(G[:, i])/np.diff(Zmid))
 
-    Hmode = np.fliplr(F[:, ind[lz-n:lz-1]])
-    Vmode = np.fliplr(G[:, ind[lz-n:lz-1]])
+    Hmode = np.fliplr(F[:, ind[-n:]])
+    Vmode = np.fliplr(G[:, ind[-n:]])
 
-    print(Hmode.shape)
     # Fill in Hmode at lowest depth
     Hmode = np.vstack([Hmode, Hmode[-2, :]])
-    c = np.flipud(c[ind[lz-n:lz-1]])
-
-    return [Vmode, Hmode, c]
+    c = np.flipud(c[ind[-n:]])
 
     # Normalize by max. amplitude
-    #Hmode = Hmode./np.repmat(max(abs(Hmode)), len(Hmode), 1)
-    #Vmode = Vmode./np.repmat(max(abs(Vmode)), len(Vmode), 1)
+    # Hmode = Hmode./np.repmat(max(abs(Hmode)), len(Hmode), 1)
+    # Vmode = Vmode./np.repmat(max(abs(Vmode)), len(Vmode), 1)
 
     # Normalize by energy (following Wunsch(1999)
     # why am I doing this using Hmode norm?
-    norm = np.sqrt(sum(avg1(Vmode)**2 * np.repmat(np.diff(Zmid), 1, n)))
-    Vnorm = Vmode / np.repmat(norm, lz-1, 1)
-    norm = np.sqrt(sum(avg1(Hmode)**2 * np.repmat(np.diff(Zmid), 1, n)))
-    Hnorm = Hmode / np.repmat(norm, lz-1, 1)
+    norm = np.sqrt(sum(avg1(Vmode)**2 * np.diff(Zmid).reshape(lz-2, 1)))
+    Vnorm = Vmode / norm
+    norm = np.sqrt(sum(avg1(Hmode)**2 * np.diff(Zmid).reshape(lz-2, 1)))
+    Hnorm = Hmode / norm
+
+    return [Vnorm, Hnorm, c]
 
     # Plot first n modes
     if make_plot:
@@ -116,9 +115,17 @@ def avg1(a):
 
 
 class oceanTests(unittest.TestCase):
+    def suite():
+        suite = unittest.TestLoader().LoadTestsfromTestCase(oceanTests)
+        return suite
+
+    def runTest(self):
+        self.test_vertmode(self)
+
     def test_vertmode(self):
         # create z-vector
-        Z = np.linspace(0, 1, 50)
+        nz = 50
+        Z = np.linspace(0, 1, nz)
 
         # constant Nsquared
         N2 = np.ones_like(Z[:-1])
@@ -137,14 +144,14 @@ class oceanTests(unittest.TestCase):
         self.assertEqual(Hmode.shape[1], n)
 
         # test normalization
-        hchk = np.sum(avg1(Hmode)**2 * np.repmat(np.diff(Zmode), 1, n))
-        vchk = np.sum(avg1(Vmode * np.repmat(N2, 1, n))**2
-                      * np.repmat(np.diff(Zmode), 1, n))
-        self.assertEqual(hchk, np.ones((n, 1)))
-        self.assertEqual(vchk, np.ones((n, 1)))
+        hchk = np.sum(avg1(Hmode)**2 * np.diff(Zmode).reshape(nz-2, 1), 0)
+        vchk = np.sum(avg1(Vmode * N2.reshape(nz-1, 1))**2
+                      * np.diff(Zmode).reshape(nz-2, 1), 0)
+        self.assertEqual(hchk, np.ones((1, n)))
+        self.assertEqual(vchk, np.ones((1, n)))
 
         # check against sine / cosines
-        #Vmodechk = np.sin()
-        #Hmodechk = np.cos()
-        #self.assertEqual(Vmodechk, Vmode)
-        #self.assertEqual(Hmodechk, Hmode)
+        # Vmodechk = np.sin()
+        # Hmodechk = np.cos()
+        # self.assertEqual(Vmodechk, Vmode)
+        # self.assertEqual(Hmodechk, Hmode)
