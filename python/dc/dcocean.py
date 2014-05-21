@@ -1,4 +1,7 @@
 #!/usr/bin/python
+import unittest
+import numpy as np
+
 def vertmode(N2, Z, n, make_plot):
     # function [Vmode, Hmode, c] = vertmode(N2, Z, n, make_plot)
     # Takes input N2 -> Buoyancy frequency squared (@ mid pts of Z)
@@ -11,8 +14,6 @@ def vertmode(N2, Z, n, make_plot):
     # c(i) -> Gravity Wave speed of i-th mode
 
     #    if ~exist('make_plot','var'), make_plot = 1; end
-
-    import numpy as np
 
     lz = len(Z)
     if Z.shape[0] == 1:
@@ -29,38 +30,36 @@ def vertmode(N2, Z, n, make_plot):
     D[0] = Z[1]/2
     D[1:-1] = (Z[2:]-Z[0:-2])/2
     D[-1] = (Z[-1] - Z[-2])/2
-    Zmid = (Z[0:-2] + Z[1:-1])/2
+    Zmid = (Z[:-1] + Z[1:])/2
 
     Q1 = np.zeros(lz-1)
 
     for k in range(len(Q1)):
         Q1[k] = 2/(D[k]*D[k+1]*(D[k] + D[k+1]))
 
-#    print(lz)
-    print(Q1)
-#    print(N2.shape)
     Q = np.diag(Q1/N2)
     A = -1*(np.diag(D[:-1]) + np.diag(D[1:])) + \
         np.diag(D[:-2], 1) + np.diag(D[2:], -1)
 
-    print(Q)
-    print(A)
-    [G, e] = np.linalg.eig(np.dot(Q, A))
+    [e, G] = np.linalg.eig(np.dot(Q, A))
 
-    c = np.sqrt(-1./np.diag(e))
+    c = np.sqrt(-1/e)
     ind = np.argsort(c)  # ascending order
 
-    return c
     F = np.zeros([lz-2, lz-1])
-    for i in range(lz-2):
+
+    for i in range(F.shape[1]):
         F[:, i] = (c[i]**2/9.81)*(np.diff(G[:, i])/np.diff(Zmid))
 
     Hmode = np.fliplr(F[:, ind[lz-n:lz-1]])
     Vmode = np.fliplr(G[:, ind[lz-n:lz-1]])
 
+    print(Hmode.shape)
     # Fill in Hmode at lowest depth
-    Hmode[lz-2, :] = Hmode[lz-3, :]
+    Hmode = np.vstack([Hmode, Hmode[-2, :]])
     c = np.flipud(c[ind[lz-n:lz-1]])
+
+    return [Vmode, Hmode, c]
 
     # Normalize by max. amplitude
     #Hmode = Hmode./np.repmat(max(abs(Hmode)), len(Hmode), 1)
@@ -72,19 +71,6 @@ def vertmode(N2, Z, n, make_plot):
     Vnorm = Vmode / np.repmat(norm, lz-1, 1)
     norm = np.sqrt(sum(avg1(Hmode)**2 * np.repmat(np.diff(Zmid), 1, n)))
     Hnorm = Hmode / np.repmat(norm, lz-1, 1)
-
-    # check normalization
-    hchk = sum(avg1(Hnorm)**2 * np.repmat(np.diff(Zmid), 1, n))
-    vchk = sum(avg1(Vnorm * np.repmat(N2, 1, n))**2
-               * np.repmat(np.diff(Zmid), 1, n))
-
-    print('\n u mode normalization: \n')
-    print(hchk)
-    print('\n w mode normalization: \n')
-    print(vchk)
-
-    Hmode = Hnorm
-    Vmode = Vnorm
 
     # Plot first n modes
     if make_plot:
@@ -121,3 +107,38 @@ def vertmode(N2, Z, n, make_plot):
             set(gca, 'ydir', 'reverse')
 
     return [Vmode, Hmode, c]
+
+
+def avg1(a):
+    return (a[:-1]+a[1:])/2
+
+
+class oceanTests(unittest.TestCase):
+    def test_vertmode(self):
+        # create z-vector
+        Z = np.linspace(0, 1, 50)
+
+        # constant Nsquared
+        N2 = np.ones_like(Z[:-1])
+
+        # z-vector for calculated mode
+        Zmode = avg1(Z)
+
+        # number of modes to calculate
+        n = 4
+
+        # calculate modes
+        [Vmode, Hmode, c] = vertmode(N2, Z, n, 0)
+
+        # test normalization
+        hchk = np.sum(avg1(Hmode)**2 * np.repmat(np.diff(Zmode), 1, n))
+        vchk = np.sum(avg1(Vmode * np.repmat(N2, 1, n))**2 \
+                      * np.repmat(np.diff(Zmode), 1, n))
+
+        #print('\n u mode normalization: \n')
+        #print(hchk)
+        #print('\n w mode normalization: \n')
+        #print(vchk)
+
+        # check against sine / cosines
+#        Vchk = np.sin()
