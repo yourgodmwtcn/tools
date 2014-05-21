@@ -2,16 +2,18 @@
 import unittest
 import numpy as np
 
+# Calculate vertical mode shapes given an N2 profile
 def vertmode(N2, Z, n, make_plot):
-    # function [Vmode, Hmode, c] = vertmode(N2, Z, n, make_plot)
-    # Takes input N2 -> Buoyancy frequency squared (@ mid pts of Z)
-    #              Z -> Vertical co-ordinate
-    #              n -> No. of modes to isolate
-    # Max. number of nodes is length(Z)-1
-    # Returns
-    #             Vmode -> Vertical structure for vertical velocity
-    #             Hmode -> Vertical structure for horizontal velocities, pressure
-    # c(i) -> Gravity Wave speed of i-th mode
+    """ function [Vmode, Hmode, c] = vertmode(N2, Z, n, make_plot)
+     Takes input N2 -> Buoyancy frequency squared (@ mid pts of Z)
+                  Z -> Vertical co-ordinate
+                  n -> No. of modes to isolate
+     Max. number of nodes is length(Z)-1
+     Returns
+                 Vmode -> Vertical structure for vertical velocity
+                 Hmode -> Vertical structure for horizontal velocities, pressure
+     c(i) -> Gravity Wave speed of i-th mode
+    """
 
     #    if ~exist('make_plot','var'), make_plot = 1; end
 
@@ -130,15 +132,19 @@ class oceanTests(unittest.TestCase):
         # calculate modes
         [Vmode, Hmode, c] = vertmode(N2, Z, n, 0)
 
+        # test size of returned arrays
+        self.assertEqual(Vmode.shape[1], n)
+        self.assertEqual(Hmode.shape[1], n)
+
         # test normalization
         hchk = np.sum(avg1(Hmode)**2 * np.repmat(np.diff(Zmode), 1, n))
-        vchk = np.sum(avg1(Vmode * np.repmat(N2, 1, n))**2 \
+        vchk = np.sum(avg1(Vmode * np.repmat(N2, 1, n))**2
                       * np.repmat(np.diff(Zmode), 1, n))
-
-        #print('\n u mode normalization: \n')
-        #print(hchk)
-        #print('\n w mode normalization: \n')
-        #print(vchk)
+        self.assertEqual(hchk, np.ones((n, 1)))
+        self.assertEqual(vchk, np.ones((n, 1)))
 
         # check against sine / cosines
-#        Vchk = np.sin()
+        #Vmodechk = np.sin()
+        #Hmodechk = np.cos()
+        #self.assertEqual(Vmodechk, Vmode)
+        #self.assertEqual(Hmodechk, Hmode)
