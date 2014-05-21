@@ -1,11 +1,12 @@
 % calculates Ertel PV at interior RHO points (horizontal plane) and midway between rho points in the vertical
 %       [pv] = roms_pv(fname,tindices)
 
-function [pv,xpv,ypv,zpv] = roms_pv(fname,tindices,outname)
+function [pv,xpv,ypv,zpv] = roms_pv(fname, tindices, outname, ftype)
 
+if ~exist('ftype', 'var'), ftype = 'avg'; end
 if isdir(fname)
     dirname = fname;
-    fnames = roms_find_file(dirname,'avg');
+    fnames = roms_find_file(dirname, ftype);
     fname = [dirname '/' fnames{1}];
     tpv = dc_roms_read_data(dirname,'ocean_time');
     dirflag = 1;
@@ -108,8 +109,10 @@ for i=0:iend-1
     tend   = read_start(end) + read_count(end) -1;
     
     if dirflag
-        u = dc_roms_read_data(dirname,'u',[tstart tend],{},[],grid);
-        v = dc_roms_read_data(dirname,'v',[tstart tend],{},[],grid);
+        u = dc_roms_read_data(dirname,'u',[tstart tend],{},[],grid, ...
+                              ftype);
+        v = dc_roms_read_data(dirname,'v',[tstart tend],{},[],grid, ...
+                              ftype);
         
         try
             rho = dc_roms_read_data(dirname,'rho',[tstart tend],{},[],grid);
@@ -137,8 +140,11 @@ for i=0:iend-1
         ncwrite(outname,'ocean_time',tpv);
     end
 
+    disp('Writing data...');
+    ticstartwrt = tic;
     ncwrite(outname,'pv',pv,read_start);
     ncwrite(outname,'rv',rvor,read_start);
+    toc(ticstartwrt);
     
     pvdV = bsxfun(@times,pv,avg1(grid.dV(2:end-1,2:end-1,:),3));
     

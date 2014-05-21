@@ -1,5 +1,5 @@
 function [out,xax,yax,zax,grd] = dc_roms_read_data(folder,varname,tindices, ...
-                        volume,stride,grd)
+                        volume,stride,grd, ftype)
     
     disp(['Reading ' varname]);
     
@@ -13,6 +13,7 @@ function [out,xax,yax,zax,grd] = dc_roms_read_data(folder,varname,tindices, ...
     if ~exist('volume','var') || isempty(volume), volume = {}; end
     if ~exist('stride','var') || isempty(stride), stride = [1 1 1 1]; end
     if ~exist('grd','var'), grd = []; end
+    if ~exist('ftype', 'var'), ftype = 'avg'; end
     
     if length(tindices) == 1, tindices(2) = tindices(1); end
     
@@ -28,7 +29,7 @@ function [out,xax,yax,zax,grd] = dc_roms_read_data(folder,varname,tindices, ...
     else
         % get all history files
         if isdir(folder)
-            files = roms_find_file(folder,'avg');
+            files = roms_find_file(folder, ftype);
         else
             files = folder;
         end
@@ -139,4 +140,3 @@ function [out,xax,yax,zax,grd] = dc_roms_read_data(folder,varname,tindices, ...
         if quitflag, break; end
     end 
     toc;
-    
