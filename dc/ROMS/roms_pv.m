@@ -8,7 +8,7 @@ if isdir(fname)
     dirname = fname;
     fnames = roms_find_file(dirname, ftype);
     fname = [dirname '/' fnames{1}];
-    tpv = dc_roms_read_data(dirname,'ocean_time');
+    tpv = dc_roms_read_data(dirname,'ocean_time', [], {}, [], [], ftype);
     dirflag = 1;
 else
     % extract dirname
@@ -115,10 +115,12 @@ for i=0:iend-1
                               ftype);
         
         try
-            rho = dc_roms_read_data(dirname,'rho',[tstart tend],{},[],grid);
+            rho = dc_roms_read_data(dirname,'rho',[tstart tend],{},[],grid, ...
+                                    ftype);
         catch ME
             rho = rho0 -rho0 * misc.Tcoef* ...
-                dc_roms_read_data(dirname,'temp',[tstart tend],{},[],grid);
+                dc_roms_read_data(dirname,'temp',[tstart tend],{},[],grid, ...
+                                  ftype);
         end
     else
         u = ncread(fname,'u',read_start,read_count,stride);
