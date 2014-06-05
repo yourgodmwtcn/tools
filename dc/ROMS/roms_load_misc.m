@@ -2,7 +2,14 @@
 %       [misc] = roms_load_misc(fname)
 
 function [misc] = roms_load_misc(fname)
-    
+
+    if isdir(fname)
+        dirname = fname;
+        fname = roms_find_file(dirname, 'his');
+    end
+
+    fname = [dirname '/' fname{1}];
+
     if ~exist('fname','var'), fname = 'ocean_his.nc'; end
     
     vars = {'nl_tnu2','nl_visc2','rdrg','rdrg2','rho0','R0','Tcoef','Scoef','h','f'};
