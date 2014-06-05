@@ -20,7 +20,7 @@ end
 vinfo = ncinfo(fname,'u');
 s     = vinfo.Size;
 dim   = length(s); 
-slab  = roms_slab(fname,0)-4;
+slab  = roms_slab(fname,0);
 
 warning off
 grid = roms_get_grid(fname,fname,1,1);
@@ -69,12 +69,18 @@ if exist(outname,'file')
     if in == 1, delete(outname); end
 end
 
-nccreate(outname,'pv', 'Format','netcdf4', 'DeflateLevel',1,'Shuffle',true,...
+% better packing = better compression?
+pv_scale = 1e-11;
+rv_scale = 1e-4;
+rhoinfo = ncinfo(fname, 'rho');
+chunksize = rhoinfo.ChunkSize;
+
+nccreate(outname,'pv', 'Format','netcdf4', 'DeflateLevel',5,'Shuffle',true,...
     'Dimensions', {xdname s(1)-1 ydname s(2)-2 zdname s(3)-1 tdname length(tpv)}, ...
-    'ChunkSize',[ceil((s(1)-1)/2) ceil((s(2)-1)/2) ceil((s(3)-1)/2) 1]);
-nccreate(outname,'rv', 'Format','netcdf4', 'DeflateLevel',1,'Shuffle',true,...
+    'ChunkSize', chunksize, 'Datatype', 'single');
+nccreate(outname,'rv', 'Format','netcdf4', 'DeflateLevel',5,'Shuffle',true,...
     'Dimensions', {xdrname s(1) ydrname s(2)-1 zdrname s(3)-1 tdname length(tpv)}, ...
-    'ChunkSize',[ceil((s(1)-1)/2) ceil((s(2)-1)/2) ceil((s(3)-1)/2) 1]);
+    'ChunkSize', chunksize, 'Datatype', 'single');
 nccreate(outname,xname,'Dimensions',{xdname s(1)-1 ydname s(2)-2 zdname s(3)-1});
 nccreate(outname,yname,'Dimensions',{xdname s(1)-1 ydname s(2)-2 zdname s(3)-1});
 nccreate(outname,zname,'Dimensions',{xdname s(1)-1 ydname s(2)-2 zdname s(3)-1});
@@ -87,9 +93,11 @@ nccreate(outname,'intPV','Dimensions',{tdname length(tpv)});
 ncwriteatt(outname,'pv','Description','Ertel PV calculated from ROMS output');
 ncwriteatt(outname,'pv','coordinates',[xname ' ' yname ' ' zname ' ' tname]);
 ncwriteatt(outname,'pv','units','N/A');
+ncwriteatt(outname,'pv','scale_factor',pv_scale);
 ncwriteatt(outname,'rv','Description','Relative voritcity, vx-uy');
 ncwriteatt(outname,'pv','coordinates',['x_rv y_rv z_rv ocean_time']);
 ncwriteatt(outname,'rv','units','1/s');
+ncwriteatt(outname,'rv','scale_factor',rv_scale);
 ncwriteatt(outname,xname,'units',ncreadatt(fname,'x_u','units'));
 ncwriteatt(outname,yname,'units',ncreadatt(fname,'y_u','units'));
 ncwriteatt(outname,zname,'units','m');
@@ -132,8 +140,11 @@ for i=0:iend-1
         end
     end
 
+    disp('Calculating pv...');
+    pvstart = tic;
     [pv,xpv,ypv,zpv,rvor] = pv_cgrid(grid1,u,v,rho,f,rho0);
-        
+    toc(pvstart);
+    
     if i == 0
         % write grid
         ncwrite(outname,xname,xpv);
@@ -144,8 +155,8 @@ for i=0:iend-1
 
     disp('Writing data...');
     ticstartwrt = tic;
-    ncwrite(outname,'pv',pv,read_start);
-    ncwrite(outname,'rv',rvor,read_start);
+    ncwrite(outname,'pv',pv/pv_scale,read_start);
+    ncwrite(outname,'rv',rvor/rv_scale,read_start);
     toc(ticstartwrt);
     
     pvdV = bsxfun(@times,pv,avg1(grid.dV(2:end-1,2:end-1,:),3));
