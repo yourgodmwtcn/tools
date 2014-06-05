@@ -6,9 +6,8 @@ function [misc] = roms_load_misc(fname)
     if isdir(fname)
         dirname = fname;
         fname = roms_find_file(dirname, 'his');
+        fname = [dirname '/' fname{1}];
     end
-
-    fname = [dirname '/' fname{1}];
 
     if ~exist('fname','var'), fname = 'ocean_his.nc'; end
     
