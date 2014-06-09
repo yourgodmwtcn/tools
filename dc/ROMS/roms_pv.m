@@ -70,8 +70,9 @@ if exist(outname,'file')
 end
 
 % better packing = better compression?
-pv_scale = 1e-11;
-rv_scale = 1e-4;
+%pv_scale = 1e-11;
+%rv_scale = 1e-4;
+% steal chunking from ROMS
 rhoinfo = ncinfo(fname, 'rho');
 chunksize = rhoinfo.ChunkSize;
 
@@ -93,11 +94,11 @@ nccreate(outname,'intPV','Dimensions',{tdname length(tpv)});
 ncwriteatt(outname,'pv','Description','Ertel PV calculated from ROMS output');
 ncwriteatt(outname,'pv','coordinates',[xname ' ' yname ' ' zname ' ' tname]);
 ncwriteatt(outname,'pv','units','N/A');
-ncwriteatt(outname,'pv','scale_factor',pv_scale);
+%ncwriteatt(outname,'pv','scale_factor',pv_scale);
 ncwriteatt(outname,'rv','Description','Relative voritcity, vx-uy');
 ncwriteatt(outname,'pv','coordinates',['x_rv y_rv z_rv ocean_time']);
 ncwriteatt(outname,'rv','units','1/s');
-ncwriteatt(outname,'rv','scale_factor',rv_scale);
+%ncwriteatt(outname,'rv','scale_factor',rv_scale);
 ncwriteatt(outname,xname,'units',ncreadatt(fname,'x_u','units'));
 ncwriteatt(outname,yname,'units',ncreadatt(fname,'y_u','units'));
 ncwriteatt(outname,zname,'units','m');
@@ -118,17 +119,17 @@ for i=0:iend-1
     
     if dirflag
         u = dc_roms_read_data(dirname,'u',[tstart tend],{},[],grid, ...
-                              ftype);
+                              ftype, 'single');
         v = dc_roms_read_data(dirname,'v',[tstart tend],{},[],grid, ...
-                              ftype);
+                              ftype, 'single');
         
         try
             rho = dc_roms_read_data(dirname,'rho',[tstart tend],{},[],grid, ...
-                                    ftype);
+                                    ftype, 'single');
         catch ME
             rho = rho0 -rho0 * misc.Tcoef* ...
                 dc_roms_read_data(dirname,'temp',[tstart tend],{},[],grid, ...
-                                  ftype);
+                                  ftype, 'single');
         end
     else
         u = ncread(fname,'u',read_start,read_count,stride);
@@ -155,8 +156,8 @@ for i=0:iend-1
 
     disp('Writing data...');
     ticstartwrt = tic;
-    ncwrite(outname,'pv',pv/pv_scale,read_start);
-    ncwrite(outname,'rv',rvor/rv_scale,read_start);
+    ncwrite(outname,'pv',pv,read_start);
+    ncwrite(outname,'rv',rvor,read_start);
     toc(ticstartwrt);
     
     pvdV = bsxfun(@times,pv,avg1(grid.dV(2:end-1,2:end-1,:),3));
