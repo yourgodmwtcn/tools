@@ -1,5 +1,5 @@
 function [out,xax,yax,zax,grd] = dc_roms_read_data(folder,varname,tindices, ...
-                        volume,stride,grd, ftype)
+                        volume,stride,grd, ftype, dtype)
     
     disp(['Reading ' varname]);
     
@@ -14,6 +14,7 @@ function [out,xax,yax,zax,grd] = dc_roms_read_data(folder,varname,tindices, ...
     if ~exist('stride','var') || isempty(stride), stride = [1 1 1 1]; end
     if ~exist('grd','var'), grd = []; end
     if ~exist('ftype', 'var'), ftype = 'avg'; end
+    if ~exist('dtype', 'var'), dtype = 'double'; end
     
     if length(tindices) == 1, tindices(2) = tindices(1); end
     
@@ -102,8 +103,14 @@ function [out,xax,yax,zax,grd] = dc_roms_read_data(folder,varname,tindices, ...
             end
         end
         [start,count] = roms_ncread_params(ndim,0,1,slab,tnew,dt,vol);
-        
-        temp = squeeze(double(ncread(fname,varname,start,count,stride)));
+
+        if strcmpi(dtype, 'single')
+            temp = squeeze(single(ncread(fname,varname,start,count, ...
+                                         stride)));
+        else
+            temp = squeeze(double(ncread(fname,varname,start,count, ...
+                                         stride)));
+        end
         if count(end) == 1 && ii == 1 % first file has the single timestep
             out = temp;
             return;
