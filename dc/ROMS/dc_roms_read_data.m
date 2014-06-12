@@ -13,8 +13,8 @@ function [out,xax,yax,zax,grd] = dc_roms_read_data(folder,varname,tindices, ...
     if ~exist('volume','var') || isempty(volume), volume = {}; end
     if ~exist('stride','var') || isempty(stride), stride = [1 1 1 1]; end
     if ~exist('grd','var'), grd = []; end
-    if ~exist('ftype', 'var'), ftype = 'avg'; end
-    if ~exist('dtype', 'var'), dtype = 'double'; end
+    if ~exist('ftype', 'var') || isempty(ftype), ftype = 'avg'; end
+    if ~exist('dtype', 'var') || isempty(dtype), dtype = 'double'; end
     
     if length(tindices) == 1, tindices(2) = tindices(1); end
     
