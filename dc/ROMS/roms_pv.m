@@ -20,7 +20,7 @@ end
 vinfo = ncinfo(fname,'u');
 s     = vinfo.Size;
 dim   = length(s); 
-slab  = roms_slab(fname,0);
+slab  = roms_slab(fname,0) + 6;
 
 warning off
 grid = roms_get_grid(fname,fname,1,1);
