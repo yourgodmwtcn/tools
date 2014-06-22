@@ -26,6 +26,8 @@ if ~isempty(find(size(x)==1))
 	[x,y] = meshgrid(x,y);
 end
 
+z = double(z);
+
 % add a border to the x values
 xnew = [   x(:,1)-(x(:,2)-x(:,1))            x      x(:,end)+(x(:,end)-x(:,end-1))      ];
 xnew = [xnew(1,:)-(xnew(2,:)-xnew(1,:));  xnew;  xnew(end,:)+(xnew(end,:)-xnew(end-1,:))];
