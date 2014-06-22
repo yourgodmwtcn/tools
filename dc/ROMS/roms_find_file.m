@@ -33,8 +33,12 @@ function [fname] = roms_find_file(dirin,type)
             ii = ii+1;
         end
     end
-    
-    in = in.name;
+
+    try
+        in = in.name;
+    catch ME
+        error('Cannot find *.in file. check config folder');
+    end
     
     % files from *.in 
     if strcmpi(type,'ini') || strcmpi(type,'bry') ||  strcmpi(type,'grd')
